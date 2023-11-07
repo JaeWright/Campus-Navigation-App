@@ -38,6 +38,8 @@ dependencies:
   flutter_map: ^6.0.1
   url_launcher: ^6.2.1
   latlong2: ^0.9.0
+  cloud_firestore: ^4.12.2
+  firebase_core: ^2.21.0
 
 dev_dependencies:
   flutter_test:

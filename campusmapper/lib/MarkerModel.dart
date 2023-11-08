@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campusmapper/MapMarker.dart';
+import 'package:latlong2/latlong.dart';
 
 class MarkerModel {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Future<List<MapMarker>> getMarkersofType(String type) async {
-    List<MapMarker> result = [];
+    List<MapMarker> results = [];
     await _firestore
         .collection("MapMarker")
         .doc('OntarioTech')
@@ -12,13 +13,24 @@ class MarkerModel {
         .get()
         .then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
-        print(docSnapshot.id);
-        print(docSnapshot["position"].latitude);
-        print(docSnapshot["position"].longitude);
-        print(docSnapshot["addInfo"]);
+        results.add(MapMarker(
+            id: docSnapshot.id,
+            location: LatLng(docSnapshot["position"].latitude,
+                docSnapshot["position"].longitude),
+            additionalInfo: docSnapshot["addInfo"]));
       }
     });
-    print(result);
-    return result;
+    print(results);
+    return results;
+  }
+
+  Future<List<String>> getAllCategoryTypes() async {
+    List<String> categories = [];
+    await _firestore.collection("MapMarker").get().then((querySnapshot) {
+      for (var docSnapshot in querySnapshot.docs) {
+        categories.add(docSnapshot.id);
+      }
+    });
+    return categories;
   }
 }

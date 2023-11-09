@@ -3,7 +3,7 @@ import 'package:latlong2/latlong.dart';
 
 class MapMarker {
   final String? id;
-  final LatLng? location;
+  final LatLng location;
   final String? additionalInfo;
 
   MapMarker(

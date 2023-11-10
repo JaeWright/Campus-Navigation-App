@@ -11,7 +11,7 @@ class DBUtils {
       onCreate: (db, version) {
         db.execute('CREATE TABLE courses(id INTEGER PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
         // Call the function to insert pre-made values
-        _insertValuesCourses(db);
+        //_insertValuesCourses(db);
 
 
 
@@ -43,7 +43,7 @@ class DBUtils {
     final List<Course> preMadeCourses = [
       Course(
         id: 1,
-        weekday: "Monday",
+        weekday: "Mon",
         courseName: "Mathematics",
         profName: "Dr. Smith",
         roomNum: "101",
@@ -52,15 +52,61 @@ class DBUtils {
       ),
       Course(
         id: 2,
-        weekday: "Wednesday",
+        weekday: "Tue",
+        courseName: "History",
+        profName: "Dr. Johnson",
+        roomNum: "202",
+        startTime: "11:00 AM",
+        endTime: "12:30 PM",
+      ),
+      Course(
+        id: 3,
+        weekday: "Wed",
         courseName: "Computer Science",
         profName: "Prof. Johnson",
-        roomNum: "202",
+        roomNum: "303",
         startTime: "2:00 PM",
         endTime: "4:00 PM",
       ),
+      Course(
+        id: 4,
+        weekday: "Thu",
+        courseName: "Physics",
+        profName: "Dr. Davis",
+        roomNum: "404",
+        startTime: "3:00 PM",
+        endTime: "5:00 PM",
+      ),
+      Course(
+        id: 5,
+        weekday: "Fri",
+        courseName: "Chemistry",
+        profName: "Dr. Brown",
+        roomNum: "505",
+        startTime: "5:00 PM",
+        endTime: "6:30 PM",
+      ),
       // Add more values as needed
+      Course(
+        id: 6,
+        weekday: "Tue",
+        courseName: "Literature",
+        profName: "Dr. Wilson",
+        roomNum: "606",
+        startTime: "1:00 PM",
+        endTime: "2:30 PM",
+      ),
+      Course(
+        id: 7,
+        weekday: "Fri",
+        courseName: "Art",
+        profName: "Prof. Miller",
+        roomNum: "707",
+        startTime: "4:30 PM",
+        endTime: "6:00 PM",
+      ),
     ];
+
 
     // Insert the pre-made courses into the database
     for (final course in preMadeCourses) {
@@ -80,11 +126,15 @@ class DBUtils {
         eventId: 1,
         eventName: "Conference",
         location: "Convention Center",
+        weekday: "Monday",
+        time: "2:00 PM"
       ),
       Event(
         eventId: 2,
         eventName: "Concert",
         location: "Stadium",
+        weekday: "Wednesday",
+        time: "5:35 PM"
       ),
       // Add more values as needed
     ];

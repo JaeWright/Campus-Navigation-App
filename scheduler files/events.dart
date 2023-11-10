@@ -8,13 +8,17 @@ class Event{
   int? eventId;
   String? eventName;
   String? location;
+  String? weekday;
+  String? time;
 
-  Event({required this.eventId, required this.eventName, required this.location});
+  Event({required this.eventId, required this.eventName, required this.location, required this.weekday, required this.time});
 
   Event.fromMap(Map map){
     eventId = map["eventId"];
     eventName = map["eventName"];
     location = map["location"];
+    weekday = map["weekday"];
+    time = map["time"];
   }
 
   Map<String,Object> toMap(){
@@ -22,11 +26,13 @@ class Event{
       'id' : eventId!,
       'eventName': eventName!,
       'location': location!,
+      'weekday' : weekday!,
+      'time' : time!,
     };
   }
 
   String toString(){
-    return "id: $eventId, Name: $eventName, location: $location";
+    return "id: $eventId, Name: $eventName, location: $location, weekday: $weekday, time: $time";
   }
 }
 

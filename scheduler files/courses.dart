@@ -42,7 +42,7 @@ class Course{
   }
 }
 
-class CourseModel{
+class CoursesModel{
 
   Future getAllCourses() async{
     //returns list of grades in database

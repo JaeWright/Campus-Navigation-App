@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campusmapper/MapMarker.dart';
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
 class MarkerModel {
@@ -19,6 +20,8 @@ class MarkerModel {
               id: docSnapshot.id,
               location: LatLng(docSnapshot["position"].latitude,
                   docSnapshot["position"].longitude),
+              icon: Icon(
+                  IconData(docSnapshot["icon"], fontFamily: 'MaterialIcons')),
               additionalInfo: docSnapshot["addInfo"]));
         }
       });

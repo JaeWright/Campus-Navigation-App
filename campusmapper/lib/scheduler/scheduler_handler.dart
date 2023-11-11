@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
 //model for databases
 final _events = EventsModel();
 final _courses = CoursesModel();
@@ -34,8 +30,8 @@ class CourseTile {
   });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+class SchedulerHandler extends StatelessWidget {
+  const SchedulerHandler({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,21 +41,21 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Scheduler'),
+      home: const SchedulerHandlerPage(title: 'Scheduler'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title});
+class SchedulerHandlerPage extends StatefulWidget {
+  const SchedulerHandlerPage({Key? key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SchedulerHandlerPage> createState() => _SchedulerHandlerPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   List<CourseTile> coursesList = [];
 
   @override
@@ -69,13 +65,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //get all the data from local databases
-  void loadCoursesData() async{
+  void loadCoursesData() async {
     List results = await _courses.getAllCourses();
-    for (int i=0; i<results.length;i++){
+    for (int i = 0; i < results.length; i++) {
       print(results[i]);
       coursesList.add(CourseTile(
-          id: results[i].id, weekday: results[i].weekday, courseName: results[i].courseName,
-          profName: results[i].profName, roomNum: results[i].roomNum, endTime: results[i].endTime,
+          id: results[i].id,
+          weekday: results[i].weekday,
+          courseName: results[i].courseName,
+          profName: results[i].profName,
+          roomNum: results[i].roomNum,
+          endTime: results[i].endTime,
           startTime: results[i].startTime));
     }
   }
@@ -85,8 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: const Icon(
-            Icons.school, // temporary logo
+        leading: const Icon(Icons.school, // temporary logo
             size: 30),
         title: Text(widget.title),
       ),
@@ -109,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
@@ -143,7 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
@@ -196,9 +197,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> getCourseWidgets(String weekday) {
     List<Widget> widgets = [];
 
-    List<CourseTile> filteredCourses = coursesList
-        .where((course) => course.weekday == weekday)
-        .toList();
+    List<CourseTile> filteredCourses =
+        coursesList.where((course) => course.weekday == weekday).toList();
 
     for (int i = 0; i < filteredCourses.length; i++) {
       widgets.addAll([
@@ -222,7 +222,8 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(fontSize: 14),
           textAlign: TextAlign.center,
         ),
-        if (i < filteredCourses.length - 1) // Add dotted line if not the last item
+        if (i <
+            filteredCourses.length - 1) // Add dotted line if not the last item
           Container(
             margin: EdgeInsets.symmetric(vertical: 8),
             height: 1,
@@ -238,5 +239,4 @@ class _MyHomePageState extends State<MyHomePage> {
   String getWeekday(int index) {
     return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][index];
   }
-
 }

@@ -1,125 +1,253 @@
 import 'package:flutter/material.dart';
+import 'Food.dart';
+import 'StudentLogin.dart';
+import 'informationCentrePage.dart';
+import 'Accessebility.dart';
+import 'scheduler/scheduler_handler.dart';
+import 'dart:math' as math;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:campusmapper/map/firebase_options.dart';
+import 'package:campusmapper/map/MapMaker.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MaterialApp(
+    title: 'Grade Viewer',
+    home: CampusNavigatorApp(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class CampusNavigatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Campus Navigator',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  // This flag will change based on the user's login status
+  bool isLoggedIn = false;
 
-  void _incrementCounter() {
+  void navigateToSection(BuildContext context, Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
+
+  // Call this method when the login is successful
+  void loginUser() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      isLoggedIn = true;
+    });
+  }
+
+  // Call this method when the user logs out
+  void logoutUser() {
+    setState(() {
+      isLoggedIn = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    List<Widget> navigationCards = [
+      NavigationCard(
+        icon: Icons.info,
+        title: 'Information Center',
+        color: Colors.blueAccent,
+        onTap: () {
+          navigateToSection(context, InformationCenterPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.fastfood_sharp,
+        title: 'CampusFood',
+        color: Colors.yellowAccent,
+        onTap: () {
+          navigateToSection(context, FoodPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.accessible,
+        title: 'Accessibility',
+        color: Colors.redAccent,
+        onTap: () {
+          navigateToSection(context, AccessibilityDirectoryPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.calendar_month,
+        title: 'My Schedule',
+        color: Colors.redAccent,
+        onTap: () {
+          navigateToSection(context, SchedulerHandler());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.map,
+        title: 'Campus Map',
+        color: Colors.redAccent,
+        onTap: () {
+          navigateToSection(context, ListMapScreen());
+        },
+      ),
+      // ... Add other NavigationCard widgets as needed ...
+    ];
+
+    if (!isLoggedIn) {
+      navigationCards.insert(
+        1, // Adjust index as needed to place the login card in the desired position
+        NavigationCard(
+          icon: Icons.school,
+          title: 'Student Login',
+          color: Colors.white38,
+          onTap: () {
+            navigateToSection(context, StudentLoginPage());
+          },
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Campus Navigator'),
+        actions: isLoggedIn
+            ? [
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: logoutUser, // Calls logoutUser to update the state
+                ),
+              ]
+            : [],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: GridView.count(
+        crossAxisCount: 3,
+        padding: EdgeInsets.all(8.0),
+        childAspectRatio: 0.8 / 1.0,
+        children: navigationCards,
+      ),
+    );
+  }
+}
+
+class AnimatedBackground extends StatefulWidget {
+  final Widget child;
+
+  const AnimatedBackground({Key? key, required this.child}) : super(key: key);
+
+  @override
+  _AnimatedBackgroundState createState() => _AnimatedBackgroundState();
+}
+
+class _AnimatedBackgroundState extends State<AnimatedBackground> {
+  Color _color = Colors.white;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Start the animation
+    _animateBackgroundColor();
+  }
+
+  void _animateBackgroundColor() {
+    Future.delayed(Duration(seconds: 1)).then((_) {
+      if (mounted) {
+        setState(() {
+          // Generate a random color with full opacity
+          _color = Color((0xFF000000 | math.Random().nextInt(0xFFFFFF)));
+        });
+        _animateBackgroundColor();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(seconds: 1),
+      color: _color,
+      child: widget.child,
+    );
+  }
+}
+
+class NotificationsPage extends StatelessWidget {
+  // ... Your existing NotificationsPage code ...
+  @override
+  Widget build(BuildContext context) {
+    // Placeholder for events
+    final events = [
+      {'name': 'Tech Workshop', 'date': 'Nov 10', 'location': 'Auditorium'},
+      // Add more events
+    ];
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Notifications')),
+      body: ListView.builder(
+        itemCount: events.length,
+        itemBuilder: (context, index) {
+          var event = events[index];
+          return ListTile(
+            title: Text(
+                event['name'] ?? 'Unknown Event'), // Provide a default value
+            subtitle: Text(
+                '${event['date'] ?? 'Date not set'} at ${event['location'] ?? 'Location not set'}'),
+            onTap: () {
+              // Your onTap code
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class NavigationCard extends StatelessWidget {
+  // ... Your existing NavigationCard code, make sure the colors are set to transparent ...
+  final IconData icon;
+  final String title;
+  final Color color;
+  final VoidCallback onTap;
+
+  const NavigationCard({
+    Key? key,
+    required this.icon,
+    required this.title,
+    required this.color,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: color,
+      child: InkWell(
+        onTap: onTap,
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Icon(icon, size: 48.0),
+            SizedBox(height: 16.0),
+            Text(title, style: TextStyle(fontSize: 16.0)),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

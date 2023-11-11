@@ -3,15 +3,16 @@ import 'package:path/path.dart' as path;
 import 'dart:async';
 import 'courses.dart';
 import 'events.dart';
+import 'dart:developer';
 
 class DBUtils {
   static Future<Database> initCourses() async {
     final database = await openDatabase(
-      path.join(await getDatabasesPath(), 'students_manager.db'),
+      path.join(await getDatabasesPath(), 'courses_manager.db'),
       onCreate: (db, version) {
         db.execute('CREATE TABLE courses(id INTEGER PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
         // Call the function to insert pre-made values
-        //_insertValuesCourses(db);
+        _insertValuesCourses(db);
 
 
 
@@ -24,9 +25,9 @@ class DBUtils {
 
   static Future<Database> initEvents() async {
     final database = await openDatabase(
-      path.join(await getDatabasesPath(), 'students_manager.db'),
+      path.join(await getDatabasesPath(), 'events_manager.db'),
       onCreate: (db, version) {
-        db.execute('CREATE TABLE events(eventId INTEGER PRIMARY KEY, eventName TEXT, location TEXT)');
+        db.execute('CREATE TABLE events(id INTEGER PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT)');
         // Call the function to insert pre-made values
         _insertValuesEvents(db);
 
@@ -34,6 +35,7 @@ class DBUtils {
       version: 1,
     );
     print("created DB $database");
+
     return database;
   }
 
@@ -123,20 +125,75 @@ class DBUtils {
     // Create a list of pre-made values (events) to insert into the database
     final List<Event> preMadeEvents = [
       Event(
-        eventId: 1,
+        id: 1,
         eventName: "Conference",
         location: "Convention Center",
-        weekday: "Monday",
-        time: "2:00 PM"
+        weekday: "Mon",
+        time: "2:00 PM",
       ),
       Event(
-        eventId: 2,
+        id: 2,
         eventName: "Concert",
         location: "Stadium",
-        weekday: "Wednesday",
-        time: "5:35 PM"
+        weekday: "Wed",
+        time: "5:35 PM",
       ),
-      // Add more values as needed
+      Event(
+        id: 3,
+        eventName: "Seminar",
+        location: "Meeting Room",
+        weekday: "Fri",
+        time: "10:00 AM",
+      ),
+      Event(
+        id: 4,
+        eventName: "Movie Night",
+        location: "Community Hall",
+        weekday: "Tue",
+        time: "7:00 PM",
+      ),
+      Event(
+        id: 5,
+        eventName: "Sports Event",
+        location: "Sports Complex",
+        weekday: "Thu",
+        time: "3:30 PM",
+      ),
+      Event(
+        id: 6,
+        eventName: "Exhibition",
+        location: "Art Gallery",
+        weekday: "Mon",
+        time: "1:30 PM",
+      ),
+      Event(
+        id: 7,
+        eventName: "Team Building",
+        location: "Outdoor Park",
+        weekday: "Wed",
+        time: "4:45 PM",
+      ),
+      Event(
+        id: 8,
+        eventName: "Networking",
+        location: "Coffee Shop",
+        weekday: "Thu",
+        time: "8:15 AM",
+      ),
+      Event(
+        id: 9,
+        eventName: "Dinner Party",
+        location: "Restaurant",
+        weekday: "Fri",
+        time: "6:45 PM",
+      ),
+      Event(
+        id: 10,
+        eventName: "Tech Talk",
+        location: "Tech Hub",
+        weekday: "Tue",
+        time: "12:15 PM",
+      ),
     ];
 
     // Insert the pre-made events into the database

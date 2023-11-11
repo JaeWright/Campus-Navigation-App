@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';
+import 'eventsPage.dart';
 
 //model for databases
-final _events = EventsModel();
 final _courses = CoursesModel();
-
-//global ID tracker for events
-var nextEventID = 0;
 
 //classes for holding courses and event (TBA) data
 class CourseTile {
@@ -57,26 +54,32 @@ class SchedulerHandlerPage extends StatefulWidget {
 
 class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   List<CourseTile> coursesList = [];
+  bool isSwitched = false;
 
   @override
   void initState() {
     super.initState();
-    loadCoursesData();
+    Future.delayed(Duration.zero, () {
+      loadCoursesData();
+    });
   }
 
   //get all the data from local databases
   void loadCoursesData() async {
-    List results = await _courses.getAllCourses();
-    for (int i = 0; i < results.length; i++) {
-      print(results[i]);
-      coursesList.add(CourseTile(
+    if (ModalRoute.of(context)!.isCurrent) {
+      List results = await _courses.getAllCourses();
+      for (int i = 0; i < results.length; i++) {
+        coursesList.add(CourseTile(
           id: results[i].id,
           weekday: results[i].weekday,
           courseName: results[i].courseName,
           profName: results[i].profName,
           roomNum: results[i].roomNum,
           endTime: results[i].endTime,
-          startTime: results[i].startTime));
+          startTime: results[i].startTime,
+        ));
+      }
+      setState(() {}); // Trigger a rebuild to update the UI
     }
   }
 
@@ -91,6 +94,30 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       ),
       body: Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Show Planned Events',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Switch(
+                value: isSwitched,
+                onChanged: (value) {
+                  setState(() {
+                    isSwitched = value;
+                    if (isSwitched) {
+                      // Load the events page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EventsScheduler(title: 'Scheduler')),
+                      );
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
           // Display the first row with Monday and Tuesday
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

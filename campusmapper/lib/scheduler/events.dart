@@ -5,16 +5,16 @@ import 'dart:async';
 
 
 class Event{
-  int? eventId;
+  int? id;
   String? eventName;
   String? location;
   String? weekday;
   String? time;
 
-  Event({required this.eventId, required this.eventName, required this.location, required this.weekday, required this.time});
+  Event({required this.id, required this.eventName, required this.location, required this.weekday, required this.time});
 
   Event.fromMap(Map map){
-    eventId = map["eventId"];
+    id = map["id"];
     eventName = map["eventName"];
     location = map["location"];
     weekday = map["weekday"];
@@ -23,7 +23,7 @@ class Event{
 
   Map<String,Object> toMap(){
     return{
-      'id' : eventId!,
+      'id' : id!,
       'eventName': eventName!,
       'location': location!,
       'weekday' : weekday!,
@@ -32,7 +32,7 @@ class Event{
   }
 
   String toString(){
-    return "id: $eventId, Name: $eventName, location: $location, weekday: $weekday, time: $time";
+    return "id: $id, Name: $eventName, location: $location, weekday: $weekday, time: $time";
   }
 }
 
@@ -42,7 +42,7 @@ class EventsModel{
     //returns list of grades in database
     final db = await DBUtils.initEvents();
     final List maps = await db.query('events');
-
+//
     List results = [];
 
     if (maps.length>0){
@@ -69,8 +69,8 @@ class EventsModel{
     return db.update(
       'events',
       event.toMap(),
-      where: 'eventId = ?',
-      whereArgs: [event.eventId],
+      where: 'id = ?',
+      whereArgs: [event.id],
     );
 
   }
@@ -79,7 +79,7 @@ class EventsModel{
     final db = await DBUtils.initEvents();
     return db.delete(
       'events',
-      where: 'eventId = ?',
+      where: 'id = ?',
       whereArgs: [id],
     );
 

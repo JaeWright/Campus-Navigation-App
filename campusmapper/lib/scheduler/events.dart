@@ -3,7 +3,7 @@ import 'package:path/path.dart' as path;
 import 'scheduler_database_helper.dart';
 import 'dart:async';
 
-
+//class to hold event data
 class Event{
   int? id;
   String? eventName;
@@ -36,6 +36,7 @@ class Event{
   }
 }
 
+//class for interaction between event class and local database
 class EventsModel{
 
   Future getAllEvents() async{
@@ -53,7 +54,7 @@ class EventsModel{
 
     return results;
   }
-
+  //functions below are functional but not currently implemented in the current page
   Future<int> insertEvent (Event event) async {
     //adds new grade to database
     final db = await DBUtils.initEvents();

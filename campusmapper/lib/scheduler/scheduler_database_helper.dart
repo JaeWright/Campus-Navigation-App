@@ -5,7 +5,9 @@ import 'courses.dart';
 import 'events.dart';
 import 'dart:developer';
 
+//class for initialization of databases for courses and events
 class DBUtils {
+
   static Future<Database> initCourses() async {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'courses_manager.db'),

@@ -160,7 +160,7 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
   void initState() {
     super.initState();
 
-    // Start the animation
+    // Start the animations
     _animateBackgroundColor();
   }
 

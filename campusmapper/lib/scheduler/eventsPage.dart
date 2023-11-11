@@ -5,20 +5,22 @@ import 'scheduler_handler.dart';
 void main() {
   runApp(const MyApp());
 }
-//model for events
+//model for events database
 final _events = EventsModel();
 
-var nextEventID = 0;
+//variable to track IDs for events when inserted (to be implemented)
+var nextEventId = 0;
 
+//class to hold event tile data
 class EventTile {
-  int? eventId;
+  int? id;
   String? eventName;
   String? location;
   String? weekday;
   String? time;
 
   EventTile({
-    required this.eventId,
+    required this.id,
     required this.eventName,
     required this.location,
     required this.weekday,
@@ -52,8 +54,10 @@ class EventsScheduler extends StatefulWidget {
 }
 
 class _EventsSchedulerState extends State<EventsScheduler> {
+  //holds list of events to be populated by database
   List<EventTile> eventsList = [];
-  bool isSwitched = false;
+  //boolean check for switch toggles
+  bool isSwitched = true;
 
   @override
   void initState() {
@@ -63,6 +67,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     });
   }
 
+  //loads data from local database
   void loadEventsData() async {
     if (ModalRoute.of(context)!.isCurrent){
       List results = await _events.getAllEvents();
@@ -70,12 +75,12 @@ class _EventsSchedulerState extends State<EventsScheduler> {
 
       for (int i=0;i<results.length;i++){
         eventsList.add(EventTile(
-            eventId: results[i].eventId, eventName: results[i].eventName,
+            id: results[i].id, eventName: results[i].eventName,
             location: results[i].location, weekday: results[i].weekday,
             time: results[i].time));
       }
-      nextEventID = eventsList.length;
-      setState(() {}); // Trigger a rebuild to update the UI
+      nextEventId = eventsList.length;
+      setState(() {}); // rebuilds everytime page is loaded
     }
 
   }
@@ -84,24 +89,24 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   Future<void> _addEvent(String eventName, String location, String weekday, String time) async {
     // Add the new data to the gradesList
     setState(() {
-      final newEvent = EventTile(eventId: nextEventID, eventName: eventName, location: location, weekday: weekday, time: time);
+      final newEvent = EventTile(id: nextEventId, eventName: eventName, location: location, weekday: weekday, time: time);
       eventsList.add(newEvent);
     });
 
     // Insert the new data into the database
-    _events.insertEvent(Event(id: nextEventID, eventName: eventName, location: location, weekday: weekday, time: time)).then((insertedId) {
+    _events.insertEvent(Event(id: nextEventId, eventName: eventName, location: location, weekday: weekday, time: time)).then((insertedId) {
       if (insertedId != null) {
         print('Data inserted with ID: $insertedId');
       } else {
         print('Failed to insert data');
       }
     });
-    nextEventID++;
+    nextEventId++;
   }
 
   //function to remove event from database
   Future<void> _deleteEvent(int index) async{
-    int? id = eventsList[index].eventId;
+    int? id = eventsList[index].id;
     setState(() {
       eventsList.removeAt(index);
     });
@@ -109,6 +114,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     print("index $_deleted was deleted");
   }
 
+  //used chatgpt for this function
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
@@ -179,7 +185,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                 onChanged: (value) {
                   setState(() {
                     isSwitched = value;
-                    if (isSwitched) {
+                    if (!isSwitched) {
                       // Load the events page
                       Navigator.pushReplacement(
                         context,
@@ -191,6 +197,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
               ),
             ],
           ),
+          //Monday and Tuesday row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -223,6 +230,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                 ),
             ],
           ),
+          //Wednesday and Thursday Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -255,6 +263,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                 ),
             ],
           ),
+          //Friday row
           Center(
             child: Container(
               margin: EdgeInsets.all(8),

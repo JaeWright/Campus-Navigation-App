@@ -3,6 +3,8 @@ import 'package:path/path.dart' as path;
 import 'scheduler_database_helper.dart';
 import 'dart:async';
 
+
+//class to hold course data
 class Course{
   int? id;
   String? weekday;
@@ -42,6 +44,7 @@ class Course{
   }
 }
 
+//class for interactions between course class and local database
 class CoursesModel{
 
   Future getAllCourses() async{

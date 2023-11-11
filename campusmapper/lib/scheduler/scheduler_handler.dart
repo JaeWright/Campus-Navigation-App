@@ -3,10 +3,10 @@ import 'events.dart';
 import 'courses.dart';
 import 'eventsPage.dart';
 
-//model for databases
+//model for course database
 final _courses = CoursesModel();
 
-//classes for holding courses and event (TBA) data
+//classes for holding course tile data
 class CourseTile {
   int? id;
   String? weekday;
@@ -53,7 +53,9 @@ class SchedulerHandlerPage extends StatefulWidget {
 }
 
 class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
+  //list of courses to be populated by database
   List<CourseTile> coursesList = [];
+  //flag for switch
   bool isSwitched = false;
 
   @override
@@ -79,7 +81,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           startTime: results[i].startTime,
         ));
       }
-      setState(() {}); // Trigger a rebuild to update the UI
+      setState(() {}); // rebuild when page is loaded
     }
   }
 
@@ -127,8 +129,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(16),
-                    height: 200, // Adjust the height as needed
-                    width: double.infinity, // Match the width of the parent
+                    height: 200,
+                    width: double.infinity,
                     color: Colors.grey[300],
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,8 +164,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(16),
-                    height: 200, // Adjust the height as needed
-                    width: double.infinity, // Match the width of the parent
+                    height: 200,
+                    width: double.infinity,
                     color: Colors.grey[300],
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -188,13 +190,13 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             ],
           ),
 
-          // Display the third row with Friday centered horizontally
+          // Display the third row with Friday centered horizontally and NOT vertically
           Center(
             child: Container(
               margin: EdgeInsets.all(8),
               padding: EdgeInsets.all(16),
-              height: 200, // Adjust the height as needed
-              width: 210, // Match the width of the parent
+              height: 200,
+              width: 210,
               color: Colors.grey[300],
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

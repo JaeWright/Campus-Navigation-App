@@ -11,6 +11,7 @@ import 'scheduler_handler.dart';
 void main() {
   runApp(const MyApp());
 }
+
 //model for events database
 final _events = EventsModel();
 
@@ -75,32 +76,47 @@ class _EventsSchedulerState extends State<EventsScheduler> {
 
   //loads data from local database
   void loadEventsData() async {
-    if (ModalRoute.of(context)!.isCurrent){
+    if (ModalRoute.of(context)!.isCurrent) {
       List results = await _events.getAllEvents();
       print(results);
 
-      for (int i=0;i<results.length;i++){
+      for (int i = 0; i < results.length; i++) {
         eventsList.add(EventTile(
-            id: results[i].id, eventName: results[i].eventName,
-            location: results[i].location, weekday: results[i].weekday,
+            id: results[i].id,
+            eventName: results[i].eventName,
+            location: results[i].location,
+            weekday: results[i].weekday,
             time: results[i].time));
       }
       nextEventId = eventsList.length;
       setState(() {}); // rebuilds everytime page is loaded
     }
-
   }
+
   //functions to interact with event maker (not implemented yet)
   //function to add event to database
-  Future<void> _addEvent(String eventName, String location, String weekday, String time) async {
+  Future<void> _addEvent(
+      String eventName, String location, String weekday, String time) async {
     // Add the new data to the gradesList
     setState(() {
-      final newEvent = EventTile(id: nextEventId, eventName: eventName, location: location, weekday: weekday, time: time);
+      final newEvent = EventTile(
+          id: nextEventId,
+          eventName: eventName,
+          location: location,
+          weekday: weekday,
+          time: time);
       eventsList.add(newEvent);
     });
 
     // Insert the new data into the database
-    _events.insertEvent(Event(id: nextEventId, eventName: eventName, location: location, weekday: weekday, time: time)).then((insertedId) {
+    _events
+        .insertEvent(Event(
+            id: nextEventId,
+            eventName: eventName,
+            location: location,
+            weekday: weekday,
+            time: time))
+        .then((insertedId) {
       if (insertedId != null) {
         print('Data inserted with ID: $insertedId');
       } else {
@@ -111,7 +127,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   }
 
   //function to remove event from database
-  Future<void> _deleteEvent(int index) async{
+  Future<void> _deleteEvent(int index) async {
     int? id = eventsList[index].id;
     setState(() {
       eventsList.removeAt(index);
@@ -124,9 +140,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
-    List<EventTile> filteredEvents = eventsList
-        .where((event) => event.weekday == weekday)
-        .toList();
+    List<EventTile> filteredEvents =
+        eventsList.where((event) => event.weekday == weekday).toList();
 
     for (int i = 0; i < filteredEvents.length; i++) {
       widgets.addAll([
@@ -195,7 +210,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       // Load the events page
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => SchedulerHandler()),
+                        MaterialPageRoute(
+                            builder: (context) => SchedulerHandlerPage()),
                       );
                     }
                   });
@@ -220,7 +236,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
@@ -253,7 +270,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),

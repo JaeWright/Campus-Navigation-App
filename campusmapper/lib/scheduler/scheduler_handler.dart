@@ -6,7 +6,7 @@ to the events page
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';
-import 'eventsPage.dart';
+import 'events_page.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -32,8 +32,8 @@ class CourseTile {
   });
 }
 
-class SchedulerHandler extends StatelessWidget {
-  const SchedulerHandler({Key? key});
+/*class SchedulerHandler extends StatelessWidget {
+  const SchedulerHandler({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +46,10 @@ class SchedulerHandler extends StatelessWidget {
       home: const SchedulerHandlerPage(title: 'Scheduler'),
     );
   }
-}
+}*/
 
 class SchedulerHandlerPage extends StatefulWidget {
-  const SchedulerHandlerPage({Key? key, required this.title});
-
-  final String title;
+  const SchedulerHandlerPage({Key? key});
 
   @override
   State<SchedulerHandlerPage> createState() => _SchedulerHandlerPageState();
@@ -94,10 +92,17 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.deepPurple,
+        /*
         leading: const Icon(Icons.school, // temporary logo
             size: 30),
-        title: Text(widget.title),
+            */
+        title: const Row(children: [
+          Icon(Icons.calendar_month),
+          Padding(
+              padding: EdgeInsetsDirectional.only(start: 10),
+              child: Text('Scheduler'))
+        ]),
       ),
       body: Column(
         children: [
@@ -117,7 +122,9 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                       // Load the events page
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EventsScheduler(title: 'Scheduler')),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                EventsScheduler(title: 'Scheduler')),
                       );
                     }
                   });

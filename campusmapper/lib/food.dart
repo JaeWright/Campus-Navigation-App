@@ -23,7 +23,15 @@ class FoodPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Food Menu')),
+      appBar: AppBar(
+        backgroundColor: Colors.orangeAccent,
+        title: const Row(children: [
+          Icon(Icons.fastfood_sharp),
+          Padding(
+              padding: EdgeInsetsDirectional.only(start: 10),
+              child: Text("Food Menu"))
+        ]),
+      ),
       body: ListView.builder(
         itemCount: foodMenu.length,
         itemBuilder: (context, index) {

@@ -11,7 +11,7 @@ class AccessibilityDirectoryPage extends StatelessWidget {
     // This data should ideally come from a backend or a local JSON file
     final buildings = [
       {
-        'name': 'Science Hall',
+        'name': 'UA',
         'accessibleEntrances': ['North entrance', 'South ramp'],
         'departments': [
           {'name': 'Biology', 'room': '102'},
@@ -19,20 +19,28 @@ class AccessibilityDirectoryPage extends StatelessWidget {
           // Add more departments
         ],
       },
-      {'name': 'Kylie Jenner Hall',
+      {
+        'name': 'UB',
         'accessibleEntrances': ['South entrance', 'South ramp'],
         'departments': [
           {'name': 'Arts', 'room': '202'},
           {'name': 'Music', 'room': '201'},
           // Add more departments
         ],
-
       }
       // Add more buildings
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Accessibility & Buildings')),
+      appBar: AppBar(
+        backgroundColor: Colors.redAccent,
+        title: const Row(children: [
+          Icon(Icons.accessible),
+          Padding(
+              padding: EdgeInsetsDirectional.only(start: 10),
+              child: Text("Accessibility"))
+        ]),
+      ),
       body: ListView.builder(
         itemCount: buildings.length,
         itemBuilder: (context, index) {
@@ -40,15 +48,14 @@ class AccessibilityDirectoryPage extends StatelessWidget {
           return ExpansionTile(
             title: Text(building['name'] as String? ?? 'Unknown Building'),
             children: (building['departments'] as List<dynamic>?)
-                ?.map<Widget>((department) {
-              return ListTile(
-                title: Text('${department['name']} - Room ${department['room']}'),
-              );
-            })
-                .toList() ??
+                    ?.map<Widget>((department) {
+                  return ListTile(
+                    title: Text(
+                        '${department['name']} - Room ${department['room']}'),
+                  );
+                }).toList() ??
                 [ListTile(title: Text('No departments'))],
           );
-
         },
       ),
     );

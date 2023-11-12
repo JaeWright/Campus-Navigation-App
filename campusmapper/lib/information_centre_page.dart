@@ -30,7 +30,13 @@ class InformationCenterPage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Information Center'),
+          backgroundColor: Colors.blueAccent,
+          title: const Row(children: [
+            Icon(Icons.info),
+            Padding(
+                padding: EdgeInsetsDirectional.only(start: 10),
+                child: Text('Information Center'))
+          ]),
           bottom: TabBar(
             tabs: [
               Tab(text: 'Timetable'),
@@ -76,7 +82,6 @@ class InformationCenterPage extends StatelessWidget {
                 );
               },
             ),
-
           ],
         ),
       ),

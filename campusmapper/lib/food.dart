@@ -1,3 +1,9 @@
+/* 
+Author: Samiur Rahman - 100824221
+A StatelessWidget representing a Food Page with a menu, showcasing items 
+such as Pizza and Sushi. Data, including calories, price, and cuisine, is 
+currently hardcoded for demonstration purposes.
+*/
 import 'package:flutter/material.dart';
 
 class FoodPage extends StatelessWidget {

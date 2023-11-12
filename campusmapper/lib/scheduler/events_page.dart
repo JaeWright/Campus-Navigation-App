@@ -1,3 +1,9 @@
+/*
+Author: Jaelen Wright - 100790481
+This page manages the events page, where the user's scheduled events are displayed and
+connects to the course scheduler page
+*/
+
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'scheduler_handler.dart';

@@ -1,3 +1,8 @@
+/*
+Author: Jaelen Wright - 100790481
+This page manages the course schedule page, which displays the user's courses and connects
+to the events page
+*/
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';

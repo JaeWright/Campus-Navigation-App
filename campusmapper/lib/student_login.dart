@@ -1,3 +1,8 @@
+/* 
+Author: Brock Davidge - 100787894
+A StatefulWidget for the Student Login page, featuring email and password input fields, login logic with error handling,
+and a responsive UI.
+*/
 import 'package:flutter/material.dart';
 
 class StudentLoginPage extends StatefulWidget {

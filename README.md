@@ -3,13 +3,13 @@
 
 Group members (3-5) (no Student IDs, only names and github usernames):
 
-1. Samiur Rahman  SAMIUR274
+1. Samiur Rahman - SAMIUR274
 
 3. Brock Davidge
 
 4. Luca Lotito
 
-5. Jaelen Wright  JaeWright
+5. Jaelen Wright - JaeWright
 
 6. Darshilkumar Patel
 

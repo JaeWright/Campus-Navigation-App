@@ -1,3 +1,8 @@
+/*
+Author: Jaelen Wright - 100790481
+This page manages the Course and CoursesModel classes, which hold the course data
+and interact with the courses database respectively
+*/
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'scheduler_database_helper.dart';

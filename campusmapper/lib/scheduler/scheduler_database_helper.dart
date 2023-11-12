@@ -1,3 +1,7 @@
+/*
+Author: Jaelen Wright - 100790481
+This page initializes the courses and events databases, and adds premade values for local testing
+*/
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'dart:async';

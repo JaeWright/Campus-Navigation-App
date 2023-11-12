@@ -1,3 +1,8 @@
+/*
+Author: Jaelen Wright - 100790481
+This page manages the Event and EventsModel classes, which hold the event data
+and interact with the events database respectively
+*/
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'scheduler_database_helper.dart';

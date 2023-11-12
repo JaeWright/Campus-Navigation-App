@@ -5,7 +5,7 @@ Group members (3-5) (no Student IDs, only names and github usernames):
 
 1. Samiur Rahman - SAMIUR274
 
-3. Brock Davidge
+3. Brock Davidge - BrockD101
 
 4. Luca Lotito
 

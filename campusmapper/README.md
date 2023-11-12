@@ -1,16 +1,13 @@
 # campusmapper
 
-A new Flutter project.
+## Running the Project
 
-## Getting Started
+To Run the project, pull from the Main branch
 
-This project is a starting point for a Flutter application.
+Running the application through Android Studios/Flutter Command line will bring you to the main homescreen.
+From there click any of the icons to access that part of the app
 
-A few resources to get you started if this is your first Flutter project:
+### Map Instructions
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The map can be navigated by dragging it around. It is locked to the Ontario Tech North Campus and surrounding areas
+At the bottom of the screen there is a pull up bar. This brings up a selection of locations, which can be selected to display the locations on the map

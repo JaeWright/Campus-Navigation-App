@@ -26,7 +26,6 @@ class MarkerModel {
         }
       });
     }
-    print(results);
     return results;
   }
 

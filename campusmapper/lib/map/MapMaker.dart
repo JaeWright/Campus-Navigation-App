@@ -38,9 +38,13 @@ class _ListMapState extends State<ListMapScreen> {
             return Text('Error: ${snapshot.error}');
           } else {
             return Scaffold(
+                appBar: AppBar(
+                  title: const Text("Campus Map"),
+                  backgroundColor: Colors.red,
+                ),
                 body: SlidingUpPanel(
                   controller: panelController,
-                  minHeight: 45,
+                  minHeight: 42,
                   panelBuilder: (ScrollController sc) => _scrollingList(sc),
                   collapsed: Column(
                     children: [

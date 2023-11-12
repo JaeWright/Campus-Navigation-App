@@ -27,8 +27,8 @@ class CourseTile {
   });
 }
 
-class SchedulerHandler extends StatelessWidget {
-  const SchedulerHandler({Key? key});
+/*class SchedulerHandler extends StatelessWidget {
+  const SchedulerHandler({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +41,12 @@ class SchedulerHandler extends StatelessWidget {
       home: const SchedulerHandlerPage(title: 'Scheduler'),
     );
   }
-}
+}*/
 
 class SchedulerHandlerPage extends StatefulWidget {
-  const SchedulerHandlerPage({Key? key, required this.title});
+  const SchedulerHandlerPage({Key? key});
 
-  final String title;
+  final String title = 'Scheduler';
 
   @override
   State<SchedulerHandlerPage> createState() => _SchedulerHandlerPageState();
@@ -89,9 +89,11 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.deepPurple,
+        /*
         leading: const Icon(Icons.school, // temporary logo
             size: 30),
+            */
         title: Text(widget.title),
       ),
       body: Column(
@@ -112,7 +114,9 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                       // Load the events page
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EventsScheduler(title: 'Scheduler')),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                EventsScheduler(title: 'Scheduler')),
                       );
                     }
                   });

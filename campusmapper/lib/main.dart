@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
         title: 'My Schedule',
         color: Colors.redAccent,
         onTap: () {
-          navigateToSection(context, SchedulerHandler());
+          navigateToSection(context, SchedulerHandlerPage());
         },
       ),
       NavigationCard(

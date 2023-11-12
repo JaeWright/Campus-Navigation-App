@@ -7,7 +7,7 @@ Group members (3-5) (no Student IDs, only names and github usernames):
 
 3. Brock Davidge - BrockD101
 
-4. Luca Lotito
+4. Luca Lotito - LucaLot
 
 5. Jaelen Wright - JaeWright
 

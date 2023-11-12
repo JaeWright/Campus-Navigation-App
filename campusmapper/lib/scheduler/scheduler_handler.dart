@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';
-import 'eventsPage.dart';
+import 'events_page.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -45,8 +45,6 @@ class CourseTile {
 
 class SchedulerHandlerPage extends StatefulWidget {
   const SchedulerHandlerPage({Key? key});
-
-  final String title = 'Scheduler';
 
   @override
   State<SchedulerHandlerPage> createState() => _SchedulerHandlerPageState();
@@ -94,7 +92,12 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
         leading: const Icon(Icons.school, // temporary logo
             size: 30),
             */
-        title: Text(widget.title),
+        title: const Row(children: [
+          Icon(Icons.calendar_month),
+          Padding(
+              padding: EdgeInsetsDirectional.only(start: 10),
+              child: Text('Scheduler'))
+        ]),
       ),
       body: Column(
         children: [

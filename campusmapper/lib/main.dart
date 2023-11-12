@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'Food.dart';
-import 'StudentLogin.dart';
-import 'informationCentrePage.dart';
-import 'Accessebility.dart';
+import 'food.dart';
+import 'student_login.dart';
+import 'information_centre_page.dart';
+import 'accessibility.dart';
 import 'scheduler/scheduler_handler.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/map/firebase_options.dart';
-import 'package:campusmapper/map/MapMaker.dart';
+import 'package:campusmapper/map/map_maker.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
     List<Widget> navigationCards = [
       NavigationCard(
         icon: Icons.info,
-        title: 'Information Center',
+        title: 'Information',
         color: Colors.blueAccent,
         onTap: () {
           navigateToSection(context, InformationCenterPage());
@@ -75,8 +75,8 @@ class _HomePageState extends State<HomePage> {
       ),
       NavigationCard(
         icon: Icons.fastfood_sharp,
-        title: 'CampusFood',
-        color: Colors.yellowAccent,
+        title: 'Campus Food',
+        color: Colors.orangeAccent,
         onTap: () {
           navigateToSection(context, FoodPage());
         },
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.calendar_month,
         title: 'My Schedule',
-        color: Colors.redAccent,
+        color: Colors.deepPurple,
         onTap: () {
           navigateToSection(context, SchedulerHandlerPage());
         },
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.map,
         title: 'Campus Map',
-        color: Colors.redAccent,
+        color: Colors.cyan,
         onTap: () {
           navigateToSection(context, ListMapScreen());
         },

@@ -20,7 +20,8 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
     // Implement your login logic here
     // For example, you could call an API with the email and password
     // Simulate a login by checking if the email and password are not empty.
-    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+    if (_emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
       // Here you should call your backend service and await for response.
 
       // If login is successful, pop the current page and return to HomePage.
@@ -39,7 +40,13 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Login'),
+        backgroundColor: Colors.white38,
+        title: const Row(children: [
+          Icon(Icons.school),
+          Padding(
+              padding: EdgeInsetsDirectional.only(start: 10),
+              child: Text("Student Login"))
+        ]),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -75,4 +82,3 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
     );
   }
 }
-

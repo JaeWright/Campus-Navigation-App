@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'AppConstants.dart';
-import 'MarkerModel.dart';
-import 'MapMarker.dart';
+import 'app_constants.dart';
+import 'marker_model.dart';
+import 'map_marker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ListMapScreen extends StatefulWidget {
   const ListMapScreen({super.key});
@@ -39,18 +40,54 @@ class _ListMapState extends State<ListMapScreen> {
           } else {
             return Scaffold(
                 appBar: AppBar(
-                  title: const Text("Campus Map"),
-                  backgroundColor: Colors.red,
+                  title: const Row(children: [
+                    Icon(Icons.map),
+                    Padding(
+                        padding: EdgeInsetsDirectional.only(start: 10),
+                        child: Text("Campus Map"))
+                  ]),
+                  backgroundColor: Colors.cyan,
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.question_mark),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text('Map Information'),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                                child: Text('OpenStreetMap'),
+                                                onPressed: () => launchUrl(
+                                                      Uri.parse(
+                                                          'https://openstreetmap.org/copyright'),
+                                                    ))),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                        child: Text("OK"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        }),
+                                  ],
+                                ));
+                      },
+                    )
+                  ],
                 ),
                 body: SlidingUpPanel(
                   controller: panelController,
-                  minHeight: 42,
+                  minHeight: 50,
                   panelBuilder: (ScrollController sc) => _scrollingList(sc),
-                  collapsed: Column(
+                  collapsed: const Column(
                     children: [
-                      Container(
-                        child: const Icon(Icons.keyboard_arrow_up),
-                      ),
+                      Icon(Icons.keyboard_arrow_up),
                       Text("Add Icons to Map")
                     ],
                   ),
@@ -148,38 +185,40 @@ class _ListMapState extends State<ListMapScreen> {
 
   Widget _scrollingList(ScrollController sc) {
     return Scaffold(
-        body: Column(children: [
-      Flexible(
-          child: ListView.builder(
-              controller: sc,
-              itemCount: AppConstants.categories.length,
-              itemBuilder: (BuildContext context, int index) {
-                return CheckboxListTile(
-                    title: Text(AppConstants.categories[index]),
-                    value: trueFalseArray[index],
-                    onChanged: (bool? value) {
-                      if (value == true) {
-                        selectedIndices!.add(index);
-                      } else {
-                        selectedIndices!.remove(index);
-                      }
-                      setState(() {
-                        trueFalseArray[index] = value;
-                      });
-                    });
-              })),
-      Flexible(
-          child: TextButton(
-              onPressed: () {
-                mapMarkers = [];
-                setState(() {
-                  for (int i = 0; i < selectedIndices!.length; i++) {
-                    mapMarkers
-                        .add(AppConstants.categories[selectedIndices![i]]);
-                  }
-                });
-              },
-              child: Text('Apply Changes')))
-    ]));
+        body: Padding(
+            padding: const EdgeInsetsDirectional.only(top: 35),
+            child: Column(children: [
+              Flexible(
+                  child: ListView.builder(
+                      controller: sc,
+                      itemCount: AppConstants.categories.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return CheckboxListTile(
+                            title: Text(AppConstants.categories[index]),
+                            value: trueFalseArray[index],
+                            onChanged: (bool? value) {
+                              if (value == true) {
+                                selectedIndices!.add(index);
+                              } else {
+                                selectedIndices!.remove(index);
+                              }
+                              setState(() {
+                                trueFalseArray[index] = value;
+                              });
+                            });
+                      })),
+              Flexible(
+                  child: TextButton(
+                      onPressed: () {
+                        mapMarkers = [];
+                        setState(() {
+                          for (int i = 0; i < selectedIndices!.length; i++) {
+                            mapMarkers.add(
+                                AppConstants.categories[selectedIndices![i]]);
+                          }
+                        });
+                      },
+                      child: Text('Apply Changes')))
+            ])));
   }
 }

@@ -1,3 +1,6 @@
+/*Luca Lotito
+Handler for the MapMarker, holds the data values for one
+*/
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 

@@ -1,3 +1,6 @@
+/*Luca Lotito
+Class used for testing the map in isolation from the rest of the project 
+*/
 import 'package:flutter/material.dart';
 import 'map_maker.dart';
 import 'package:firebase_core/firebase_core.dart';

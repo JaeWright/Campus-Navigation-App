@@ -1,4 +1,5 @@
-/*Luca Lotito
+/*
+Author: Luca Lotito
 Class that holds constant values used by the map marker 
 Will likely be changed to be a YAML file for the final relase
 */

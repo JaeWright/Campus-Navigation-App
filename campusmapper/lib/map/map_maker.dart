@@ -1,4 +1,5 @@
-/*Luca Lotito
+/*
+Author: Luca Lotito
 This class handles the logic for displaying the map along with placing markers on the map.
 In the final submission, will handle pathfinding and Geolocation logic
 */

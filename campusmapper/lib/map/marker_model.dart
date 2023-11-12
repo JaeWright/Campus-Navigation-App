@@ -1,4 +1,5 @@
-/*Luca Lotito
+/*
+Author: Luca Lotito
 Firebase access class, handles reading from the firebase database and translating the data to the mapper (and in the future, other classes)
 */
 import 'package:cloud_firestore/cloud_firestore.dart';

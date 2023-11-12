@@ -1,4 +1,5 @@
-/*Luca Lotito
+/*
+Author: Luca Lotito
 Handler for the MapMarker, holds the data values for one
 */
 import 'package:flutter/material.dart';

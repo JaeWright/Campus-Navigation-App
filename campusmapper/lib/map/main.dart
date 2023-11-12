@@ -1,4 +1,5 @@
-/*Luca Lotito
+/*
+Author: Luca Lotito
 Class used for testing the map in isolation from the rest of the project 
 */
 import 'package:flutter/material.dart';

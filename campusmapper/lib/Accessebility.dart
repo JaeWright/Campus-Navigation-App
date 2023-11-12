@@ -1,3 +1,8 @@
+/*
+Author: Brock Davidge - 100787894
+This page manages the Accessibility Directory for campus buildings, displaying 
+details about accessible entrances and departments. 
+*/
 import 'package:flutter/material.dart';
 
 class AccessibilityDirectoryPage extends StatelessWidget {

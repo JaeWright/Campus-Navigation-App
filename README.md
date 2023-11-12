@@ -9,7 +9,7 @@ Group members (3-5) (no Student IDs, only names and github usernames):
 
 4. Luca Lotito
 
-5. Jaelen Wright
+5. Jaelen Wright  JaeWright
 
 6. Darshilkumar Patel
 

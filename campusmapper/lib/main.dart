@@ -1,3 +1,11 @@
+/* 
+Author: Samiur Rahman - 100824221
+The main application entry point, CampusNavigatorApp, defines a HomePage with a grid of NavigationCard 
+widgets representing different sections of the app. The app includes features such as information center, 
+campus food, accessibility directory, user schedule, and a campus map. Firebase is initialized for potential 
+backend integration. Additionally, a login functionality is implemented, with the UI dynamically adjusting 
+based on the user's login status.
+*/
 import 'package:flutter/material.dart';
 import 'Food.dart';
 import 'StudentLogin.dart';

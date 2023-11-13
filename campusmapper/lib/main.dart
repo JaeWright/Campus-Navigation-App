@@ -5,6 +5,9 @@ widgets representing different sections of the app. The app includes features su
 campus food, accessibility directory, user schedule, and a campus map. Firebase is initialized for potential 
 backend integration. Additionally, a login functionality is implemented, with the UI dynamically adjusting 
 based on the user's login status.
+
+Author: Darshilkumar Patel
+Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 */
 import 'package:flutter/material.dart';
 import 'food.dart';
@@ -16,6 +19,7 @@ import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/map/firebase_options.dart';
 import 'package:campusmapper/map/map_maker.dart';
+import 'helpbutton.dart'; // Import the HelpButton class
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,51 +74,81 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> navigationCards = [
-      NavigationCard(
-        icon: Icons.info,
-        title: 'Information',
-        color: Colors.blueAccent,
-        onTap: () {
-          navigateToSection(context, InformationCenterPage());
-        },
-      ),
-      NavigationCard(
-        icon: Icons.fastfood_sharp,
-        title: 'Campus Food',
-        color: Colors.orangeAccent,
-        onTap: () {
-          navigateToSection(context, FoodPage());
-        },
-      ),
-      NavigationCard(
-        icon: Icons.accessible,
-        title: 'Accessibility',
-        color: Colors.redAccent,
-        onTap: () {
-          navigateToSection(context, AccessibilityDirectoryPage());
-        },
-      ),
-      NavigationCard(
-        icon: Icons.calendar_month,
-        title: 'My Schedule',
-        color: Colors.deepPurple,
-        onTap: () {
-          navigateToSection(context, SchedulerHandlerPage());
-        },
-      ),
-      NavigationCard(
-        icon: Icons.map,
-        title: 'Campus Map',
-        color: Colors.cyan,
-        onTap: () {
-          navigateToSection(context, ListMapScreen());
-        },
-      ),
-      // ... Add other NavigationCard widgets as needed ...
-    ];
+    @override
+    Widget build(BuildContext context) {
+      List<Widget> navigationCards = [
+        NavigationCard(
+          icon: Icons.info,
+          title: 'Information Center',
+          color: Color(0xFF3498DB), // Blue
+          onTap: () {
+            navigateToSection(context, InformationCenterPage());
+          },
+        ),
+        NavigationCard(
+          icon: Icons.fastfood_sharp,
+          title: 'CampusFood',
+          color: Color(0xFF2ECC71), // Green
+          onTap: () {
+            navigateToSection(context, FoodPage());
+          },
+        ),
+        NavigationCard(
+          icon: Icons.accessible,
+          title: 'Accessibility',
+          color: Color(0xFFE67E22), // Orange
+          onTap: () {
+            navigateToSection(context, AccessibilityDirectoryPage());
+          },
+        ),
+        NavigationCard(
+          icon: Icons.calendar_month,
+          title: 'My Schedule',
+          color: Color(0xFF9B59B6), // Purple
+          onTap: () {
+            navigateToSection(context, SchedulerHandlerPage());
+          },
+        ),
+        NavigationCard(
+          icon: Icons.map,
+          title: 'Campus Map',
+          color: Color(0xFF008080), // Teal
+          onTap: () {
+            navigateToSection(context, ListMapScreen());
+          },
+        ),
+
+      Container(
+          alignment: Alignment.bottomCenter,
+          padding: EdgeInsets.only(bottom: 8.0), // Adjust the bottom padding as needed
+          child: HelpButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Help'),
+                    content: Text('This is the help message.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+
+        // ... Add other NavigationCard widgets as needed ...
+      ];
+
+
+      // Rest of your build method...
 
     if (!isLoggedIn) {
       navigationCards.insert(

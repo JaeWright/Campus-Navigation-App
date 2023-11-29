@@ -74,81 +74,81 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-    @override
-    Widget build(BuildContext context) {
-      List<Widget> navigationCards = [
-        NavigationCard(
-          icon: Icons.info,
-          title: 'Information Center',
-          color: Color(0xFF3498DB), // Blue
-          onTap: () {
-            navigateToSection(context, InformationCenterPage());
-          },
-        ),
-        NavigationCard(
-          icon: Icons.fastfood_sharp,
-          title: 'CampusFood',
-          color: Color(0xFF2ECC71), // Green
-          onTap: () {
-            navigateToSection(context, FoodPage());
-          },
-        ),
-        NavigationCard(
-          icon: Icons.accessible,
-          title: 'Accessibility',
-          color: Color(0xFFE67E22), // Orange
-          onTap: () {
-            navigateToSection(context, AccessibilityDirectoryPage());
-          },
-        ),
-        NavigationCard(
-          icon: Icons.calendar_month,
-          title: 'My Schedule',
-          color: Color(0xFF9B59B6), // Purple
-          onTap: () {
-            navigateToSection(context, SchedulerHandlerPage());
-          },
-        ),
-        NavigationCard(
-          icon: Icons.map,
-          title: 'Campus Map',
-          color: Color(0xFF008080), // Teal
-          onTap: () {
-            navigateToSection(context, ListMapScreen());
-          },
-        ),
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> navigationCards = [
+      NavigationCard(
+        icon: Icons.info,
+        title: 'Information',
+        color: Color(0xFF3498DB), // Blue
+        onTap: () {
+          navigateToSection(context, InformationCenterPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.fastfood_sharp,
+        title: 'CampusFood',
+        color: Color(0xFF2ECC71), // Green
+        onTap: () {
+          navigateToSection(context, FoodPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.accessible,
+        title: 'Accessibility',
+        color: Color(0xFFE67E22), // Orange
+        onTap: () {
+          navigateToSection(context, AccessibilityDirectoryPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.calendar_month,
+        title: 'My Schedule',
+        color: Color(0xFF9B59B6), // Purple
+        onTap: () {
+          navigateToSection(context, SchedulerHandlerPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.map,
+        title: 'Campus Map',
+        color: Color(0xFF008080), // Teal
+        onTap: () {
+          navigateToSection(context, ListMapScreen());
+        },
+      ),
 
       Container(
-          alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.only(bottom: 8.0), // Adjust the bottom padding as needed
-          child: HelpButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Help'),
-                    content: Text('This is the help message.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('OK'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
+        alignment: Alignment.bottomCenter,
+        padding:
+            EdgeInsets.only(bottom: 8.0), // Adjust the bottom padding as needed
+        child: HelpButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Help'),
+                  content: Text('This is the help message.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         ),
+      ),
 
-        // ... Add other NavigationCard widgets as needed ...
-      ];
+      // ... Add other NavigationCard widgets as needed ...
+    ];
 
-
-      // Rest of your build method...
+    // Rest of your build method...
 
     if (!isLoggedIn) {
       navigationCards.insert(

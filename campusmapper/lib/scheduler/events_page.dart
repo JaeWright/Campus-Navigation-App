@@ -236,7 +236,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
@@ -270,7 +270,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),

@@ -6,14 +6,15 @@ import 'package:flutter/material.dart';
 import 'map_maker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:latlong2/latlong.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     title: 'Grade Viewer',
-    home: ListMapScreen(),
+    home: ListMapScreen(findLocation: LatLng(0.0, 0.0)),
   ));
 }

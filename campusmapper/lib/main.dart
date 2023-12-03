@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/map/firebase_options.dart';
+import 'package:latlong2/latlong.dart';
 import 'helpbutton.dart';
 import 'courses/course_search_page.dart';
 import 'courses/schedule_page.dart';
@@ -27,6 +28,7 @@ import 'food.dart';
 import 'scheduler/scheduler_handler.dart';
 import 'student_login.dart';
 import 'package:provider/provider.dart';
+import 'package:campusmapper/map/map_maker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +39,8 @@ void main() async {
     // Wrap your app with MultiProvider to provide multiple providers
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ScheduleProvider()), // Add this line
+        ChangeNotifierProvider(
+            create: (context) => ScheduleProvider()), // Add this line
         // Add other providers if needed
       ],
       child: MaterialApp(
@@ -57,8 +60,10 @@ class CampusNavigatorApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/home': (context) => HomePage(), // Assign route name '/' to the HomePage
-        '/events': (context) => const EventsScheduler(title: 'Events Scheduler'),
+        '/home': (context) =>
+            HomePage(), // Assign route name '/' to the HomePage
+        '/events': (context) =>
+            const EventsScheduler(title: 'Events Scheduler'),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -141,7 +146,11 @@ class _HomePageState extends State<HomePage> {
         title: 'Campus Map',
         color: Color(0xFF008080),
         onTap: () {
-          // Navigate to Campus Map
+          navigateToSection(
+              context,
+              ListMapScreen(
+                findLocation: const LatLng(0.0, 0.0),
+              ));
         },
       ),
       NavigationCard(
@@ -198,11 +207,11 @@ class _HomePageState extends State<HomePage> {
         title: Text('Campus Navigator'),
         actions: isLoggedIn
             ? [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: logoutUser,
-          ),
-        ]
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: logoutUser,
+                ),
+              ]
             : [],
       ),
       body: GridView.count(
@@ -314,4 +323,3 @@ class NavigationCard extends StatelessWidget {
     );
   }
 }
-

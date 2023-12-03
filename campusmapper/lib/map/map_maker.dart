@@ -14,8 +14,9 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ListMapScreen extends StatefulWidget {
-  const ListMapScreen({super.key});
-
+  ListMapScreen({super.key, required this.findLocation});
+  //Variable used for passing in Resturant locatations to the map to be generated first
+  LatLng findLocation;
   @override
   ListMapState createState() => ListMapState();
 }
@@ -40,6 +41,16 @@ class ListMapState extends State<ListMapScreen> {
       location: const LatLng(43.943754, -78.8960396),
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
+  //If a Resturant location is requested, map it out
+  @override
+  void initState() {
+    super.initState();
+    if (widget.findLocation != const LatLng(0.0, 0.0)) {
+      mapMarkers = ["Food"];
+      directionManager.setItemPos(widget.findLocation);
+      setMap();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,6 +276,10 @@ class ListMapState extends State<ListMapScreen> {
                       },
                       child: const Text('Apply Changes')))
             ])));
+  }
+
+  List<LatLng> initRoute() {
+    return [];
   }
 
   void setMap() async {

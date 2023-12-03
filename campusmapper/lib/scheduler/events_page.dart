@@ -7,6 +7,7 @@ connects to the course scheduler page
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'scheduler_handler.dart';
+import 'eventEditPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,6 +34,16 @@ class EventTile {
     required this.weekday,
     required this.time,
   });
+
+  Event toEvent(){
+    return Event(
+      id: id,
+      eventName: eventName,
+      location: location,
+      weekday: weekday,
+      time: time,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -52,7 +63,7 @@ class MyApp extends StatelessWidget {
 }
 
 class EventsScheduler extends StatefulWidget {
-  const EventsScheduler({Key? key, required this.title});
+  const EventsScheduler({Key? key,required this.title, String? eventName, String? location,  String? weekday, String? time, int? id});
 
   final String title;
 
@@ -95,8 +106,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
 
   //functions to interact with event maker (not implemented yet)
   //function to add event to database
-  Future<void> _addEvent(
-      String eventName, String location, String weekday, String time) async {
+  Future<void> _addEvent(String eventName, String location, String weekday, String time) async {
     // Add the new data to the gradesList
     setState(() {
       final newEvent = EventTile(
@@ -126,47 +136,140 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     nextEventId++;
   }
 
-  //function to remove event from database
-  Future<void> _deleteEvent(int index) async {
-    int? id = eventsList[index].id;
-    setState(() {
-      eventsList.removeAt(index);
-    });
-    int _deleted = await _events.deleteEvent(id!);
-    print("index $_deleted was deleted");
+  void _confirmDeleteEvent(EventTile eventToDelete) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: Text('Do you want to delete ${eventToDelete.eventName}?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteEvent(eventToDelete.id!); // Perform delete operation
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
+
+  //function to remove event from database
+  Future<void> _deleteEvent(int id) async {
+    setState(() {
+      eventsList.removeWhere((event) => event.id == id);
+    });
+    int deleted = await _events.deleteEvent(id!);
+    print("index $deleted was deleted");
+  }
+
+  //Used ChatGPT +L
+  void _editEvent(EventTile event) async {
+    final initialId = event.id;
+    final initialEventName = event.eventName;
+    final initialLocation = event.location;
+    final initialWeekday = event.weekday;
+    final initialTime = event.time;
+
+    var updatedData = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventEditPage(
+          id: initialId,
+          eventName: initialEventName,
+          location: initialLocation,
+          weekday: initialWeekday,
+          time: initialTime,
+        ),
+      ),
+    );
+
+    if (updatedData != null) {
+      final updatedEvent = Event(
+        id: initialId,
+        eventName: updatedData['eventName'],
+        location: updatedData['location'],
+        weekday: updatedData['weekday'],
+        time: updatedData['time'],
+      );
+
+      setState(() {
+        final index = eventsList.indexWhere((eventTile) => eventTile.id == initialId);
+        if (index != -1) {
+          eventsList[index] = EventTile(
+            id: updatedEvent.id,
+            eventName: updatedEvent.eventName,
+            location: updatedEvent.location,
+            weekday: updatedEvent.weekday,
+            time: updatedEvent.time,
+          );
+        }
+      });
+
+      // Update the event in the database
+      int updated = await _events.updateEvent(updatedEvent);
+      print("updated: $updated");
+
+    }
+  }
+
 
   //used chatgpt for this function
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
-    List<EventTile> filteredEvents =
-        eventsList.where((event) => event.weekday == weekday).toList();
+    List<int> indexes = eventsList.asMap().entries.where((entry) => entry.value.weekday == weekday).map((entry) => entry.key).toList();
 
-    for (int i = 0; i < filteredEvents.length; i++) {
+
+    for (int i = 0; i < indexes.length; i++) {
       widgets.addAll([
-        Text(
-          filteredEvents[i].eventName!,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          filteredEvents[i].location!,
-          style: TextStyle(fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          '${filteredEvents[i].weekday!}, ${filteredEvents[i].time!}',
-          style: TextStyle(fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-        if (i < filteredEvents.length - 1)
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 8),
-            height: 1,
-            width: double.infinity,
-            color: Colors.black54,
+        GestureDetector(
+          onTap: () {
+            _editEvent(eventsList[indexes[i]]);
+          },
+          onLongPress: (){
+            _confirmDeleteEvent(eventsList[indexes[i]]);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                eventsList[indexes[i]].eventName!,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                eventsList[indexes[i]].location!,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                eventsList[indexes[i]].time!,
+                style: const TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              if (i < indexes.length - 1)
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  height: 1,
+                  width: double.infinity,
+                  color: Colors.black54,
+                ),
+            ],
           ),
+        ),
       ]);
     }
 
@@ -181,14 +284,17 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: const Icon(
-          Icons.school,
-          size: 30,
+        backgroundColor: Colors.deepPurple,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/home');
+          },
+          iconSize: 25,
         ),
-        title: Row(
+        title: const Row(
           children: [
-            Text(widget.title),
+            Text("Events Scheduler"),
           ],
         ),
       ),
@@ -217,6 +323,10 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                   });
                 },
               ),
+              const Text(
+                'Show Planned Events',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           //Monday and Tuesday row
@@ -224,7 +334,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               for (int i = 0; i < 2; i++)
-                Expanded(
+                Flexible(
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(16),
@@ -232,16 +342,17 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                     width: double.infinity,
                     color: Colors.grey[300],
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
-                        Expanded(
+                        Flexible(
                           child: ListView(
                             shrinkWrap: true,
                             children: getEventWidgets(getWeekday(i)),
@@ -258,7 +369,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               for (int i = 2; i < 4; i++)
-                Expanded(
+                Flexible(
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(16),
@@ -270,12 +381,12 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
-                        Expanded(
+                        Flexible(
                           child: ListView(
                             shrinkWrap: true,
                             children: getEventWidgets(getWeekday(i)),
@@ -304,7 +415,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16),
-                  Expanded(
+                  Flexible(
                     child: ListView(
                       shrinkWrap: true,
                       children: getEventWidgets(getWeekday(4)),

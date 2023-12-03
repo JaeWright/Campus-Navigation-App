@@ -8,28 +8,44 @@ based on the user's login status.
 
 Author: Darshilkumar Patel
 Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
+
+Author: Brock Davidge
+Added functionality to connect to course search and weekly schedule.
 */
+import 'package:campusmapper/scheduler/events_page.dart';
 import 'package:flutter/material.dart';
-import 'food.dart';
-import 'student_login.dart';
-import 'information_centre_page.dart';
-import 'accessibility.dart';
-import 'scheduler/scheduler_handler.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/map/firebase_options.dart';
-import 'package:campusmapper/map/map_maker.dart';
-import 'helpbutton.dart'; // Import the HelpButton class
+import 'helpbutton.dart';
+import 'courses/course_search_page.dart';
+import 'courses/schedule_page.dart';
+import 'courses/schedule_provider.dart';
+import 'information_centre_page.dart';
+import 'accessibility.dart';
+import 'food.dart';
+import 'scheduler/scheduler_handler.dart';
+import 'student_login.dart';
+import 'package:provider/provider.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MaterialApp(
-    title: 'Grade Viewer',
-    home: CampusNavigatorApp(),
-  ));
+  runApp(
+    // Wrap your app with MultiProvider to provide multiple providers
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ScheduleProvider()), // Add this line
+        // Add other providers if needed
+      ],
+      child: MaterialApp(
+        title: 'Grade Viewer',
+        home: CampusNavigatorApp(),
+      ),
+    ),
+  );
 }
 
 class CampusNavigatorApp extends StatelessWidget {
@@ -40,6 +56,12 @@ class CampusNavigatorApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      routes: {
+        '/home': (context) => HomePage(), // Assign route name '/' to the HomePage
+        '/events': (context) => const EventsScheduler(title: 'Events Scheduler'),
+        // Other named routes if needed
+      },
+      initialRoute: '/', // Set the initial route
       home: HomePage(),
     );
   }
@@ -51,7 +73,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // This flag will change based on the user's login status
   bool isLoggedIn = false;
 
   void navigateToSection(BuildContext context, Widget page) {
@@ -60,14 +81,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Call this method when the login is successful
   void loginUser() {
     setState(() {
       isLoggedIn = true;
     });
   }
 
-  // Call this method when the user logs out
   void logoutUser() {
     setState(() {
       isLoggedIn = false;
@@ -79,8 +98,8 @@ class _HomePageState extends State<HomePage> {
     List<Widget> navigationCards = [
       NavigationCard(
         icon: Icons.info,
-        title: 'Information',
-        color: Color(0xFF3498DB), // Blue
+        title: 'Information Center',
+        color: Color(0xFF3498DB),
         onTap: () {
           navigateToSection(context, InformationCenterPage());
         },
@@ -88,7 +107,7 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.fastfood_sharp,
         title: 'CampusFood',
-        color: Color(0xFF2ECC71), // Green
+        color: Color(0xFF2ECC71),
         onTap: () {
           navigateToSection(context, FoodPage());
         },
@@ -96,7 +115,7 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.accessible,
         title: 'Accessibility',
-        color: Color(0xFFE67E22), // Orange
+        color: Color(0xFFE67E22),
         onTap: () {
           navigateToSection(context, AccessibilityDirectoryPage());
         },
@@ -104,24 +123,38 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.calendar_month,
         title: 'My Schedule',
-        color: Color(0xFF9B59B6), // Purple
+        color: Color(0xFF9B59B6),
         onTap: () {
           navigateToSection(context, SchedulerHandlerPage());
         },
       ),
       NavigationCard(
-        icon: Icons.map,
-        title: 'Campus Map',
-        color: Color(0xFF008080), // Teal
+        icon: Icons.calendar_today,
+        title: 'Weekly Schedule',
+        color: Color(0xFF9B59B6),
         onTap: () {
-          navigateToSection(context, ListMapScreen());
+          navigateToSection(context, SchedulePage());
         },
       ),
-
+      NavigationCard(
+        icon: Icons.map,
+        title: 'Campus Map',
+        color: Color(0xFF008080),
+        onTap: () {
+          // Navigate to Campus Map
+        },
+      ),
+      NavigationCard(
+        icon: Icons.search,
+        title: 'Search Courses',
+        color: Color(0xFFFFD700),
+        onTap: () {
+          navigateToSection(context, CourseSearchPage());
+        },
+      ),
       Container(
         alignment: Alignment.bottomCenter,
-        padding:
-            EdgeInsets.only(bottom: 8.0), // Adjust the bottom padding as needed
+        padding: EdgeInsets.only(bottom: 8.0),
         child: HelpButton(
           onPressed: () {
             showDialog(
@@ -144,15 +177,11 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-
-      // ... Add other NavigationCard widgets as needed ...
     ];
-
-    // Rest of your build method...
 
     if (!isLoggedIn) {
       navigationCards.insert(
-        1, // Adjust index as needed to place the login card in the desired position
+        1,
         NavigationCard(
           icon: Icons.school,
           title: 'Student Login',
@@ -169,11 +198,11 @@ class _HomePageState extends State<HomePage> {
         title: Text('Campus Navigator'),
         actions: isLoggedIn
             ? [
-                IconButton(
-                  icon: Icon(Icons.exit_to_app),
-                  onPressed: logoutUser, // Calls logoutUser to update the state
-                ),
-              ]
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: logoutUser,
+          ),
+        ]
             : [],
       ),
       body: GridView.count(
@@ -201,8 +230,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
   @override
   void initState() {
     super.initState();
-
-    // Start the animations
     _animateBackgroundColor();
   }
 
@@ -210,7 +237,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
     Future.delayed(Duration(seconds: 1)).then((_) {
       if (mounted) {
         setState(() {
-          // Generate a random color with full opacity
           _color = Color((0xFF000000 | math.Random().nextInt(0xFFFFFF)));
         });
         _animateBackgroundColor();
@@ -229,13 +255,10 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
 }
 
 class NotificationsPage extends StatelessWidget {
-  // ... Your existing NotificationsPage code ...
   @override
   Widget build(BuildContext context) {
-    // Placeholder for events
     final events = [
       {'name': 'Tech Workshop', 'date': 'Nov 10', 'location': 'Auditorium'},
-      // Add more events
     ];
 
     return Scaffold(
@@ -245,8 +268,7 @@ class NotificationsPage extends StatelessWidget {
         itemBuilder: (context, index) {
           var event = events[index];
           return ListTile(
-            title: Text(
-                event['name'] ?? 'Unknown Event'), // Provide a default value
+            title: Text(event['name'] ?? 'Unknown Event'),
             subtitle: Text(
                 '${event['date'] ?? 'Date not set'} at ${event['location'] ?? 'Location not set'}'),
             onTap: () {
@@ -260,7 +282,6 @@ class NotificationsPage extends StatelessWidget {
 }
 
 class NavigationCard extends StatelessWidget {
-  // ... Your existing NavigationCard code, make sure the colors are set to transparent ...
   final IconData icon;
   final String title;
   final Color color;
@@ -293,3 +314,4 @@ class NavigationCard extends StatelessWidget {
     );
   }
 }
+

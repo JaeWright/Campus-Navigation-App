@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';
 import 'events_page.dart';
+import 'package:campusmapper/main.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -90,7 +91,15 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      //Return to home page
+      Navigator.pushReplacementNamed(context, '/home');
+
+      // Return 'false' to prevent the default back button behavior
+      return false;
+    },
+    child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         /*
@@ -110,7 +119,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Show Planned Events',
+                'Show Courses',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Switch(
@@ -129,6 +138,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                     }
                   });
                 },
+              ),
+              const Text(
+                'Show Planned Events',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -231,6 +244,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           ),
         ],
       ),
+    )
     );
   }
 

@@ -12,6 +12,7 @@ Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 Author: Brock Davidge
 Added functionality to connect to course search and weekly schedule.
 */
+import 'package:campusmapper/scheduler/events_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
@@ -55,6 +56,12 @@ class CampusNavigatorApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      routes: {
+        '/home': (context) => HomePage(), // Assign route name '/' to the HomePage
+        '/events': (context) => const EventsScheduler(title: 'Events Scheduler'),
+        // Other named routes if needed
+      },
+      initialRoute: '/', // Set the initial route
       home: HomePage(),
     );
   }

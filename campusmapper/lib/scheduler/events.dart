@@ -33,7 +33,7 @@ class Event {
     location = map["location"];
     weekday = map["weekday"];
     time = map["time"];
-    date = getDate(DateTime.parse(map["date"]));
+    date = DateTime.parse(map["date"]);
   }
 
   Map<String, Object> toMap() {

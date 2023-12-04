@@ -10,6 +10,7 @@ import 'scheduler_handler.dart';
 import 'eventEditPage.dart';
 import 'dateConversions.dart';
 import 'package:intl/intl.dart';
+import 'eventAddPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -94,7 +95,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   void loadEventsData() async {
     if (ModalRoute.of(context)!.isCurrent) {
       List results = await _events.getAllEvents();
-      print(results);
+      //print(results);
 
       for (int i = 0; i < results.length; i++) {
         eventsList.add(EventTile(
@@ -105,36 +106,50 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             time: results[i].time,
             date: results[i].date));
       }
-      nextEventId = eventsList.length;
+      nextEventId = eventsList.length+1;
       setState(() {}); // rebuilds everytime page is loaded
     }
   }
 
   //functions to interact with event maker (not implemented yet)
   //function to add event to database
-  /*
-  Future<void> _addEvent(String eventName, String location, String weekday, String time) async {
+
+  Future<void> _addEvent() async {
+    var newEvent = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventAddPage(), // Navigate to EventAddPage
+      ),
+    );
+
+    if (newEvent != null) {
+      final String newEventName = newEvent['eventName'];
+      final String newLocation = newEvent['location'];
+      final String newWeekday = newEvent['weekday'];
+      final String newTime = newEvent['time'];
+      final DateTime newDate = newEvent['date'];
+
     // Add the new data to the gradesList
     setState(() {
-      final newEvent = EventTile(
+      eventsList.add(EventTile(
           id: nextEventId,
-          eventName: eventName,
-          location: location,
-          weekday: weekday,
-          time: time
-          date: date);
-      eventsList.add(newEvent);
+          eventName: newEventName,
+          location: newLocation,
+          weekday: newWeekday,
+          time: newTime,
+          date: newDate)
+      );
     });
 
     // Insert the new data into the database
     _events
         .insertEvent(Event(
-            id: nextEventId,
-            eventName: eventName,
-            location: location,
-            weekday: weekday,
-            time: time,
-            date: date))
+        id: nextEventId,
+        eventName: newEventName,
+        location: newLocation,
+        weekday: newWeekday,
+        time: newTime,
+        date: newDate))
         .then((insertedId) {
       if (insertedId != null) {
         print('Data inserted with ID: $insertedId');
@@ -142,11 +157,13 @@ class _EventsSchedulerState extends State<EventsScheduler> {
         print('Failed to insert data');
       }
     });
+     }
     nextEventId++;
   }
 
-   */
 
+
+  //function to show popup for deleting events
   void _confirmDeleteEvent(EventTile eventToDelete) {
     showDialog(
       context: context,
@@ -186,7 +203,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     print("index $deleted was deleted");
   }
 
-  //Used ChatGPT +L
+  //go to eventeditpage and update database
   void _editEvent(EventTile event) async {
     final initialId = event.id;
     final initialEventName = event.eventName;
@@ -195,6 +212,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     final initialTime = event.time;
     final initialDate = event.date;
 
+    //used ChatGPT for the push
     var updatedData = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -209,6 +227,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       ),
     );
 
+    //check for if data was even changed
     if (updatedData != null) {
       final updatedEvent = Event(
         id: initialId,
@@ -322,11 +341,22 @@ class _EventsSchedulerState extends State<EventsScheduler> {
           },
           iconSize: 25,
         ),
-        title: const Row(
+        title:  const Row(
           children: [
             Text("Events Scheduler"),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              _addEvent();
+            },
+            iconSize: 25,
+          ),
+        ],
+
+
       ),
       body: Column(
         children: [

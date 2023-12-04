@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'events_page.dart';
 import 'dateConversions.dart';
 
 class EventEditPage extends StatefulWidget {
@@ -98,9 +97,9 @@ class _EventEditPageState extends State<EventEditPage> {
                     );
                     if (picked != null) {
                       setState(() {
-                        date = getDate(picked);
+                        date = picked;
                         weekday = convertWeekday(picked);
-                        dateController.text = "${convertWeekday(picked)} - ${getDate(picked)}"; // format in weekday - date
+                        dateController.text = "${convertWeekday(picked)} on ${picked.year}-${picked.month}-${picked.day}"; // format in weekday - date
                       });
                     }
                   },

@@ -24,6 +24,10 @@ import 'courses/schedule_page.dart';
 import 'courses/schedule_provider.dart';
 import 'information_centre_page.dart';
 import 'accessibility.dart';
+<<<<<<< HEAD
+=======
+import 'food.dart';
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
 import 'scheduler/scheduler_handler.dart';
 import 'student_login.dart';
 import 'package:provider/provider.dart';
@@ -43,9 +47,12 @@ void main() async {
         ChangeNotifierProvider(
             create: (context) => ScheduleProvider()), // Add this line
         // Add other providers if needed
+<<<<<<< HEAD
         Provider(
           create: (context) => LocationService(),
         ),
+=======
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
       ],
       child: MaterialApp(
         title: 'Grade Viewer',
@@ -150,12 +157,18 @@ class _HomePageState extends State<HomePage> {
         title: 'Campus Map',
         color: Color(0xFF008080),
         onTap: () {
+<<<<<<< HEAD
           final locationService = Provider.of<LocationService>(context, listen: false);
+=======
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
           navigateToSection(
               context,
               ListMapScreen(
                 findLocation: const LatLng(0.0, 0.0),
+<<<<<<< HEAD
                 restaurantLocations: locationService.getAllRestaurantLocations(),
+=======
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
               ));
         },
       ),

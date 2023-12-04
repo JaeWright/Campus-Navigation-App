@@ -17,11 +17,17 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:campusmapper/food/location.dart';
 
 class ListMapScreen extends StatefulWidget {
+<<<<<<< HEAD
   final LatLng findLocation;
   final List<RestaurantLocation> restaurantLocations;
 
   ListMapScreen({Key? key, required this.findLocation, required this.restaurantLocations}) : super(key: key);
 
+=======
+  ListMapScreen({super.key, required this.findLocation});
+  //Variable used for passing in Resturant locatations to the map to be generated first
+  LatLng findLocation;
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
   @override
   ListMapState createState() => ListMapState();
 }
@@ -83,6 +89,7 @@ class ListMapState extends State<ListMapScreen> {
                             context: context,
                             //Popup box displaying sourcing for the map
                             builder: (context) => AlertDialog(
+<<<<<<< HEAD
                               title: const Text('Map Information'),
                               content: SingleChildScrollView(
                                 child: ListBody(
@@ -105,6 +112,39 @@ class ListMapState extends State<ListMapScreen> {
                                               Uri.parse(
                                                   'https://openrouteservice.org/terms-of-service/'),
                                             ))),
+=======
+                                  title: const Text('Map Information'),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                                child: const Text(
+                                                    'Map data © OpenStreetMap contributors'),
+                                                onPressed: () => launchUrl(
+                                                      Uri.parse(
+                                                          'https://openstreetmap.org/copyright'),
+                                                    ))),
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                                child: const Text(
+                                                    '© openrouteservice.org by HeiGIT '),
+                                                onPressed: () => launchUrl(
+                                                      Uri.parse(
+                                                          'https://openrouteservice.org/terms-of-service/'),
+                                                    ))),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                        child: const Text("OK"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        }),
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
                                   ],
                                 ),
                               ),
@@ -294,4 +334,8 @@ class ListMapState extends State<ListMapScreen> {
       routing = returned;
     });
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2

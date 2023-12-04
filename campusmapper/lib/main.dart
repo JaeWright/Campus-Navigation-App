@@ -5,27 +5,54 @@ widgets representing different sections of the app. The app includes features su
 campus food, accessibility directory, user schedule, and a campus map. Firebase is initialized for potential 
 backend integration. Additionally, a login functionality is implemented, with the UI dynamically adjusting 
 based on the user's login status.
+
+Author: Darshilkumar Patel
+Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
+
+Author: Brock Davidge
+Added functionality to connect to course search and weekly schedule.
 */
+import 'package:campusmapper/scheduler/events_page.dart';
 import 'package:flutter/material.dart';
-import 'food.dart';
-import 'student_login.dart';
-import 'information_centre_page.dart';
-import 'accessibility.dart';
-import 'scheduler/scheduler_handler.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/map/firebase_options.dart';
+import 'package:latlong2/latlong.dart';
+import 'helpbutton.dart';
+import 'courses/course_search_page.dart';
+import 'courses/schedule_page.dart';
+import 'courses/schedule_provider.dart';
+import 'information_centre_page.dart';
+import 'accessibility.dart';
+import 'scheduler/scheduler_handler.dart';
+import 'student_login.dart';
+import 'package:provider/provider.dart';
 import 'package:campusmapper/map/map_maker.dart';
+import 'package:campusmapper/food/location.dart';
+import 'package:campusmapper/food/restaurant_details.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MaterialApp(
-    title: 'Grade Viewer',
-    home: CampusNavigatorApp(),
-  ));
+  runApp(
+    // Wrap your app with MultiProvider to provide multiple providers
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) => ScheduleProvider()), // Add this line
+        // Add other providers if needed
+        Provider(
+          create: (context) => LocationService(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Grade Viewer',
+        home: CampusNavigatorApp(),
+      ),
+    ),
+  );
 }
 
 class CampusNavigatorApp extends StatelessWidget {
@@ -36,6 +63,14 @@ class CampusNavigatorApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      routes: {
+        '/home': (context) =>
+            HomePage(), // Assign route name '/' to the HomePage
+        '/events': (context) =>
+            const EventsScheduler(title: 'Events Scheduler'),
+        // Other named routes if needed
+      },
+      initialRoute: '/', // Set the initial route
       home: HomePage(),
     );
   }
@@ -47,7 +82,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // This flag will change based on the user's login status
   bool isLoggedIn = false;
 
   void navigateToSection(BuildContext context, Widget page) {
@@ -56,14 +90,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Call this method when the login is successful
   void loginUser() {
     setState(() {
       isLoggedIn = true;
     });
   }
 
-  // Call this method when the user logs out
   void logoutUser() {
     setState(() {
       isLoggedIn = false;
@@ -75,16 +107,16 @@ class _HomePageState extends State<HomePage> {
     List<Widget> navigationCards = [
       NavigationCard(
         icon: Icons.info,
-        title: 'Information',
-        color: Colors.blueAccent,
+        title: 'Information Center',
+        color: Color(0xFF3498DB),
         onTap: () {
           navigateToSection(context, InformationCenterPage());
         },
       ),
       NavigationCard(
         icon: Icons.fastfood_sharp,
-        title: 'Campus Food',
-        color: Colors.orangeAccent,
+        title: 'CampusFood',
+        color: Color(0xFF2ECC71),
         onTap: () {
           navigateToSection(context, FoodPage());
         },
@@ -92,7 +124,7 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.accessible,
         title: 'Accessibility',
-        color: Colors.redAccent,
+        color: Color(0xFFE67E22),
         onTap: () {
           navigateToSection(context, AccessibilityDirectoryPage());
         },
@@ -100,25 +132,71 @@ class _HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.calendar_month,
         title: 'My Schedule',
-        color: Colors.deepPurple,
+        color: Color(0xFF9B59B6),
         onTap: () {
           navigateToSection(context, SchedulerHandlerPage());
         },
       ),
       NavigationCard(
-        icon: Icons.map,
-        title: 'Campus Map',
-        color: Colors.cyan,
+        icon: Icons.calendar_today,
+        title: 'Weekly Schedule',
+        color: Color(0xFF9B59B6),
         onTap: () {
-          navigateToSection(context, ListMapScreen());
+          navigateToSection(context, SchedulePage());
         },
       ),
-      // ... Add other NavigationCard widgets as needed ...
+      NavigationCard(
+        icon: Icons.map,
+        title: 'Campus Map',
+        color: Color(0xFF008080),
+        onTap: () {
+          final locationService = Provider.of<LocationService>(context, listen: false);
+          navigateToSection(
+              context,
+              ListMapScreen(
+                findLocation: const LatLng(0.0, 0.0),
+                restaurantLocations: locationService.getAllRestaurantLocations(),
+              ));
+        },
+      ),
+      NavigationCard(
+        icon: Icons.search,
+        title: 'Search Courses',
+        color: Color(0xFFFFD700),
+        onTap: () {
+          navigateToSection(context, CourseSearchPage());
+        },
+      ),
+      Container(
+        alignment: Alignment.bottomCenter,
+        padding: EdgeInsets.only(bottom: 8.0),
+        child: HelpButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Help'),
+                  content: Text('This is the help message.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+      ),
     ];
 
     if (!isLoggedIn) {
       navigationCards.insert(
-        1, // Adjust index as needed to place the login card in the desired position
+        1,
         NavigationCard(
           icon: Icons.school,
           title: 'Student Login',
@@ -137,7 +215,7 @@ class _HomePageState extends State<HomePage> {
             ? [
                 IconButton(
                   icon: Icon(Icons.exit_to_app),
-                  onPressed: logoutUser, // Calls logoutUser to update the state
+                  onPressed: logoutUser,
                 ),
               ]
             : [],
@@ -167,8 +245,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
   @override
   void initState() {
     super.initState();
-
-    // Start the animations
     _animateBackgroundColor();
   }
 
@@ -176,7 +252,6 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
     Future.delayed(Duration(seconds: 1)).then((_) {
       if (mounted) {
         setState(() {
-          // Generate a random color with full opacity
           _color = Color((0xFF000000 | math.Random().nextInt(0xFFFFFF)));
         });
         _animateBackgroundColor();
@@ -195,13 +270,10 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> {
 }
 
 class NotificationsPage extends StatelessWidget {
-  // ... Your existing NotificationsPage code ...
   @override
   Widget build(BuildContext context) {
-    // Placeholder for events
     final events = [
       {'name': 'Tech Workshop', 'date': 'Nov 10', 'location': 'Auditorium'},
-      // Add more events
     ];
 
     return Scaffold(
@@ -211,8 +283,7 @@ class NotificationsPage extends StatelessWidget {
         itemBuilder: (context, index) {
           var event = events[index];
           return ListTile(
-            title: Text(
-                event['name'] ?? 'Unknown Event'), // Provide a default value
+            title: Text(event['name'] ?? 'Unknown Event'),
             subtitle: Text(
                 '${event['date'] ?? 'Date not set'} at ${event['location'] ?? 'Location not set'}'),
             onTap: () {
@@ -226,7 +297,6 @@ class NotificationsPage extends StatelessWidget {
 }
 
 class NavigationCard extends StatelessWidget {
-  // ... Your existing NavigationCard code, make sure the colors are set to transparent ...
   final IconData icon;
   final String title;
   final Color color;

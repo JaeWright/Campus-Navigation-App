@@ -7,39 +7,51 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'scheduler_database_helper.dart';
 import 'dart:async';
+import 'dateConversions.dart';
 
 //class to hold event data
-class Event{
+class Event {
   int? id;
   String? eventName;
   String? location;
   String? weekday;
   String? time;
+  DateTime? date; // New field for the date
 
-  Event({required this.id, required this.eventName, required this.location, required this.weekday, required this.time});
+  Event({
+    required this.id,
+    required this.eventName,
+    required this.location,
+    required this.weekday,
+    required this.time,
+    required this.date, // Include the new date field in the constructor
+  });
 
-  Event.fromMap(Map map){
+  Event.fromMap(Map map) {
     id = map["id"];
     eventName = map["eventName"];
     location = map["location"];
     weekday = map["weekday"];
     time = map["time"];
+    date = DateTime.parse(map["date"]);
   }
 
-  Map<String,Object> toMap(){
-    return{
-      'id' : id!,
+  Map<String, Object> toMap() {
+    return {
+      'id': id!,
       'eventName': eventName!,
       'location': location!,
-      'weekday' : weekday!,
-      'time' : time!,
+      'weekday': weekday!,
+      'time': time!,
+      'date': date!.toIso8601String(), // Include 'date' in the returned map
     };
   }
 
-  String toString(){
-    return "id: $id, Name: $eventName, location: $location, weekday: $weekday, time: $time";
+  String toString() {
+    return "id: $id, Name: $eventName, location: $location, weekday: $weekday, time: $time, date: $date";
   }
 }
+
 
 //class for interaction between event class and local database
 class EventsModel{

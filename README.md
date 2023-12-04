@@ -3,15 +3,15 @@
 
 Group members (3-5) (no Student IDs, only names and github usernames):
 
-1. Samiur Rahman
+1. Samiur Rahman - SAMIUR274
 
-2. Brock Davidge
+3. Brock Davidge - BrockD101
 
-3. Luca Lotito
+4. Luca Lotito - LucaLot
 
-4. Jaelen Wright
+5. Jaelen Wright - JaeWright
 
-5. Darshilkumar Patel
+6. Darshilkumar Patel - DarshilkumarPatel
 
 ## Overview
 This group project is designed for you to demonstrate the skills that you have learned in this course.  The final project that you submit in the last week of classes will be a completed mobile application.  Non-functional requirements, especially those associated with production-readiness, will be considered extremely important when marking this project.  You are expected to work in a group of three to five students when completing this project.  Students are not permitted to work alone on the project, as this eliminates one of the learning objectives of this assessment. Peer feedback forms will be required for all three phases of the project to ensure group equity of work.

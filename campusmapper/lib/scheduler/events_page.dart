@@ -7,6 +7,10 @@ connects to the course scheduler page
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'scheduler_handler.dart';
+import 'eventEditPage.dart';
+import 'dateConversions.dart';
+import 'package:intl/intl.dart';
+import 'eventAddPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +29,7 @@ class EventTile {
   String? location;
   String? weekday;
   String? time;
+  DateTime? date;
 
   EventTile({
     required this.id,
@@ -32,7 +37,19 @@ class EventTile {
     required this.location,
     required this.weekday,
     required this.time,
+    required this.date,
   });
+
+  Event toEvent(){
+    return Event(
+      id: id,
+      eventName: eventName,
+      location: location,
+      weekday: weekday,
+      time: time,
+      date: date,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -52,7 +69,7 @@ class MyApp extends StatelessWidget {
 }
 
 class EventsScheduler extends StatefulWidget {
-  const EventsScheduler({Key? key, required this.title});
+  const EventsScheduler({Key? key,required this.title, String? eventName, String? location,  String? weekday, String? time, int? id});
 
   final String title;
 
@@ -78,7 +95,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   void loadEventsData() async {
     if (ModalRoute.of(context)!.isCurrent) {
       List results = await _events.getAllEvents();
-      print(results);
+      //print(results);
 
       for (int i = 0; i < results.length; i++) {
         eventsList.add(EventTile(
@@ -86,36 +103,53 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             eventName: results[i].eventName,
             location: results[i].location,
             weekday: results[i].weekday,
-            time: results[i].time));
+            time: results[i].time,
+            date: results[i].date));
       }
-      nextEventId = eventsList.length;
+      nextEventId = eventsList.length+1;
       setState(() {}); // rebuilds everytime page is loaded
     }
   }
 
   //functions to interact with event maker (not implemented yet)
   //function to add event to database
-  Future<void> _addEvent(
-      String eventName, String location, String weekday, String time) async {
+
+  Future<void> _addEvent() async {
+    var newEvent = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventAddPage(), // Navigate to EventAddPage
+      ),
+    );
+
+    if (newEvent != null) {
+      final String newEventName = newEvent['eventName'];
+      final String newLocation = newEvent['location'];
+      final String newWeekday = newEvent['weekday'];
+      final String newTime = newEvent['time'];
+      final DateTime newDate = newEvent['date'];
+
     // Add the new data to the gradesList
     setState(() {
-      final newEvent = EventTile(
+      eventsList.add(EventTile(
           id: nextEventId,
-          eventName: eventName,
-          location: location,
-          weekday: weekday,
-          time: time);
-      eventsList.add(newEvent);
+          eventName: newEventName,
+          location: newLocation,
+          weekday: newWeekday,
+          time: newTime,
+          date: newDate)
+      );
     });
 
     // Insert the new data into the database
     _events
         .insertEvent(Event(
-            id: nextEventId,
-            eventName: eventName,
-            location: location,
-            weekday: weekday,
-            time: time))
+        id: nextEventId,
+        eventName: newEventName,
+        location: newLocation,
+        weekday: newWeekday,
+        time: newTime,
+        date: newDate))
         .then((insertedId) {
       if (insertedId != null) {
         print('Data inserted with ID: $insertedId');
@@ -123,74 +157,206 @@ class _EventsSchedulerState extends State<EventsScheduler> {
         print('Failed to insert data');
       }
     });
+     }
     nextEventId++;
   }
 
-  //function to remove event from database
-  Future<void> _deleteEvent(int index) async {
-    int? id = eventsList[index].id;
-    setState(() {
-      eventsList.removeAt(index);
-    });
-    int _deleted = await _events.deleteEvent(id!);
-    print("index $_deleted was deleted");
+
+
+  //function to show popup for deleting events
+  void _confirmDeleteEvent(EventTile eventToDelete) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: Text('Do you want to delete ${eventToDelete.eventName}?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteEvent(eventToDelete.id!); // Perform delete operation
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
+
+  //function to remove event from database
+  Future<void> _deleteEvent(int id) async {
+    setState(() {
+      eventsList.removeWhere((event) => event.id == id);
+    });
+    int deleted = await _events.deleteEvent(id!);
+    print("index $deleted was deleted");
+  }
+
+  //go to eventeditpage and update database
+  void _editEvent(EventTile event) async {
+    final initialId = event.id;
+    final initialEventName = event.eventName;
+    final initialLocation = event.location;
+    final initialWeekday = event.weekday;
+    final initialTime = event.time;
+    final initialDate = event.date;
+
+    //used ChatGPT for the push
+    var updatedData = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventEditPage(
+          id: initialId,
+          eventName: initialEventName,
+          location: initialLocation,
+          weekday: initialWeekday,
+          time: initialTime,
+          date: initialDate,
+        ),
+      ),
+    );
+
+    //check for if data was even changed
+    if (updatedData != null) {
+      final updatedEvent = Event(
+        id: initialId,
+        eventName: updatedData['eventName'],
+        location: updatedData['location'],
+        weekday: updatedData['weekday'],
+        time: updatedData['time'],
+        date: updatedData['date'],
+      );
+
+      setState(() {
+        final index = eventsList.indexWhere((eventTile) => eventTile.id == initialId);
+        if (index != -1) {
+          eventsList[index] = EventTile(
+            id: updatedEvent.id,
+            eventName: updatedEvent.eventName,
+            location: updatedEvent.location,
+            weekday: updatedEvent.weekday,
+            time: updatedEvent.time,
+            date: updatedEvent.date,
+          );
+        }
+      });
+
+      // Update the event in the database
+      int updated = await _events.updateEvent(updatedEvent);
+      print("updated: $updated");
+
+    }
+  }
+
 
   //used chatgpt for this function
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
-    List<EventTile> filteredEvents =
-        eventsList.where((event) => event.weekday == weekday).toList();
+    List<int> indexes = eventsList
+        .asMap()
+        .entries
+        .where((entry) => entry.value.weekday == weekday)
+        .map((entry) => entry.key)
+        .toList();
 
-    for (int i = 0; i < filteredEvents.length; i++) {
+    // Sort events by date and time
+    indexes.sort((a, b) {
+      if (eventsList[a].date!.compareTo(eventsList[b].date!) != 0) {
+        return eventsList[a].date!.compareTo(eventsList[b].date!);
+      } else {
+        return DateTime.parse("${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+            .compareTo(DateTime.parse("${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+      }
+    });
+
+    for (int i = 0; i < indexes.length; i++) {
       widgets.addAll([
-        Text(
-          filteredEvents[i].eventName!,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          filteredEvents[i].location!,
-          style: TextStyle(fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          '${filteredEvents[i].weekday!}, ${filteredEvents[i].time!}',
-          style: TextStyle(fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-        if (i < filteredEvents.length - 1)
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 8),
-            height: 1,
-            width: double.infinity,
-            color: Colors.black54,
+        GestureDetector(
+          onTap: () {
+            _editEvent(eventsList[indexes[i]]);
+          },
+          onLongPress: () {
+            _confirmDeleteEvent(eventsList[indexes[i]]);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                eventsList[indexes[i]].eventName!,
+                style: const TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                eventsList[indexes[i]].location!,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
+                style: const TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              if (i < indexes.length - 1)
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  height: 1,
+                  width: double.infinity,
+                  color: Colors.black54,
+                ),
+            ],
           ),
+        ),
       ]);
     }
 
     return widgets;
   }
 
-  String getWeekday(int index) {
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][index];
-  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        leading: const Icon(
-          Icons.school,
-          size: 30,
+        backgroundColor: Colors.deepPurple,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/home');
+          },
+          iconSize: 25,
         ),
-        title: Row(
+        title:  const Row(
           children: [
-            Text(widget.title),
+            Text("Events Scheduler"),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              _addEvent();
+            },
+            iconSize: 25,
+          ),
+        ],
+
+
       ),
       body: Column(
         children: [
@@ -217,6 +383,10 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                   });
                 },
               ),
+              const Text(
+                'Show Planned Events',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           //Monday and Tuesday row
@@ -224,7 +394,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               for (int i = 0; i < 2; i++)
-                Expanded(
+                Flexible(
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(16),
@@ -232,16 +402,17 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                     width: double.infinity,
                     color: Colors.grey[300],
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
-                        Expanded(
+                        Flexible(
                           child: ListView(
                             shrinkWrap: true,
                             children: getEventWidgets(getWeekday(i)),
@@ -258,7 +429,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               for (int i = 2; i < 4; i++)
-                Expanded(
+                Flexible(
                   child: Container(
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(16),
@@ -270,12 +441,12 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 16),
-                        Expanded(
+                        Flexible(
                           child: ListView(
                             shrinkWrap: true,
                             children: getEventWidgets(getWeekday(i)),
@@ -304,7 +475,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 16),
-                  Expanded(
+                  Flexible(
                     child: ListView(
                       shrinkWrap: true,
                       children: getEventWidgets(getWeekday(4)),

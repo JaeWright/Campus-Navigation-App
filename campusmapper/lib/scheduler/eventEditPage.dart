@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'events_page.dart';
+import 'dateConversions.dart';
 
 class EventEditPage extends StatefulWidget {
   final int? id;
@@ -8,6 +9,7 @@ class EventEditPage extends StatefulWidget {
   final String? location;
   final String? weekday;
   final String? time;
+  final DateTime? date;
 
   EventEditPage({
     required this.id,
@@ -15,6 +17,7 @@ class EventEditPage extends StatefulWidget {
     required this.location,
     required this.weekday,
     required this.time,
+    required this.date,
   });
 
   @override
@@ -24,15 +27,17 @@ class EventEditPage extends StatefulWidget {
 class _EventEditPageState extends State<EventEditPage> {
   late TextEditingController eventNameController;
   late TextEditingController locationController;
-  late TextEditingController weekdayController;
+  late TextEditingController dateController;
   late TextEditingController timeController;
+  late String weekday;
+  late DateTime date;
 
   @override
   void initState() {
     super.initState();
     eventNameController = TextEditingController(text: widget.eventName);
     locationController = TextEditingController(text: widget.location);
-    weekdayController = TextEditingController(text: widget.weekday);
+    dateController = TextEditingController(text: "${widget.weekday} - ${widget.date.toString()}");
     timeController = TextEditingController(text: widget.time);
   }
 
@@ -40,7 +45,7 @@ class _EventEditPageState extends State<EventEditPage> {
   void dispose() {
     eventNameController.dispose();
     locationController.dispose();
-    weekdayController.dispose();
+    dateController.dispose();
     timeController.dispose();
     super.dispose();
   }
@@ -75,16 +80,16 @@ class _EventEditPageState extends State<EventEditPage> {
             ),
             TextFormField(
               readOnly: true,
-              controller: weekdayController,
+              controller: dateController,
               decoration: InputDecoration(
-                labelText: 'Weekday',
+                labelText: 'Date',
                 suffixIcon: IconButton(
                   icon: Icon(Icons.calendar_today),
                   onPressed: () async {
                     final DateTime? picked = await showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2022),
+                      initialDate: widget.date!,
+                      firstDate: DateTime(2023),
                       lastDate: DateTime(2025),
                       selectableDayPredicate: (DateTime date) {
                         // Disable Saturday (day 6) and Sunday (day 7)
@@ -93,7 +98,9 @@ class _EventEditPageState extends State<EventEditPage> {
                     );
                     if (picked != null) {
                       setState(() {
-                        weekdayController.text = picked.toString(); // You can format this date as needed
+                        date = getDate(picked);
+                        weekday = convertWeekday(picked);
+                        dateController.text = "${convertWeekday(picked)} - ${getDate(picked)}"; // format in weekday - date
                       });
                     }
                   },
@@ -131,7 +138,8 @@ class _EventEditPageState extends State<EventEditPage> {
                   var updatedData = {
                     'eventName': eventNameController.text,
                     'location': locationController.text,
-                    'weekday': weekdayController.text,
+                    'weekday': weekday,
+                    'date': date,
                     'time': timeController.text,
 
                   };

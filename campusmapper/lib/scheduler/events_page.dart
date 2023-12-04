@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'events.dart';
 import 'scheduler_handler.dart';
 import 'eventEditPage.dart';
+import 'dateConversions.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +28,7 @@ class EventTile {
   String? location;
   String? weekday;
   String? time;
+  DateTime? date;
 
   EventTile({
     required this.id,
@@ -33,6 +36,7 @@ class EventTile {
     required this.location,
     required this.weekday,
     required this.time,
+    required this.date,
   });
 
   Event toEvent(){
@@ -42,6 +46,7 @@ class EventTile {
       location: location,
       weekday: weekday,
       time: time,
+      date: date,
     );
   }
 }
@@ -97,7 +102,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             eventName: results[i].eventName,
             location: results[i].location,
             weekday: results[i].weekday,
-            time: results[i].time));
+            time: results[i].time,
+            date: results[i].date));
       }
       nextEventId = eventsList.length;
       setState(() {}); // rebuilds everytime page is loaded
@@ -106,6 +112,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
 
   //functions to interact with event maker (not implemented yet)
   //function to add event to database
+  /*
   Future<void> _addEvent(String eventName, String location, String weekday, String time) async {
     // Add the new data to the gradesList
     setState(() {
@@ -114,7 +121,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
           eventName: eventName,
           location: location,
           weekday: weekday,
-          time: time);
+          time: time
+          date: date);
       eventsList.add(newEvent);
     });
 
@@ -125,7 +133,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             eventName: eventName,
             location: location,
             weekday: weekday,
-            time: time))
+            time: time,
+            date: date))
         .then((insertedId) {
       if (insertedId != null) {
         print('Data inserted with ID: $insertedId');
@@ -135,6 +144,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     });
     nextEventId++;
   }
+
+   */
 
   void _confirmDeleteEvent(EventTile eventToDelete) {
     showDialog(
@@ -182,6 +193,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     final initialLocation = event.location;
     final initialWeekday = event.weekday;
     final initialTime = event.time;
+    final initialDate = event.date;
 
     var updatedData = await Navigator.push(
       context,
@@ -192,6 +204,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
           location: initialLocation,
           weekday: initialWeekday,
           time: initialTime,
+          date: initialDate,
         ),
       ),
     );
@@ -203,6 +216,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
         location: updatedData['location'],
         weekday: updatedData['weekday'],
         time: updatedData['time'],
+        date: updatedData['date'],
       );
 
       setState(() {
@@ -214,6 +228,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             location: updatedEvent.location,
             weekday: updatedEvent.weekday,
             time: updatedEvent.time,
+            date: updatedEvent.date,
           );
         }
       });
@@ -230,8 +245,22 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
-    List<int> indexes = eventsList.asMap().entries.where((entry) => entry.value.weekday == weekday).map((entry) => entry.key).toList();
+    List<int> indexes = eventsList
+        .asMap()
+        .entries
+        .where((entry) => entry.value.weekday == weekday)
+        .map((entry) => entry.key)
+        .toList();
 
+    // Sort events by date and time
+    indexes.sort((a, b) {
+      if (eventsList[a].date!.compareTo(eventsList[b].date!) != 0) {
+        return eventsList[a].date!.compareTo(eventsList[b].date!);
+      } else {
+        return DateTime.parse("${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+            .compareTo(DateTime.parse("${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+      }
+    });
 
     for (int i = 0; i < indexes.length; i++) {
       widgets.addAll([
@@ -239,7 +268,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
           onTap: () {
             _editEvent(eventsList[indexes[i]]);
           },
-          onLongPress: (){
+          onLongPress: () {
             _confirmDeleteEvent(eventsList[indexes[i]]);
           },
           child: Column(
@@ -247,7 +276,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             children: [
               Text(
                 eventsList[indexes[i]].eventName!,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               Text(
@@ -256,7 +286,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                 textAlign: TextAlign.center,
               ),
               Text(
-                eventsList[indexes[i]].time!,
+                "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
                 style: const TextStyle(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -276,9 +306,9 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     return widgets;
   }
 
-  String getWeekday(int index) {
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][index];
-  }
+
+
+
 
   @override
   Widget build(BuildContext context) {

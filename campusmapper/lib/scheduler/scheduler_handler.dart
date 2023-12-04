@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'events.dart';
 import 'courses.dart';
 import 'events_page.dart';
-import 'package:campusmapper/main.dart';
+import 'dateConversions.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -291,7 +291,4 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     return widgets;
   }
 
-  String getWeekday(int index) {
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][index];
-  }
 }

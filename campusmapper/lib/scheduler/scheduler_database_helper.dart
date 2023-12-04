@@ -33,7 +33,7 @@ class DBUtils {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'events_manager.db'),
       onCreate: (db, version) {
-        db.execute('CREATE TABLE events(id INTEGER PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT)');
+        db.execute('CREATE TABLE events(id INTEGER PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
         // Call the function to insert pre-made values
         _insertValuesEvents(db);
 
@@ -136,6 +136,7 @@ class DBUtils {
         location: "Convention Center",
         weekday: "Mon",
         time: "2:00 PM",
+        date: DateTime(2023, 12, 11),
       ),
       Event(
         id: 2,
@@ -143,6 +144,7 @@ class DBUtils {
         location: "Stadium",
         weekday: "Wed",
         time: "5:35 PM",
+        date: DateTime(2023, 12, 13),
       ),
       Event(
         id: 3,
@@ -150,6 +152,7 @@ class DBUtils {
         location: "Meeting Room",
         weekday: "Fri",
         time: "10:00 AM",
+        date: DateTime(2023, 12, 15),
       ),
       Event(
         id: 4,
@@ -157,6 +160,7 @@ class DBUtils {
         location: "Community Hall",
         weekday: "Tue",
         time: "7:00 PM",
+        date: DateTime(2023, 12, 12),
       ),
       Event(
         id: 5,
@@ -164,6 +168,7 @@ class DBUtils {
         location: "Sports Complex",
         weekday: "Thu",
         time: "3:30 PM",
+        date: DateTime(2023, 12, 14),
       ),
       Event(
         id: 6,
@@ -171,6 +176,7 @@ class DBUtils {
         location: "Art Gallery",
         weekday: "Mon",
         time: "1:30 PM",
+        date: DateTime(2023, 12, 11),
       ),
       Event(
         id: 7,
@@ -178,6 +184,7 @@ class DBUtils {
         location: "Outdoor Park",
         weekday: "Wed",
         time: "4:45 PM",
+        date: DateTime(2023, 12, 13),
       ),
       Event(
         id: 8,
@@ -185,6 +192,7 @@ class DBUtils {
         location: "Coffee Shop",
         weekday: "Thu",
         time: "8:15 AM",
+        date: DateTime(2023, 12, 14),
       ),
       Event(
         id: 9,
@@ -192,6 +200,7 @@ class DBUtils {
         location: "Restaurant",
         weekday: "Fri",
         time: "6:45 PM",
+        date: DateTime(2023, 12, 15),
       ),
       Event(
         id: 10,
@@ -199,6 +208,7 @@ class DBUtils {
         location: "Tech Hub",
         weekday: "Tue",
         time: "12:15 PM",
+        date: DateTime(2023, 12, 12),
       ),
     ];
 

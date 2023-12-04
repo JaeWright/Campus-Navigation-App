@@ -9,24 +9,31 @@ import 'package:latlong2/latlong.dart';
 import 'app_constants.dart';
 import 'marker_model.dart';
 import 'map_marker.dart';
+import 'directions.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ListMapScreen extends StatefulWidget {
-  const ListMapScreen({super.key});
-
+  ListMapScreen({super.key, required this.findLocation});
+  //Variable used for passing in Resturant locatations to the map to be generated first
+  LatLng findLocation;
   @override
   ListMapState createState() => ListMapState();
 }
 
 class ListMapState extends State<ListMapScreen> {
-  final _database = MarkerModel();
+  static final _database = MarkerModel();
   final mapController = MapController();
   final panelController = PanelController();
+  final directionManager = Directions(
+      initialPosition: const LatLng(43.943754, -78.8960396),
+      locationPosition: const LatLng(43.843754, -78.9960396),
+      database: _database);
   List<bool?> trueFalseArray =
       List<bool>.filled(AppConstants.categories.length, false);
   List<String> mapMarkers = [];
   List? selectedIndices = [];
+  List<LatLng> routing = [];
   bool bottomCard = false;
   //Holds the vlaues for any clicked marker on the map
   MapMarker displayValues = MapMarker(
@@ -34,6 +41,16 @@ class ListMapState extends State<ListMapScreen> {
       location: const LatLng(43.943754, -78.8960396),
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
+  //If a Resturant location is requested, map it out
+  @override
+  void initState() {
+    super.initState();
+    if (widget.findLocation != const LatLng(0.0, 0.0)) {
+      mapMarkers = ["Food"];
+      directionManager.setItemPos(widget.findLocation);
+      setMap();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +85,20 @@ class ListMapState extends State<ListMapScreen> {
                                         Align(
                                             alignment: Alignment.centerLeft,
                                             child: TextButton(
-                                                child:
-                                                    const Text('OpenStreetMap'),
+                                                child: const Text(
+                                                    'Map data © OpenStreetMap contributors'),
                                                 onPressed: () => launchUrl(
                                                       Uri.parse(
                                                           'https://openstreetmap.org/copyright'),
+                                                    ))),
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                                child: const Text(
+                                                    '© openrouteservice.org by HeiGIT '),
+                                                onPressed: () => launchUrl(
+                                                      Uri.parse(
+                                                          'https://openrouteservice.org/terms-of-service/'),
                                                     ))),
                                       ],
                                     ),
@@ -140,6 +166,8 @@ class ListMapState extends State<ListMapScreen> {
                                     point: snapshot.data![i].location,
                                     child: GestureDetector(
                                         onTap: () {
+                                          directionManager.setItemPos(
+                                              snapshot.data![i].location);
                                           panelController.hide();
                                           setState(() {
                                             bottomCard = true;
@@ -154,6 +182,12 @@ class ListMapState extends State<ListMapScreen> {
                                         },
                                         child: snapshot.data![i].icon))
                           ]),
+                          PolylineLayer(polylines: [
+                            Polyline(
+                                points: routing,
+                                color: Colors.blue,
+                                strokeWidth: 3.0)
+                          ])
                         ],
                       ),
                     ],
@@ -179,7 +213,9 @@ class ListMapState extends State<ListMapScreen> {
                                 child: const Text('Navigate'),
                                 //For the full release, pressing this will display the route a user needs to take using pathways in the campus
                                 //As Geolocation and OSM pathway information is not implemented yet, the UI is the only thing that is implemented right now
-                                onPressed: () {/* ... */},
+                                onPressed: () {
+                                  setMap();
+                                },
                               ),
                               const SizedBox(width: 8),
                               TextButton(
@@ -240,5 +276,16 @@ class ListMapState extends State<ListMapScreen> {
                       },
                       child: const Text('Apply Changes')))
             ])));
+  }
+
+  List<LatLng> initRoute() {
+    return [];
+  }
+
+  void setMap() async {
+    List<LatLng> returned = await directionManager.getDirections();
+    setState(() {
+      routing = returned;
+    });
   }
 }

@@ -10,8 +10,11 @@ import 'app_constants.dart';
 import 'marker_model.dart';
 import 'map_marker.dart';
 import 'directions.dart';
+import 'geolocation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
 class ListMapScreen extends StatefulWidget {
   ListMapScreen({super.key, required this.findLocation});
@@ -25,9 +28,10 @@ class ListMapState extends State<ListMapScreen> {
   static final _database = MarkerModel();
   final mapController = MapController();
   final panelController = PanelController();
+  final geoLocatorController = GeoLocation();
   final directionManager = Directions(
-      initialPosition: const LatLng(43.943754, -78.8960396),
-      locationPosition: const LatLng(43.843754, -78.9960396),
+      initialPosition: AppConstants.mapCenter,
+      locationPosition: AppConstants.mapCenter,
       database: _database);
   List<bool?> trueFalseArray =
       List<bool>.filled(AppConstants.categories.length, false);
@@ -35,21 +39,31 @@ class ListMapState extends State<ListMapScreen> {
   List? selectedIndices = [];
   List<LatLng> routing = [];
   bool bottomCard = false;
+  bool canFindLocation = false;
   //Holds the vlaues for any clicked marker on the map
   MapMarker displayValues = MapMarker(
       id: '0',
-      location: const LatLng(43.943754, -78.8960396),
+      location: AppConstants.mapCenter,
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
   //If a Resturant location is requested, map it out
+  Timer timer = Timer(const Duration(seconds: 120), () {});
   @override
   void initState() {
     super.initState();
+    timer = Timer.periodic(const Duration(seconds: 10),
+        (Timer t) => (canFindLocation) ? updatePosition() : ());
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = ["Food"];
       directionManager.setItemPos(widget.findLocation);
       setMap();
     }
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -61,6 +75,7 @@ class ListMapState extends State<ListMapScreen> {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
+            checkLocationService();
             return Scaffold(
                 appBar: AppBar(
                   title: const Row(children: [
@@ -137,12 +152,14 @@ class ListMapState extends State<ListMapScreen> {
                                 bottomCard = false;
                               });
                             },
-                            initialCenter: const LatLng(43.943754, -78.8960396),
+                            initialCenter: AppConstants.mapCenter,
                             initialZoom: 18,
+                            maxZoom: 20,
+                            minZoom: 16,
                             cameraConstraint: CameraConstraint.contain(
                                 bounds: LatLngBounds(
-                                    const LatLng(43.952142, -78.902931),
-                                    const LatLng(43.940242, -78.889625)))),
+                                    AppConstants.mapUpperCorner,
+                                    AppConstants.mapLowerCorner))),
                         children: [
                           TileLayer(
                             urlTemplate:
@@ -159,29 +176,43 @@ class ListMapState extends State<ListMapScreen> {
                           //Marker handler logic
                           //On the current OpenStreetMap tile provider there are static icons already on the map.
                           //Again, this is just for testing purposes, the final release map will not have static icons
-                          MarkerLayer(markers: [
-                            if (snapshot.data != null)
-                              for (int i = 0; i < snapshot.data!.length; i++)
-                                Marker(
-                                    point: snapshot.data![i].location,
-                                    child: GestureDetector(
-                                        onTap: () {
-                                          directionManager.setItemPos(
-                                              snapshot.data![i].location);
-                                          panelController.hide();
-                                          setState(() {
-                                            bottomCard = true;
-                                            displayValues = MapMarker(
-                                                id: snapshot.data![i].id,
-                                                location:
-                                                    snapshot.data![i].location,
-                                                icon: snapshot.data![i].icon,
-                                                additionalInfo: snapshot
-                                                    .data![i].additionalInfo);
-                                          });
-                                        },
-                                        child: snapshot.data![i].icon))
-                          ]),
+                          MarkerLayer(
+                            markers: [
+                              if (snapshot.data != null)
+                                for (int i = 0; i < snapshot.data!.length; i++)
+                                  Marker(
+                                      point: snapshot.data![i].location,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            directionManager.setItemPos(
+                                                snapshot.data![i].location);
+                                            panelController.hide();
+                                            setState(() {
+                                              bottomCard = true;
+                                              displayValues = MapMarker(
+                                                  id: snapshot.data![i].id,
+                                                  location: snapshot
+                                                      .data![i].location,
+                                                  icon: snapshot.data![i].icon,
+                                                  additionalInfo: snapshot
+                                                      .data![i].additionalInfo);
+                                            });
+                                          },
+                                          child: snapshot.data![i].icon)),
+                              if ((directionManager.initialPosition.latitude <
+                                      AppConstants.mapUpperCorner.latitude &&
+                                  directionManager.initialPosition.latitude >
+                                      AppConstants.mapLowerCorner.latitude))
+                                if ((directionManager
+                                            .initialPosition.longitude <
+                                        AppConstants.mapUpperCorner.longitude &&
+                                    directionManager.initialPosition.longitude >
+                                        AppConstants.mapLowerCorner.longitude))
+                                  Marker(
+                                      point: directionManager.initialPosition,
+                                      child: AppConstants.circle)
+                            ],
+                          ),
                           PolylineLayer(polylines: [
                             Polyline(
                                 points: routing,
@@ -286,6 +317,41 @@ class ListMapState extends State<ListMapScreen> {
     List<LatLng> returned = await directionManager.getDirections();
     setState(() {
       routing = returned;
+    });
+  }
+
+  void checkLocationService() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      canFindLocation = false;
+    } else {
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          canFindLocation = false;
+        } else {
+          canFindLocation = true;
+        }
+      } else {
+        canFindLocation = true;
+      }
+      if (permission == LocationPermission.deniedForever) {
+        // Permissions are denied forever, handle appropriately.
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      } else {
+        canFindLocation = true;
+      }
+    }
+  }
+
+  void updatePosition() async {
+    LatLng newPos = await geoLocatorController.getPosition();
+    setState(() {
+      directionManager.setInitPos(newPos);
     });
   }
 }

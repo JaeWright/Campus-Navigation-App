@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'marker_model.dart';
 import 'package:http/http.dart' as http;
@@ -7,11 +6,11 @@ import 'dart:convert';
 class Directions {
   LatLng initialPosition;
   LatLng locationPosition;
-  MarkerModel database;
+  MarkerModel? database;
   Directions(
       {required this.initialPosition,
       required this.locationPosition,
-      required this.database});
+      this.database});
 
   Future<List<LatLng>> getDirections() async {
     List<LatLng> result = [];

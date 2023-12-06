@@ -1,5 +1,3 @@
-// Darshil //
-
 /*
 Author: Luca Lotito
 This class handles the logic for displaying the map along with placing markers on the map.
@@ -8,59 +6,71 @@ In the final submission, will handle pathfinding and Geolocation logic
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'app_constants.dart';
+import 'map_constants.dart';
 import 'marker_model.dart';
 import 'map_marker.dart';
 import 'directions.dart';
+import 'geolocation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:campusmapper/food/location.dart';
+import 'dart:async';
 
 class ListMapScreen extends StatefulWidget {
-<<<<<<< HEAD
-  final LatLng findLocation;
-  final List<RestaurantLocation> restaurantLocations;
-
-  ListMapScreen({Key? key, required this.findLocation, required this.restaurantLocations}) : super(key: key);
-
-=======
-  ListMapScreen({super.key, required this.findLocation});
+  const ListMapScreen({super.key, required this.findLocation});
   //Variable used for passing in Resturant locatations to the map to be generated first
-  LatLng findLocation;
->>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
+  final LatLng findLocation;
   @override
   ListMapState createState() => ListMapState();
 }
 
 class ListMapState extends State<ListMapScreen> {
-  static final _database = MarkerModel();
-  final mapController = MapController();
-  final panelController = PanelController();
-  final directionManager = Directions(
-      initialPosition: const LatLng(43.943754, -78.8960396),
-      locationPosition: const LatLng(43.843754, -78.9960396),
-      database: _database);
-  List<bool?> trueFalseArray =
-  List<bool>.filled(AppConstants.categories.length, false);
-  List<String> mapMarkers = [];
-  List? selectedIndices = [];
-  List<LatLng> routing = [];
-  bool bottomCard = false;
-  //Holds the vlaues for any clicked marker on the map
+  final MarkerModel _database = MarkerModel();
+  final MapController mapController = MapController();
+  final PanelController panelController = PanelController();
+  final Geolocation geoLocatorController = Geolocation();
+  Directions directionManager = Directions(
+      initialPosition: MapConstants.mapCenter,
+      locationPosition: MapConstants.mapCenter);
   MapMarker displayValues = MapMarker(
       id: '0',
-      location: const LatLng(43.943754, -78.8960396),
+      location: MapConstants.mapCenter,
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
   //If a Resturant location is requested, map it out
+  Timer timer = Timer(const Duration(seconds: 120), () {});
+
+  List<bool?> trueFalseArray =
+      List<bool>.filled(MapConstants.categories.length, false);
+  List<String> mapMarkers = [];
+  List? selectedIndices = [];
+  List<LatLng> routing = [];
+
+  bool bottomCard = false;
+
+  //Holds the vlaues for any clicked marker on the map
+
   @override
   void initState() {
-    super.initState();
+    updatePosition();
+    directionManager = Directions(
+        initialPosition: MapConstants.mapCenter,
+        locationPosition: MapConstants.mapCenter,
+        database: _database);
+    timer = Timer.periodic(
+        const Duration(seconds: 10), (Timer t) => updatePosition());
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = ["Food"];
       directionManager.setItemPos(widget.findLocation);
       setMap();
     }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -89,30 +99,6 @@ class ListMapState extends State<ListMapScreen> {
                             context: context,
                             //Popup box displaying sourcing for the map
                             builder: (context) => AlertDialog(
-<<<<<<< HEAD
-                              title: const Text('Map Information'),
-                              content: SingleChildScrollView(
-                                child: ListBody(
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: TextButton(
-                                            child: const Text(
-                                                'Map data © OpenStreetMap contributors'),
-                                            onPressed: () => launchUrl(
-                                              Uri.parse(
-                                                  'https://openstreetmap.org/copyright'),
-                                            ))),
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: TextButton(
-                                            child: const Text(
-                                                '© openrouteservice.org by HeiGIT '),
-                                            onPressed: () => launchUrl(
-                                              Uri.parse(
-                                                  'https://openrouteservice.org/terms-of-service/'),
-                                            ))),
-=======
                                   title: const Text('Map Information'),
                                   content: SingleChildScrollView(
                                     child: ListBody(
@@ -144,33 +130,43 @@ class ListMapState extends State<ListMapScreen> {
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         }),
->>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2
                                   ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                    child: const Text("OK"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    }),
-                              ],
-                            ));
+                                ));
                       },
                     )
                   ],
                 ),
+                /*
+                floatingActionButton: Row(children: [
+                  FloatingActionButton(
+                      onPressed: () {}, child: const Icon(Icons.add)),
+                  FloatingActionButton(
+                      onPressed: () {}, child: const Icon(Icons.remove)),
+                  FloatingActionButton(
+                      onPressed: () {},
+                      child: const Icon(Icons.center_focus_strong))
+                ]),*/
                 //Handler for (as the name states) the sliding up panel at the bottom of the screen
                 body: SlidingUpPanel(
                   controller: panelController,
-                  minHeight: 50,
+                  minHeight: MediaQuery.of(context).size.height * .065,
+                  parallaxEnabled: true,
+                  parallaxOffset: 0.5,
                   panelBuilder: (ScrollController sc) => _scrollingList(sc),
-                  collapsed: const Column(
-                    children: [
-                      Icon(Icons.keyboard_arrow_up),
-                      Text("Add Icons to Map")
-                    ],
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(24.0)),
+                  collapsed: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24.0),
+                            topRight: Radius.circular(24.0)),
+                      ),
+                      child: const Column(
+                        children: [
+                          Icon(Icons.keyboard_arrow_up),
+                          Text("Add Icons to Map")
+                        ],
+                      )),
                   body: Stack(
                     children: [
                       FlutterMap(
@@ -182,16 +178,18 @@ class ListMapState extends State<ListMapScreen> {
                                 bottomCard = false;
                               });
                             },
-                            initialCenter: const LatLng(43.943754, -78.8960396),
+                            initialCenter: MapConstants.mapCenter,
                             initialZoom: 18,
+                            maxZoom: 20,
+                            minZoom: 16,
                             cameraConstraint: CameraConstraint.contain(
                                 bounds: LatLngBounds(
-                                    const LatLng(43.952142, -78.902931),
-                                    const LatLng(43.940242, -78.889625)))),
+                                    MapConstants.mapUpperCorner,
+                                    MapConstants.mapLowerCorner))),
                         children: [
                           TileLayer(
                             urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                             //Current tile provider is OSM for testing purpsoes,a s there is no API limit for limited use
                             //Final app will use a free MapBox map. It is not currently used due to the API limit that may be hit during testing
                             userAgentPackageName: 'com.example.app',
@@ -204,30 +202,43 @@ class ListMapState extends State<ListMapScreen> {
                           //Marker handler logic
                           //On the current OpenStreetMap tile provider there are static icons already on the map.
                           //Again, this is just for testing purposes, the final release map will not have static icons
-                          MarkerLayer(markers: [
-
-                            if (snapshot.data != null)
-                              for (int i = 0; i < snapshot.data!.length; i++)
-                                Marker(
-                                    point: snapshot.data![i].location,
-                                    child: GestureDetector(
-                                        onTap: () {
-                                          directionManager.setItemPos(
-                                              snapshot.data![i].location);
-                                          panelController.hide();
-                                          setState(() {
-                                            bottomCard = true;
-                                            displayValues = MapMarker(
-                                                id: snapshot.data![i].id,
-                                                location:
-                                                snapshot.data![i].location,
-                                                icon: snapshot.data![i].icon,
-                                                additionalInfo: snapshot
-                                                    .data![i].additionalInfo);
-                                          });
-                                        },
-                                        child: snapshot.data![i].icon))
-                          ]),
+                          MarkerLayer(
+                            markers: [
+                              if (snapshot.data != null)
+                                for (int i = 0; i < snapshot.data!.length; i++)
+                                  Marker(
+                                      point: snapshot.data![i].location,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            directionManager.setItemPos(
+                                                snapshot.data![i].location);
+                                            panelController.hide();
+                                            setState(() {
+                                              bottomCard = true;
+                                              displayValues = MapMarker(
+                                                  id: snapshot.data![i].id,
+                                                  location: snapshot
+                                                      .data![i].location,
+                                                  icon: snapshot.data![i].icon,
+                                                  additionalInfo: snapshot
+                                                      .data![i].additionalInfo);
+                                            });
+                                          },
+                                          child: snapshot.data![i].icon)),
+                              if ((directionManager.initialPosition.latitude <
+                                      MapConstants.mapUpperCorner.latitude &&
+                                  directionManager.initialPosition.latitude >
+                                      MapConstants.mapLowerCorner.latitude))
+                                if ((directionManager
+                                            .initialPosition.longitude <
+                                        MapConstants.mapUpperCorner.longitude &&
+                                    directionManager.initialPosition.longitude >
+                                        MapConstants.mapLowerCorner.longitude))
+                                  Marker(
+                                      point: directionManager.initialPosition,
+                                      child: MapConstants.circle)
+                            ],
+                          ),
                           PolylineLayer(polylines: [
                             Polyline(
                                 points: routing,
@@ -284,18 +295,22 @@ class ListMapState extends State<ListMapScreen> {
   }
 
   Widget _scrollingList(ScrollController sc) {
-    return Scaffold(
-        body: Padding(
+    return Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+        ),
+        child: Padding(
             padding: const EdgeInsetsDirectional.only(top: 35),
             child: Column(children: [
               Flexible(
-                //List of all curently implemented campus markers. Found through the AppConstants
+                  //List of all curently implemented campus markers. Found through the MapConstants
                   child: ListView.builder(
                       controller: sc,
-                      itemCount: AppConstants.categories.length,
+                      itemCount: MapConstants.categories.length,
                       itemBuilder: (BuildContext context, int index) {
                         return CheckboxListTile(
-                            title: Text(AppConstants.categories[index]),
+                            title: Text(MapConstants.categories[index]),
                             value: trueFalseArray[index],
                             onChanged: (bool? value) {
                               if (value == true) {
@@ -315,7 +330,7 @@ class ListMapState extends State<ListMapScreen> {
                         setState(() {
                           for (int i = 0; i < selectedIndices!.length; i++) {
                             mapMarkers.add(
-                                AppConstants.categories[selectedIndices![i]]);
+                                MapConstants.categories[selectedIndices![i]]);
                           }
                         });
                         panelController.close();
@@ -329,13 +344,18 @@ class ListMapState extends State<ListMapScreen> {
   }
 
   void setMap() async {
+    await updatePosition();
     List<LatLng> returned = await directionManager.getDirections();
     setState(() {
       routing = returned;
     });
   }
-<<<<<<< HEAD
+
+  Future<bool> updatePosition() async {
+    LatLng newPos = await geoLocatorController.getPosition();
+    setState(() {
+      directionManager.setInitPos(newPos);
+    });
+    return true;
+  }
 }
-=======
-}
->>>>>>> 879dd6dd596fa1c36c42d05a428926e97fcd92e2

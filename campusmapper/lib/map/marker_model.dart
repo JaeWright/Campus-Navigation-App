@@ -23,6 +23,7 @@ class MarkerModel {
         for (var docSnapshot in querySnapshot.docs) {
           results.add(MapMarker(
               id: docSnapshot.id,
+              type: type[i],
               location: LatLng(docSnapshot["location"].latitude,
                   docSnapshot["location"].longitude),
               icon: Icon(

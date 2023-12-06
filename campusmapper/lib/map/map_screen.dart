@@ -6,6 +6,7 @@ In the final submission, will handle pathfinding and Geolocation logic
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:campusmapper/food/location.dart';
 import 'map_constants.dart';
 import 'marker_model.dart';
 import 'map_marker.dart';
@@ -16,9 +17,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
 class ListMapScreen extends StatefulWidget {
-  const ListMapScreen({super.key, required this.findLocation});
+  const ListMapScreen(
+      {Key? key, required this.findLocation, required this.restaurantLocations})
+      : super(key: key);
   //Variable used for passing in Resturant locatations to the map to be generated first
   final LatLng findLocation;
+  final List<RestaurantLocation> restaurantLocations;
   @override
   ListMapState createState() => ListMapState();
 }
@@ -28,11 +32,17 @@ class ListMapState extends State<ListMapScreen> {
   final MapController mapController = MapController();
   final PanelController panelController = PanelController();
   final Geolocation geoLocatorController = Geolocation();
+  final ButtonStyle style = ElevatedButton.styleFrom(
+      textStyle: const TextStyle(fontSize: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+      backgroundColor: Colors.cyan);
+
   Directions directionManager = Directions(
       initialPosition: MapConstants.mapCenter,
       locationPosition: MapConstants.mapCenter);
   MapMarker displayValues = MapMarker(
       id: '0',
+      type: 'Null',
       location: MapConstants.mapCenter,
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
@@ -124,7 +134,8 @@ class ListMapState extends State<ListMapScreen> {
                                     ),
                                   ),
                                   actions: [
-                                    TextButton(
+                                    ElevatedButton(
+                                        style: style,
                                         child: const Text("OK"),
                                         onPressed: () {
                                           Navigator.of(context).pop();
@@ -140,7 +151,7 @@ class ListMapState extends State<ListMapScreen> {
                   controller: panelController,
                   minHeight: MediaQuery.of(context).size.height * .065,
                   parallaxEnabled: true,
-                  parallaxOffset: 0.5,
+                  parallaxOffset: 0.4,
                   panelBuilder: (ScrollController sc) => _scrollingList(sc),
                   borderRadius: const BorderRadius.all(Radius.circular(24.0)),
                   collapsed: Container(
@@ -206,6 +217,7 @@ class ListMapState extends State<ListMapScreen> {
                                               bottomCard = true;
                                               displayValues = MapMarker(
                                                   id: snapshot.data![i].id,
+                                                  type: snapshot.data![i].type,
                                                   location: snapshot
                                                       .data![i].location,
                                                   icon: snapshot.data![i].icon,
@@ -230,7 +242,7 @@ class ListMapState extends State<ListMapScreen> {
                       ),
                       Positioned(
                           right: MediaQuery.of(context).size.width * .03,
-                          bottom: MediaQuery.of(context).size.height * .170,
+                          bottom: MediaQuery.of(context).size.height * .265,
                           child: Column(children: [
                             Container(
                                 padding: const EdgeInsets.only(bottom: 5),
@@ -267,35 +279,7 @@ class ListMapState extends State<ListMapScreen> {
                                               directionManager.initialPosition,
                                               mapController.camera.zoom);
                                         } else {
-                                          showDialog(
-                                              context: context,
-                                              //Popup box displaying sourcing for the map
-                                              builder: (context) => Dialog(
-                                                    child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: <Widget>[
-                                                            const Text(
-                                                                'You are currently off campus. To display your current location, please come on campus'),
-                                                            TextButton(
-                                                                child:
-                                                                    const Text(
-                                                                        "OK"),
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                }),
-                                                          ],
-                                                        )),
-                                                  ));
+                                          displayOffCampus();
                                         }
                                       });
                                     },
@@ -316,14 +300,19 @@ class ListMapState extends State<ListMapScreen> {
                         children: <Widget>[
                           ListTile(
                             leading: displayValues.icon,
-                            title: Text(displayValues.id),
-                            subtitle: Text(displayValues.additionalInfo),
+                            title: Text(displayValues.type),
+                            subtitle: Text(
+                                (displayValues.additionalInfo != 'None')
+                                    ? displayValues.additionalInfo
+                                    : ''),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              TextButton(
+                              ElevatedButton(
+                                style: style,
                                 child: const Text('Navigate'),
+
                                 //For the full release, pressing this will display the route a user needs to take using pathways in the campus
                                 //As Geolocation and OSM pathway information is not implemented yet, the UI is the only thing that is implemented right now
                                 onPressed: () {
@@ -331,7 +320,8 @@ class ListMapState extends State<ListMapScreen> {
                                 },
                               ),
                               const SizedBox(width: 8),
-                              TextButton(
+                              ElevatedButton(
+                                style: style,
                                 child: const Text('Close'),
                                 onPressed: () {
                                   setState(() {
@@ -380,7 +370,8 @@ class ListMapState extends State<ListMapScreen> {
                             });
                       })),
               Flexible(
-                  child: TextButton(
+                  child: ElevatedButton(
+                      style: style,
                       onPressed: () {
                         mapMarkers = [];
                         setState(() {
@@ -410,12 +401,40 @@ class ListMapState extends State<ListMapScreen> {
     return false;
   }
 
+  Future<dynamic> displayOffCampus() {
+    return showDialog(
+        context: context,
+        //Popup box displaying sourcing for the map
+        builder: (context) => Dialog(
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text(
+                          'You are currently off campus. To display your current location, please come on campus'),
+                      ElevatedButton(
+                          style: style,
+                          child: const Text("OK"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          }),
+                    ],
+                  )),
+            ));
+  }
+
   void setMap() async {
     await updatePosition();
-    List<LatLng> returned = await directionManager.getDirections();
-    setState(() {
-      routing = returned;
-    });
+    if (isOnCampus()) {
+      List<LatLng> returned = await directionManager.getDirections();
+      setState(() {
+        routing = returned;
+      });
+    } else {
+      displayOffCampus();
+    }
   }
 
   Future<bool> updatePosition() async {

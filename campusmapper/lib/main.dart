@@ -27,7 +27,7 @@ import 'accessibility.dart';
 import 'scheduler/scheduler_handler.dart';
 import 'student_login.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/map/map_maker.dart';
+import 'package:campusmapper/map/map_screen.dart';
 import 'package:campusmapper/food/location.dart';
 import 'package:campusmapper/food/restaurant_details.dart';
 
@@ -150,12 +150,14 @@ class _HomePageState extends State<HomePage> {
         title: 'Campus Map',
         color: Color(0xFF008080),
         onTap: () {
-          final locationService = Provider.of<LocationService>(context, listen: false);
+          final locationService =
+              Provider.of<LocationService>(context, listen: false);
           navigateToSection(
               context,
               ListMapScreen(
                 findLocation: const LatLng(0.0, 0.0),
-                restaurantLocations: locationService.getAllRestaurantLocations(),
+                restaurantLocations:
+                    locationService.getAllRestaurantLocations(),
               ));
         },
       ),

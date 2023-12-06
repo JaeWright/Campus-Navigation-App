@@ -7,12 +7,14 @@ import 'package:latlong2/latlong.dart';
 
 class MapMarker {
   final String id;
+  final String type;
   final LatLng location;
   final Icon icon;
   final String additionalInfo;
 
   MapMarker(
       {required this.id,
+      required this.type,
       required this.location,
       required this.icon,
       required this.additionalInfo});

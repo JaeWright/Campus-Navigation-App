@@ -63,7 +63,7 @@ class CampusNavigatorApp extends StatelessWidget {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
         '/events': (context) =>
-            const EventsScheduler(title: 'Events Scheduler'),
+        const EventsScheduler(title: 'Events Scheduler'),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -207,11 +207,11 @@ class _HomePageState extends State<HomePage> {
         title: Text('Campus Navigator'),
         actions: isLoggedIn
             ? [
-                IconButton(
-                  icon: Icon(Icons.exit_to_app),
-                  onPressed: logoutUser,
-                ),
-              ]
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: logoutUser,
+          ),
+        ]
             : [],
       ),
       body: GridView.count(

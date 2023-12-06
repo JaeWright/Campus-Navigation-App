@@ -41,7 +41,7 @@ class ListMapState extends State<ListMapScreen> {
   Timer timer = Timer(const Duration(seconds: 120), () {});
 
   List<bool?> trueFalseArray =
-      List<bool>.filled(MapConstants.categories.length, false);
+  List<bool>.filled(MapConstants.categories.length, false);
   List<String> mapMarkers = [];
   List? selectedIndices = [];
   List<LatLng> routing = [];
@@ -99,39 +99,39 @@ class ListMapState extends State<ListMapScreen> {
                             context: context,
                             //Popup box displaying sourcing for the map
                             builder: (context) => AlertDialog(
-                                  title: const Text('Map Information'),
-                                  content: SingleChildScrollView(
-                                    child: ListBody(
-                                      children: [
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: TextButton(
-                                                child: const Text(
-                                                    'Map data © OpenStreetMap contributors'),
-                                                onPressed: () => launchUrl(
-                                                      Uri.parse(
-                                                          'https://openstreetmap.org/copyright'),
-                                                    ))),
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: TextButton(
-                                                child: const Text(
-                                                    '© openrouteservice.org by HeiGIT '),
-                                                onPressed: () => launchUrl(
-                                                      Uri.parse(
-                                                          'https://openrouteservice.org/terms-of-service/'),
-                                                    ))),
-                                      ],
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                        child: const Text("OK"),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        }),
+                              title: const Text('Map Information'),
+                              content: SingleChildScrollView(
+                                child: ListBody(
+                                  children: [
+                                    Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: TextButton(
+                                            child: const Text(
+                                                'Map data © OpenStreetMap contributors'),
+                                            onPressed: () => launchUrl(
+                                              Uri.parse(
+                                                  'https://openstreetmap.org/copyright'),
+                                            ))),
+                                    Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: TextButton(
+                                            child: const Text(
+                                                '© openrouteservice.org by HeiGIT '),
+                                            onPressed: () => launchUrl(
+                                              Uri.parse(
+                                                  'https://openrouteservice.org/terms-of-service/'),
+                                            ))),
                                   ],
-                                ));
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                    child: const Text("OK"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    }),
+                              ],
+                            ));
                       },
                     )
                   ],
@@ -189,7 +189,7 @@ class ListMapState extends State<ListMapScreen> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                             //Current tile provider is OSM for testing purpsoes,a s there is no API limit for limited use
                             //Final app will use a free MapBox map. It is not currently used due to the API limit that may be hit during testing
                             userAgentPackageName: 'com.example.app',
@@ -226,12 +226,12 @@ class ListMapState extends State<ListMapScreen> {
                                           },
                                           child: snapshot.data![i].icon)),
                               if ((directionManager.initialPosition.latitude <
-                                      MapConstants.mapUpperCorner.latitude &&
+                                  MapConstants.mapUpperCorner.latitude &&
                                   directionManager.initialPosition.latitude >
                                       MapConstants.mapLowerCorner.latitude))
                                 if ((directionManager
-                                            .initialPosition.longitude <
-                                        MapConstants.mapUpperCorner.longitude &&
+                                    .initialPosition.longitude <
+                                    MapConstants.mapUpperCorner.longitude &&
                                     directionManager.initialPosition.longitude >
                                         MapConstants.mapLowerCorner.longitude))
                                   Marker(
@@ -304,7 +304,7 @@ class ListMapState extends State<ListMapScreen> {
             padding: const EdgeInsetsDirectional.only(top: 35),
             child: Column(children: [
               Flexible(
-                  //List of all curently implemented campus markers. Found through the MapConstants
+                //List of all curently implemented campus markers. Found through the MapConstants
                   child: ListView.builder(
                       controller: sc,
                       itemCount: MapConstants.categories.length,

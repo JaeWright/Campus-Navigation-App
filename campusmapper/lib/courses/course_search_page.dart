@@ -15,7 +15,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
 
   List<Course> courses = [
     Course(
-      id: 1,
+      id: '1',
       weekday: 'Mon',
       courseName: 'CSCI 101 - Introduction to Computer Science',
       profName: 'Dr. Smith',
@@ -24,7 +24,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '11:30 AM',
     ),
     Course(
-      id: 2,
+      id: '2',
       weekday: 'Tue',
       courseName: 'CSCI 201 - Data Structures',
       profName: 'Dr. Johnson',
@@ -33,7 +33,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '3:30 PM',
     ),
     Course(
-      id: 3,
+      id: '3',
       weekday: 'Wed',
       courseName: 'CSCI 301 - Algorithms',
       profName: 'Dr. Williams',
@@ -42,7 +42,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '10:30 AM',
     ),
     Course(
-      id: 4,
+      id: '4',
       weekday: 'Thu',
       courseName: 'ENGL 101 - Introduction to Literature',
       profName: 'Prof. Davis',
@@ -51,7 +51,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '12:30 PM',
     ),
     Course(
-      id: 5,
+      id: '5',
       weekday: 'Fri',
       courseName: 'MATH 201 - Calculus II',
       profName: 'Prof. Brown',
@@ -60,7 +60,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '2:30 PM',
     ),
     Course(
-      id: 6,
+      id: '6',
       weekday: 'Mon',
       courseName: 'BIOL 202 - Genetics',
       profName: 'Dr. Martinez',
@@ -69,7 +69,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '4:30 PM',
     ),
     Course(
-      id: 7,
+      id: '7',
       weekday: 'Tue',
       courseName: 'PSYC 101 - Introduction to Psychology',
       profName: 'Dr. Wilson',
@@ -78,7 +78,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '11:30 AM',
     ),
     Course(
-      id: 8,
+      id: '8',
       weekday: 'Thu',
       courseName: 'ANTH 201 - Cultural Anthropology',
       profName: 'Dr. Turner',
@@ -87,7 +87,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '10:30 AM',
     ),
     Course(
-      id: 9,
+      id: '9',
       weekday: 'Fri',
       courseName: 'PHYS 202 - Electricity and Magnetism',
       profName: 'Prof. White',
@@ -96,7 +96,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '2:30 PM',
     ),
     Course(
-      id: 10,
+      id: '10',
       weekday: 'Mon',
       courseName: 'PSYCH 201 - Abnormal Psychology',
       profName: 'Dr. Garcia',
@@ -105,7 +105,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '4:30 PM',
     ),
     Course(
-      id: 11,
+      id: '11',
       weekday: 'Tue',
       courseName: 'CHEM 202 - Inorganic Chemistry',
       profName: 'Prof. Clark',
@@ -114,7 +114,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '11:30 AM',
     ),
     Course(
-      id: 12,
+      id: '12',
       weekday: 'Wed',
       courseName: 'BIOL 101 - Introduction to Biology',
       profName: 'Dr. Adams',
@@ -123,7 +123,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '4:00 PM',
     ),
     Course(
-      id: 13,
+      id: '13',
       weekday: 'Thu',
       courseName: 'COMM 101 - Introduction to Communication',
       profName: 'Dr. Turner',
@@ -132,7 +132,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '11:00 AM',
     ),
     Course(
-      id: 14,
+      id: '14',
       weekday: 'Fri',
       courseName: 'HIST 202 - Modern World History',
       profName: 'Prof. White',
@@ -141,7 +141,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '3:00 PM',
     ),
     Course(
-      id: 15,
+      id: '15',
       weekday: 'Mon',
       courseName: 'SOC 201 - Social Theory',
       profName: 'Dr. Garcia',
@@ -150,7 +150,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '5:00 PM',
     ),
     Course(
-      id: 16,
+      id: '16',
       weekday: 'Tue',
       courseName: 'ART 201 - Art History',
       profName: 'Prof. Clark',
@@ -159,7 +159,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '1:00 PM',
     ),
     Course(
-      id: 17,
+      id: '17',
       weekday: 'Wed',
       courseName: 'LANG 101 - French Language',
       profName: 'Dr. Adams',
@@ -168,7 +168,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '3:30 PM',
     ),
     Course(
-      id: 18,
+      id: '18',
       weekday: 'Thu',
       courseName: 'THEA 201 - Advanced Theater Production',
       profName: 'Prof. Turner',
@@ -177,7 +177,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '10:30 AM',
     ),
     Course(
-      id: 19,
+      id: '19',
       weekday: 'Fri',
       courseName: 'PHIL 101 - Introduction to Philosophy',
       profName: 'Prof. White',
@@ -186,7 +186,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '2:30 PM',
     ),
     Course(
-      id: 20,
+      id: '20',
       weekday: 'Mon',
       courseName: 'MUS 201 - Music Theory',
       profName: 'Dr. Garcia',
@@ -195,7 +195,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '4:30 PM',
     ),
     Course(
-      id: 21,
+      id: '21',
       weekday: 'Tue',
       courseName: 'EDUC 101 - Foundations of Education',
       profName: 'Prof. Clark',
@@ -204,7 +204,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '11:30 AM',
     ),
     Course(
-      id: 22,
+      id: '22',
       weekday: 'Wed',
       courseName: 'GEOG 201 - Human Geography',
       profName: 'Dr. Adams',
@@ -213,7 +213,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '4:00 PM',
     ),
     Course(
-      id: 23,
+      id: '23',
       weekday: 'Thu',
       courseName: 'POLI 101 - Introduction to Political Science',
       profName: 'Prof. Turner',
@@ -222,7 +222,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '11:00 AM',
     ),
     Course(
-      id: 24,
+      id: '24',
       weekday: 'Fri',
       courseName: 'PHED 101 - Physical Fitness',
       profName: 'Prof. White',
@@ -231,7 +231,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '3:00 PM',
     ),
     Course(
-      id: 25,
+      id: '25',
       weekday: 'Mon',
       courseName: 'ASTR 201 - Planetary Science',
       profName: 'Dr. Garcia',
@@ -240,7 +240,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '5:00 PM',
     ),
     Course(
-      id: 26,
+      id: '26',
       weekday: 'Tue',
       courseName: 'POLI 202 - International Relations',
       profName: 'Prof. Clark',
@@ -249,7 +249,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '1:00 PM',
     ),
     Course(
-      id: 27,
+      id: '27',
       weekday: 'Wed',
       courseName: 'ART 202 - Modern Art',
       profName: 'Dr. Adams',
@@ -258,7 +258,6 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
       endTime: '3:30 PM',
     ),
   ];
-
 
   List<Course> filteredCourses = [];
 

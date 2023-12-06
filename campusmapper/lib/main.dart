@@ -24,11 +24,12 @@ import 'courses/schedule_page.dart';
 import 'courses/schedule_provider.dart';
 import 'information_centre_page.dart';
 import 'accessibility.dart';
-import 'food.dart';
 import 'scheduler/scheduler_handler.dart';
 import 'student_login.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/map/map_screen.dart';
+import 'package:campusmapper/map/map_maker.dart';
+import 'package:campusmapper/food/location.dart';
+import 'package:campusmapper/food/restaurant_details.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +43,9 @@ void main() async {
         ChangeNotifierProvider(
             create: (context) => ScheduleProvider()), // Add this line
         // Add other providers if needed
+        Provider(
+          create: (context) => LocationService(),
+        ),
       ],
       child: MaterialApp(
         title: 'Grade Viewer',
@@ -63,7 +67,7 @@ class CampusNavigatorApp extends StatelessWidget {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
         '/events': (context) =>
-        const EventsScheduler(title: 'Events Scheduler'),
+            const EventsScheduler(title: 'Events Scheduler'),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -146,10 +150,12 @@ class _HomePageState extends State<HomePage> {
         title: 'Campus Map',
         color: Color(0xFF008080),
         onTap: () {
+          final locationService = Provider.of<LocationService>(context, listen: false);
           navigateToSection(
               context,
               ListMapScreen(
                 findLocation: const LatLng(0.0, 0.0),
+                restaurantLocations: locationService.getAllRestaurantLocations(),
               ));
         },
       ),
@@ -207,11 +213,11 @@ class _HomePageState extends State<HomePage> {
         title: Text('Campus Navigator'),
         actions: isLoggedIn
             ? [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: logoutUser,
-          ),
-        ]
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: logoutUser,
+                ),
+              ]
             : [],
       ),
       body: GridView.count(

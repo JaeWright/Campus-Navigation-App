@@ -8,15 +8,17 @@ import 'dart:async';
 import 'courses.dart';
 import 'events.dart';
 import 'dart:developer';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 //class for initialization of databases for courses and events
-class DBUtils {
+class DBUtilsSQL {
 
   static Future<Database> initCourses() async {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'courses_manager.db'),
       onCreate: (db, version) {
-        db.execute('CREATE TABLE courses(id INTEGER PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
+        db.execute('CREATE TABLE courses(id TEXT PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
         // Call the function to insert pre-made values
         _insertValuesCourses(db);
 
@@ -33,7 +35,7 @@ class DBUtils {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'events_manager.db'),
       onCreate: (db, version) {
-        db.execute('CREATE TABLE events(id INTEGER PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
+        db.execute('CREATE TABLE events(id TEXT PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
         // Call the function to insert pre-made values
         _insertValuesEvents(db);
 
@@ -50,7 +52,7 @@ class DBUtils {
     // Create a list of pre-made values (courses) to insert into the database
     final List<Course> preMadeCourses = [
       Course(
-        id: 1,
+        id: "1",
         weekday: "Mon",
         courseName: "Mathematics",
         profName: "Dr. Smith",
@@ -59,7 +61,7 @@ class DBUtils {
         endTime: "10:30 AM",
       ),
       Course(
-        id: 2,
+        id: "2",
         weekday: "Tue",
         courseName: "History",
         profName: "Dr. Johnson",
@@ -68,7 +70,7 @@ class DBUtils {
         endTime: "12:30 PM",
       ),
       Course(
-        id: 3,
+        id: "3",
         weekday: "Wed",
         courseName: "Computer Science",
         profName: "Prof. Johnson",
@@ -77,7 +79,7 @@ class DBUtils {
         endTime: "4:00 PM",
       ),
       Course(
-        id: 4,
+        id: "4",
         weekday: "Thu",
         courseName: "Physics",
         profName: "Dr. Davis",
@@ -86,7 +88,7 @@ class DBUtils {
         endTime: "5:00 PM",
       ),
       Course(
-        id: 5,
+        id: "5",
         weekday: "Fri",
         courseName: "Chemistry",
         profName: "Dr. Brown",
@@ -96,7 +98,7 @@ class DBUtils {
       ),
       // Add more values as needed
       Course(
-        id: 6,
+        id: "6",
         weekday: "Tue",
         courseName: "Literature",
         profName: "Dr. Wilson",
@@ -105,7 +107,7 @@ class DBUtils {
         endTime: "2:30 PM",
       ),
       Course(
-        id: 7,
+        id: "7",
         weekday: "Fri",
         courseName: "Art",
         profName: "Prof. Miller",
@@ -120,7 +122,7 @@ class DBUtils {
     for (final course in preMadeCourses) {
       db.insert(
         'courses',
-        course.toMap(),
+        course.toMapLocal(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     }
@@ -131,7 +133,7 @@ class DBUtils {
     // Create a list of pre-made values (events) to insert into the database
     final List<Event> preMadeEvents = [
       Event(
-        id: 1,
+        id: "1",
         eventName: "Conference",
         location: "Convention Center",
         weekday: "Mon",
@@ -139,7 +141,7 @@ class DBUtils {
         date: DateTime(2023, 12, 11),
       ),
       Event(
-        id: 2,
+        id: "2",
         eventName: "Concert",
         location: "Stadium",
         weekday: "Wed",
@@ -147,7 +149,7 @@ class DBUtils {
         date: DateTime(2023, 12, 13),
       ),
       Event(
-        id: 3,
+        id: "3",
         eventName: "Seminar",
         location: "Meeting Room",
         weekday: "Fri",
@@ -155,7 +157,7 @@ class DBUtils {
         date: DateTime(2023, 12, 15),
       ),
       Event(
-        id: 4,
+        id: "4",
         eventName: "Movie Night",
         location: "Community Hall",
         weekday: "Tue",
@@ -163,7 +165,7 @@ class DBUtils {
         date: DateTime(2023, 12, 12),
       ),
       Event(
-        id: 5,
+        id: "5",
         eventName: "Sports Event",
         location: "Sports Complex",
         weekday: "Thu",
@@ -171,7 +173,7 @@ class DBUtils {
         date: DateTime(2023, 12, 14),
       ),
       Event(
-        id: 6,
+        id: "6",
         eventName: "Exhibition",
         location: "Art Gallery",
         weekday: "Mon",
@@ -179,7 +181,7 @@ class DBUtils {
         date: DateTime(2023, 12, 11),
       ),
       Event(
-        id: 7,
+        id: "7",
         eventName: "Team Building",
         location: "Outdoor Park",
         weekday: "Wed",
@@ -187,7 +189,7 @@ class DBUtils {
         date: DateTime(2023, 12, 13),
       ),
       Event(
-        id: 8,
+        id: "8",
         eventName: "Networking",
         location: "Coffee Shop",
         weekday: "Thu",
@@ -195,7 +197,7 @@ class DBUtils {
         date: DateTime(2023, 12, 14),
       ),
       Event(
-        id: 9,
+        id: "9",
         eventName: "Dinner Party",
         location: "Restaurant",
         weekday: "Fri",
@@ -203,7 +205,7 @@ class DBUtils {
         date: DateTime(2023, 12, 15),
       ),
       Event(
-        id: 10,
+        id: "10",
         eventName: "Tech Talk",
         location: "Tech Hub",
         weekday: "Tue",

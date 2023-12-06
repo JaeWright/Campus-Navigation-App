@@ -4,6 +4,7 @@ This page manages the events page, where the user's scheduled events are display
 connects to the course scheduler page
 */
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'events.dart';
 import 'scheduler_handler.dart';
@@ -19,17 +20,15 @@ void main() {
 //model for events database
 final _events = EventsModel();
 
-//variable to track IDs for events when inserted (to be implemented)
-var nextEventId = 0;
-
 //class to hold event tile data
 class EventTile {
-  int? id;
+  String? id;
   String? eventName;
   String? location;
   String? weekday;
   String? time;
   DateTime? date;
+  DocumentReference? reference;
 
   EventTile({
     required this.id,
@@ -38,18 +37,8 @@ class EventTile {
     required this.weekday,
     required this.time,
     required this.date,
+    this.reference
   });
-
-  Event toEvent(){
-    return Event(
-      id: id,
-      eventName: eventName,
-      location: location,
-      weekday: weekday,
-      time: time,
-      date: date,
-    );
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -94,19 +83,46 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   //loads data from local database
   void loadEventsData() async {
     if (ModalRoute.of(context)!.isCurrent) {
-      List results = await _events.getAllEvents();
-      //print(results);
+      List results = [];
 
-      for (int i = 0; i < results.length; i++) {
-        eventsList.add(EventTile(
-            id: results[i].id,
-            eventName: results[i].eventName,
-            location: results[i].location,
-            weekday: results[i].weekday,
-            time: results[i].time,
-            date: results[i].date));
+      //check local first to see if any data is saved
+      results = await _events.getAllEventsLocal();
+      if (results.length>0){
+        for (int i = 0; i < results.length; i++) {
+          eventsList.add(EventTile(
+              id: results[i].id,
+              eventName: results[i].eventName,
+              location: results[i].location,
+              weekday: results[i].weekday,
+              time: results[i].time,
+              date: results[i].date));
+        }
       }
-      nextEventId = eventsList.length+1;
+      else{
+        //check global database if no data is saved
+        results = await _events.getAllEventsCloud();
+        if (results.length>0){
+          for (int i=0;i<results.length;i++){
+            eventsList.add(EventTile(
+                id: results[i].id,
+                eventName: results[i].eventName,
+                location: results[i].location,
+                weekday: results[i].weekday,
+                time: results[i].time,
+                date: results[i].date));
+
+            //add to local database for next save
+            await _events.insertEventLocal(Event(
+                id: results[i].id,
+                eventName: results[i].eventName,
+                location: results[i].location,
+                weekday: results[i].weekday,
+                time: results[i].time,
+                date: results[i].date
+            ));
+          }
+          }
+      }
       setState(() {}); // rebuilds everytime page is loaded
     }
   }
@@ -115,50 +131,47 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   //function to add event to database
 
   Future<void> _addEvent() async {
-    var newEvent = await Navigator.push(
+    var newEventData = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EventAddPage(), // Navigate to EventAddPage
       ),
     );
 
-    if (newEvent != null) {
-      final String newEventName = newEvent['eventName'];
-      final String newLocation = newEvent['location'];
-      final String newWeekday = newEvent['weekday'];
-      final String newTime = newEvent['time'];
-      final DateTime newDate = newEvent['date'];
+    if (newEventData != null) {
+      final String newEventName = newEventData['eventName'];
+      final String newLocation = newEventData['location'];
+      final String newWeekday = newEventData['weekday'];
+      final String newTime = newEventData['time'];
+      final DateTime newDate = newEventData['date'];
 
     // Add the new data to the gradesList
-    setState(() {
-      eventsList.add(EventTile(
-          id: nextEventId,
+      String newId = await _events.insertEventCloud(newEventData);
+      setState(() async {
+
+        eventsList.add(EventTile(
+            id: newId,
+            eventName: newEventName,
+            location: newLocation,
+            weekday: newWeekday,
+            time: newTime,
+            date: newDate)
+        );
+      });
+
+      Event newEvent = Event(
+          id: newId,
           eventName: newEventName,
           location: newLocation,
           weekday: newWeekday,
           time: newTime,
-          date: newDate)
-      );
-    });
+          date: newDate);
 
-    // Insert the new data into the database
-    _events
-        .insertEvent(Event(
-        id: nextEventId,
-        eventName: newEventName,
-        location: newLocation,
-        weekday: newWeekday,
-        time: newTime,
-        date: newDate))
-        .then((insertedId) {
-      if (insertedId != null) {
-        print('Data inserted with ID: $insertedId');
-      } else {
-        print('Failed to insert data');
-      }
-    });
+    // Insert the new data into the local database
+      _events.insertEventLocal(newEvent);
+      //insert into cloud database
+      _events.insertEventCloud(newEvent);
      }
-    nextEventId++;
   }
 
 
@@ -195,17 +208,19 @@ class _EventsSchedulerState extends State<EventsScheduler> {
   }
 
   //function to remove event from database
-  Future<void> _deleteEvent(int id) async {
+  Future<void> _deleteEvent(String id) async {
     setState(() {
       eventsList.removeWhere((event) => event.id == id);
     });
-    int deleted = await _events.deleteEvent(id!);
+    //delete from local database
+    int deleted = await _events.deleteEventLocal(id!);
+    //delete from cloud database
+    await _events.deleteEventCloud(id!);
     print("index $deleted was deleted");
   }
 
   //go to eventeditpage and update database
   void _editEvent(EventTile event) async {
-    final initialId = event.id;
     final initialEventName = event.eventName;
     final initialLocation = event.location;
     final initialWeekday = event.weekday;
@@ -217,7 +232,6 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       context,
       MaterialPageRoute(
         builder: (context) => EventEditPage(
-          id: initialId,
           eventName: initialEventName,
           location: initialLocation,
           weekday: initialWeekday,
@@ -230,7 +244,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     //check for if data was even changed
     if (updatedData != null) {
       final updatedEvent = Event(
-        id: initialId,
+        id: event.id,
         eventName: updatedData['eventName'],
         location: updatedData['location'],
         weekday: updatedData['weekday'],
@@ -239,7 +253,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       );
 
       setState(() {
-        final index = eventsList.indexWhere((eventTile) => eventTile.id == initialId);
+        final index = eventsList.indexWhere((eventTile) => eventTile.id == event.id);
         if (index != -1) {
           eventsList[index] = EventTile(
             id: updatedEvent.id,
@@ -252,8 +266,10 @@ class _EventsSchedulerState extends State<EventsScheduler> {
         }
       });
 
-      // Update the event in the database
-      int updated = await _events.updateEvent(updatedEvent);
+      // Update the event in the local database
+      int updated = await _events.updateEventLocal(updatedEvent);
+      // Update the event in the cloud database
+      await _events.updateEventCloud(updatedEvent);
       print("updated: $updated");
 
     }

@@ -33,21 +33,6 @@ class CourseTile {
   });
 }
 
-/*class SchedulerHandler extends StatelessWidget {
-  const SchedulerHandler({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const SchedulerHandlerPage(title: 'Scheduler'),
-    );
-  }
-}*/
 
 class SchedulerHandlerPage extends StatefulWidget {
   const SchedulerHandlerPage({Key? key});
@@ -73,17 +58,51 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   //get all the data from local databases
   void loadCoursesData() async {
     if (ModalRoute.of(context)!.isCurrent) {
-      List results = await _courses.getAllCourses();
-      for (int i = 0; i < results.length; i++) {
-        coursesList.add(CourseTile(
-          id: results[i].id,
-          weekday: results[i].weekday,
-          courseName: results[i].courseName,
-          profName: results[i].profName,
-          roomNum: results[i].roomNum,
-          endTime: results[i].endTime,
-          startTime: results[i].startTime,
-        ));
+      List results = [];
+      //check local first to see if any data is saved
+      results = await _courses.getAllCoursesLocal();
+      if (results.length>0){
+        for (int i = 0; i < results.length; i++) {
+          coursesList.add(CourseTile(
+            id: results[i].id,
+            weekday: results[i].weekday,
+            courseName: results[i].courseName,
+            profName: results[i].profName,
+            roomNum: results[i].roomNum,
+            endTime: results[i].endTime,
+            startTime: results[i].startTime,
+          ));
+        }
+      }else{
+        //check global database if no data is saved
+        results = await _courses.getAllCoursesCloud();
+        if (results.length>0){
+          for (int i = 0; i < results.length; i++) {
+            coursesList.add(CourseTile(
+              id: results[i].reference?.id,
+              weekday: results[i].weekday,
+              courseName: results[i].courseName,
+              profName: results[i].profName,
+              roomNum: results[i].roomNum,
+              endTime: results[i].endTime,
+              startTime: results[i].startTime,
+            ));
+            //add to local database for next load
+            await _courses.insertLocal(
+                Course(
+                  id: results[i].reference?.id,
+                  weekday: results[i].weekday,
+                  courseName: results[i].courseName,
+                  profName: results[i].profName,
+                  roomNum: results[i].roomNum,
+                  endTime: results[i].endTime,
+                  startTime: results[i].startTime,
+                )
+            );
+          }
+        }else{
+          //popup that tells the user they do not have any courses registered
+        }
       }
       setState(() {}); // rebuild when page is loaded
     }

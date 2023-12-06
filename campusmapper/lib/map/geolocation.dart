@@ -4,6 +4,7 @@ import 'map_constants.dart';
 
 class Geolocation {
   bool canFindLocation = false;
+
   Future<LatLng> getPosition() async {
     LatLng curLoc = MapConstants.mapCenter;
     if (!canFindLocation) {
@@ -42,5 +43,14 @@ class Geolocation {
       }
     }
     return canFindLocation;
+  }
+}
+
+class GeoLocation {
+  Future<LatLng> getPosition() async {
+    Position pos = await Geolocator.getCurrentPosition();
+    LatLng curLoc = LatLng(pos.latitude, pos.longitude);
+    print(curLoc);
+    return curLoc;
   }
 }

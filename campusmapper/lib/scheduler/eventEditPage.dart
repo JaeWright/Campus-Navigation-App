@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'dateConversions.dart';
 
 class EventEditPage extends StatefulWidget {
-  final int? id;
   final String? eventName;
   final String? location;
   final String? weekday;
@@ -11,7 +10,6 @@ class EventEditPage extends StatefulWidget {
   final DateTime? date;
 
   EventEditPage({
-    required this.id,
     required this.eventName,
     required this.location,
     required this.weekday,

@@ -11,7 +11,6 @@ import 'marker_model.dart';
 import 'map_marker.dart';
 import 'directions.dart';
 import 'geolocation.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -136,16 +135,6 @@ class ListMapState extends State<ListMapScreen> {
                     )
                   ],
                 ),
-                /*
-                floatingActionButton: Row(children: [
-                  FloatingActionButton(
-                      onPressed: () {}, child: const Icon(Icons.add)),
-                  FloatingActionButton(
-                      onPressed: () {}, child: const Icon(Icons.remove)),
-                  FloatingActionButton(
-                      onPressed: () {},
-                      child: const Icon(Icons.center_focus_strong))
-                ]),*/
                 //Handler for (as the name states) the sliding up panel at the bottom of the screen
                 body: SlidingUpPanel(
                   controller: panelController,
@@ -180,8 +169,8 @@ class ListMapState extends State<ListMapScreen> {
                             },
                             initialCenter: MapConstants.mapCenter,
                             initialZoom: 18,
-                            maxZoom: 20,
-                            minZoom: 16,
+                            maxZoom: 21,
+                            minZoom: 15,
                             cameraConstraint: CameraConstraint.contain(
                                 bounds: LatLngBounds(
                                     MapConstants.mapUpperCorner,
@@ -225,18 +214,10 @@ class ListMapState extends State<ListMapScreen> {
                                             });
                                           },
                                           child: snapshot.data![i].icon)),
-                              if ((directionManager.initialPosition.latitude <
-                                      MapConstants.mapUpperCorner.latitude &&
-                                  directionManager.initialPosition.latitude >
-                                      MapConstants.mapLowerCorner.latitude))
-                                if ((directionManager
-                                            .initialPosition.longitude <
-                                        MapConstants.mapUpperCorner.longitude &&
-                                    directionManager.initialPosition.longitude >
-                                        MapConstants.mapLowerCorner.longitude))
-                                  Marker(
-                                      point: directionManager.initialPosition,
-                                      child: MapConstants.circle)
+                              if (isOnCampus())
+                                Marker(
+                                    point: directionManager.initialPosition,
+                                    child: MapConstants.circle)
                             ],
                           ),
                           PolylineLayer(polylines: [
@@ -247,6 +228,81 @@ class ListMapState extends State<ListMapScreen> {
                           ])
                         ],
                       ),
+                      Positioned(
+                          right: MediaQuery.of(context).size.width * .03,
+                          bottom: MediaQuery.of(context).size.height * .170,
+                          child: Column(children: [
+                            Container(
+                                padding: const EdgeInsets.only(bottom: 5),
+                                child: FloatingActionButton(
+                                    heroTag: 'hero_add',
+                                    onPressed: () {
+                                      mapController.move(
+                                          mapController.camera.center,
+                                          mapController.camera.zoom + 1);
+                                    },
+                                    backgroundColor: Colors.white,
+                                    child: const Icon(Icons.add,
+                                        color: Colors.cyan))),
+                            Container(
+                                padding: const EdgeInsets.only(bottom: 5),
+                                child: FloatingActionButton(
+                                    heroTag: 'hero_remove',
+                                    onPressed: () {
+                                      mapController.move(
+                                          mapController.camera.center,
+                                          mapController.camera.zoom - 1);
+                                    },
+                                    backgroundColor: Colors.white,
+                                    child: const Icon(Icons.remove,
+                                        color: Colors.cyan))),
+                            Container(
+                                padding: const EdgeInsets.only(bottom: 5),
+                                child: FloatingActionButton(
+                                    heroTag: 'hero_focus',
+                                    onPressed: () {
+                                      setState(() {
+                                        if (isOnCampus()) {
+                                          mapController.move(
+                                              directionManager.initialPosition,
+                                              mapController.camera.zoom);
+                                        } else {
+                                          showDialog(
+                                              context: context,
+                                              //Popup box displaying sourcing for the map
+                                              builder: (context) => Dialog(
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: <Widget>[
+                                                            const Text(
+                                                                'You are currently off campus. To display your current location, please come on campus'),
+                                                            TextButton(
+                                                                child:
+                                                                    const Text(
+                                                                        "OK"),
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                }),
+                                                          ],
+                                                        )),
+                                                  ));
+                                        }
+                                      });
+                                    },
+                                    backgroundColor: Colors.white,
+                                    child: const Icon(Icons.center_focus_strong,
+                                        color: Colors.cyan)))
+                          ])),
                     ],
                   ),
                 ),
@@ -339,8 +395,19 @@ class ListMapState extends State<ListMapScreen> {
             ])));
   }
 
-  List<LatLng> initRoute() {
-    return [];
+  bool isOnCampus() {
+    if ((directionManager.initialPosition.latitude <
+            MapConstants.mapUpperCorner.latitude &&
+        directionManager.initialPosition.latitude >
+            MapConstants.mapLowerCorner.latitude)) {
+      if (directionManager.initialPosition.longitude <
+              MapConstants.mapUpperCorner.longitude &&
+          directionManager.initialPosition.longitude >
+              MapConstants.mapLowerCorner.longitude) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void setMap() async {

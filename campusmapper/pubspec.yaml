@@ -45,7 +45,6 @@ dependencies:
   provider: ^6.1.1
   table_calendar: ^3.0.1
   geolocator: ^10.1.0
-  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -70,9 +69,12 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+     - assets/menu_images/boosterjuice.jpg
+     - assets/menu_images/hunterkitchen.jpg
+     - assets/menu_images/dripcafe.jpg
+     - assets/menu_images/cafe.jpg
+     - assets/menu_images/timhortons.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

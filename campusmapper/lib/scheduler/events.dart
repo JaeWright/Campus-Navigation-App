@@ -5,7 +5,6 @@ and interact with the events database respectively
 */
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
 import 'scheduler_database_helper.dart';
 import 'dart:async';
 import 'dateConversions.dart';
@@ -60,6 +59,7 @@ class Event {
     };
   }
 
+  @override
   String toString() {
     return "id: $id, Name: $eventName, location: $location, weekday: $weekday, time: $time, date: $date";
   }
@@ -76,7 +76,7 @@ class EventsModel{
 //
     List results = [];
 
-    if (maps.length>0){
+    if (maps.isNotEmpty){
       for (int i=0; i<maps.length; i++){
         results.add(Event.fromMapLocal(maps[i]));
       }
@@ -135,14 +135,14 @@ class EventsModel{
               eventName: docSnapshot["eventName"],
               location: docSnapshot["location"],
               time: docSnapshot["time"],
-              date: docSnapshot["date"],
+              date: DateTime.parse(docSnapshot["date"].split(" – ").first),
             )
         );
       }
     });
     return results;
   }
-  Future<String> insertEventCloud (Event event) async {
+  Future<String> insertEventCloud (String weekday, String eventName, String location, String time, DateTime date) async {
     //remove test variable once fully implemented
     String userRef = "1000";
     //adds new event to online database
@@ -151,11 +151,11 @@ class EventsModel{
         .doc(userRef)
         .collection("Events")
         .add(<String, dynamic>{
-      'weekday': event.weekday,
-      'eventName': event.eventName,
-      'location': event.location,
-      'time': event.time,
-      'date': DateFormat('yyyy-MM-dd – kk:mm').format(event.date!)
+      'weekday': weekday,
+      'eventName': eventName,
+      'location': location,
+      'time': time,
+      'date': DateFormat('yyyy-MM-dd – kk:mm').format(date!)
     });
     //returns new id
     return ref.id;

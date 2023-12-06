@@ -66,8 +66,8 @@ class CampusNavigatorApp extends StatelessWidget {
       routes: {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
-        '/events': (context) =>
-            const EventsScheduler(title: 'Events Scheduler'),
+        '/scheduler': (context) =>
+            SchedulerHandlerPage(),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -134,7 +134,8 @@ class _HomePageState extends State<HomePage> {
         title: 'My Schedule',
         color: Color(0xFF9B59B6),
         onTap: () {
-          navigateToSection(context, SchedulerHandlerPage());
+          //navigateToSection(context, SchedulerHandlerPage());
+          Navigator.pushReplacementNamed(context, '/scheduler');
         },
       ),
       NavigationCard(

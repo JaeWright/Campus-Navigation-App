@@ -20,7 +20,7 @@ class DBUtilsSQL {
       onCreate: (db, version) {
         db.execute('CREATE TABLE courses(id TEXT PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
         // Call the function to insert pre-made values
-        _insertValuesCourses(db);
+        //_insertValuesCourses(db);
 
 
 
@@ -37,7 +37,7 @@ class DBUtilsSQL {
       onCreate: (db, version) {
         db.execute('CREATE TABLE events(id TEXT PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
         // Call the function to insert pre-made values
-        _insertValuesEvents(db);
+       //_insertValuesEvents(db);
 
       },
       version: 1,

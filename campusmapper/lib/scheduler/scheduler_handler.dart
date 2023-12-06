@@ -3,24 +3,32 @@ Author: Jaelen Wright - 100790481
 This page manages the course schedule page, which displays the user's courses and connects
 to the events page
 */
+import 'package:campusmapper/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'eventAddPage.dart';
+import 'eventEditPage.dart';
 import 'events.dart';
 import 'courses.dart';
-import 'events_page.dart';
+import 'package:intl/intl.dart';
 import 'dateConversions.dart';
 
 //model for course database
 final _courses = CoursesModel();
 
+//model for events database
+final _events = EventsModel();
+
 //classes for holding course tile data
 class CourseTile {
-  int? id;
+  String? id;
   String? weekday;
   String? courseName;
   String? profName;
   String? roomNum;
   String? startTime;
   String? endTime;
+  DocumentReference? reference;
 
   CourseTile({
     required this.id,
@@ -30,12 +38,34 @@ class CourseTile {
     required this.roomNum,
     required this.endTime,
     required this.startTime,
+    this.reference
+  });
+}
+
+//class to hold event tile data
+class EventTile {
+  String? id;
+  String? eventName;
+  String? location;
+  String? weekday;
+  String? time;
+  DateTime? date;
+  DocumentReference? reference;
+
+  EventTile({
+    required this.id,
+    required this.eventName,
+    required this.location,
+    required this.weekday,
+    required this.time,
+    required this.date,
+    this.reference
   });
 }
 
 
 class SchedulerHandlerPage extends StatefulWidget {
-  const SchedulerHandlerPage({Key? key});
+  const SchedulerHandlerPage({super.key});
 
   @override
   State<SchedulerHandlerPage> createState() => _SchedulerHandlerPageState();
@@ -44,6 +74,8 @@ class SchedulerHandlerPage extends StatefulWidget {
 class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   //list of courses to be populated by database
   List<CourseTile> coursesList = [];
+  //holds list of events to be populated by database
+  List<EventTile> eventsList = [];
   //flag for switch
   bool isSwitched = false;
 
@@ -52,16 +84,22 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       loadCoursesData();
+      loadEventsData();
     });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
   }
 
   //get all the data from local databases
   void loadCoursesData() async {
-    if (ModalRoute.of(context)!.isCurrent) {
       List results = [];
+
       //check local first to see if any data is saved
       results = await _courses.getAllCoursesLocal();
-      if (results.length>0){
+      if (results.isNotEmpty){
         for (int i = 0; i < results.length; i++) {
           coursesList.add(CourseTile(
             id: results[i].id,
@@ -76,10 +114,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       }else{
         //check global database if no data is saved
         results = await _courses.getAllCoursesCloud();
-        if (results.length>0){
+        if (results.isNotEmpty){
           for (int i = 0; i < results.length; i++) {
             coursesList.add(CourseTile(
-              id: results[i].reference?.id,
+              id: results[i].id,
               weekday: results[i].weekday,
               courseName: results[i].courseName,
               profName: results[i].profName,
@@ -90,7 +128,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             //add to local database for next load
             await _courses.insertLocal(
                 Course(
-                  id: results[i].reference?.id,
+                  id: results[i].id,
                   weekday: results[i].weekday,
                   courseName: results[i].courseName,
                   profName: results[i].profName,
@@ -105,32 +143,225 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
         }
       }
       setState(() {}); // rebuild when page is loaded
+
+  }
+
+  void loadEventsData() async {
+
+      List results = [];
+
+      //check local first to see if any data is saved
+      results = await _events.getAllEventsLocal();
+      if (results.isNotEmpty){
+        for (int i = 0; i < results.length; i++) {
+          eventsList.add(EventTile(
+              id: results[i].id,
+              eventName: results[i].eventName,
+              location: results[i].location,
+              weekday: results[i].weekday,
+              time: results[i].time,
+              date: results[i].date));
+        }
+      }
+      else{
+        //check global database if no data is saved
+        results = await _events.getAllEventsCloud();
+        if (results.isNotEmpty){
+          for (int i=0;i<results.length;i++){
+            eventsList.add(EventTile(
+                id: results[i].id,
+                eventName: results[i].eventName,
+                location: results[i].location,
+                weekday: results[i].weekday,
+                time: results[i].time,
+                date: results[i].date));
+
+            //add to local database for next save
+            _events.insertEventLocal(Event(
+                id: results[i].id,
+                eventName: results[i].eventName,
+                location: results[i].location,
+                weekday: results[i].weekday,
+                time: results[i].time,
+                date: results[i].date
+            ));
+          }
+        }
+      }
+      setState(() {}); // rebuilds everytime page is loaded
+
+  }
+
+  Future<void> _addEvent() async {
+
+    var newEventData = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventAddPage(), // Navigate to EventAddPage
+      ),
+    );
+
+    if (newEventData != null) {
+      final String newEventName = newEventData['eventName'];
+      final String newLocation = newEventData['location'];
+      final String newWeekday = newEventData['weekday'];
+      final String newTime = newEventData['time'];
+      final DateTime newDate = newEventData['date'];
+
+      // Add the new data to the cloud + get ref id for local database
+      String newId = await _events.insertEventCloud(
+          newWeekday,
+          newEventName,
+          newLocation,
+          newTime,
+          newDate
+      );
+      setState(() {
+
+        eventsList.add(EventTile(
+            id: newId,
+            eventName: newEventName,
+            location: newLocation,
+            weekday: newWeekday,
+            time: newTime,
+            date: newDate)
+        );
+      });
+
+
+      // Insert the new data into the local database
+      _events.insertEventLocal(Event(
+          id: newId,
+          eventName: newEventName,
+          location: newLocation,
+          weekday: newWeekday,
+          time: newTime,
+          date: newDate));
+    }
+  }
+
+  void _confirmDeleteEvent(EventTile eventToDelete) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: Text('Do you want to delete ${eventToDelete.eventName}?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteEvent(eventToDelete.id!); // Perform delete operation
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteEvent(String id) async {
+    setState(() {
+      eventsList.removeWhere((event) => event.id == id);
+    });
+    //delete from local database
+    int deleted = await _events.deleteEventLocal(id!);
+    //delete from cloud database
+    await _events.deleteEventCloud(id!);
+    print("index $deleted was deleted");
+  }
+
+  //go to eventeditpage and update database
+  void _editEvent(EventTile event) async {
+    final initialEventName = event.eventName;
+    final initialLocation = event.location;
+    final initialWeekday = event.weekday;
+    final initialTime = event.time;
+    final initialDate = event.date;
+
+    //used ChatGPT for the push
+    var updatedData = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventEditPage(
+          eventName: initialEventName,
+          location: initialLocation,
+          weekday: initialWeekday,
+          time: initialTime,
+          date: initialDate,
+        ),
+      ),
+    );
+
+    //check for if data was even changed
+    if (updatedData != null) {
+      final updatedEvent = Event(
+        id: event.id,
+        eventName: updatedData['eventName'],
+        location: updatedData['location'],
+        weekday: updatedData['weekday'],
+        time: updatedData['time'],
+        date: updatedData['date'],
+      );
+
+      setState(() {
+        final index = eventsList.indexWhere((eventTile) => eventTile.id == event.id);
+        if (index != -1) {
+          eventsList[index] = EventTile(
+            id: updatedEvent.id,
+            eventName: updatedEvent.eventName,
+            location: updatedEvent.location,
+            weekday: updatedEvent.weekday,
+            time: updatedEvent.time,
+            date: updatedEvent.date,
+          );
+        }
+      });
+
+      // Update the event in the local database
+      int updated = await _events.updateEventLocal(updatedEvent);
+      // Update the event in the cloud database
+      await _events.updateEventCloud(updatedEvent);
+      print("updated: $updated");
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-      //Return to home page
-      Navigator.pushReplacementNamed(context, '/home');
-
-      // Return 'false' to prevent the default back button behavior
-      return false;
-    },
-    child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        /*
-        leading: const Icon(Icons.school, // temporary logo
-            size: 30),
-            */
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/home');
+          },
+          iconSize: 25,
+        ),
         title: const Row(children: [
           Icon(Icons.calendar_month),
           Padding(
               padding: EdgeInsetsDirectional.only(start: 10),
               child: Text('Scheduler'))
         ]),
+          actions: <Widget>[
+                isSwitched ? IconButton(
+                    onPressed: () {_addEvent();},
+                    icon: const Icon(Icons.add)
+                ): Container(),
+
+          ],
       ),
       body: Column(
         children: [
@@ -146,15 +377,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                 onChanged: (value) {
                   setState(() {
                     isSwitched = value;
-                    if (isSwitched) {
-                      // Load the events page
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                EventsScheduler(title: 'Scheduler')),
-                      );
-                    }
                   });
                 },
               ),
@@ -171,8 +393,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               for (int i = 0; i < 2; i++)
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.all(16),
+                    margin: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(16),
                     height: 200,
                     width: double.infinity,
                     color: Colors.grey[300],
@@ -181,15 +403,15 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Expanded(
                           child: ListView(
                             shrinkWrap: true,
-                            children: getCourseWidgets(getWeekday(i)),
+                            children: selectWidgets(getWeekday(i),isSwitched),
                           ),
                         ),
                       ],
@@ -206,8 +428,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               for (int i = 2; i < 4; i++)
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.all(16),
+                    margin: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(16),
                     height: 200,
                     width: double.infinity,
                     color: Colors.grey[300],
@@ -216,15 +438,15 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                       children: [
                         Text(
                           getWeekday(i),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Expanded(
                           child: ListView(
                             shrinkWrap: true,
-                            children: getCourseWidgets(getWeekday(i)),
+                            children: selectWidgets(getWeekday(i),isSwitched),
                           ),
                         ),
                       ],
@@ -237,8 +459,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           // Display the third row with Friday centered horizontally and NOT vertically
           Center(
             child: Container(
-              margin: EdgeInsets.all(8),
-              padding: EdgeInsets.all(16),
+              margin: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(16),
               height: 200,
               width: 210,
               color: Colors.grey[300],
@@ -250,11 +472,11 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Expanded(
                     child: ListView(
                       shrinkWrap: true,
-                      children: getCourseWidgets(getWeekday(4)),
+                      children: selectWidgets(getWeekday(4),isSwitched),
                     ),
                   ),
                 ],
@@ -263,10 +485,16 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           ),
         ],
       ),
-    )
+
     );
   }
-
+  List<Widget> selectWidgets(String weekday,bool isEvents){
+    if (isEvents){
+      return getEventWidgets(weekday);
+    }else{
+      return getCourseWidgets(weekday);
+    }
+  }
   //used chatgpt for this function
   List<Widget> getCourseWidgets(String weekday) {
     List<Widget> widgets = [];
@@ -278,32 +506,97 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       widgets.addAll([
         Text(
           filteredCourses[i].courseName!,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         Text(
           filteredCourses[i].profName!,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),
         Text(
           filteredCourses[i].roomNum!,
-          style: TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14),
           textAlign: TextAlign.center,
         ),
         Text(
           '${filteredCourses[i].startTime!} - ${filteredCourses[i].endTime!}',
-          style: TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14),
           textAlign: TextAlign.center,
         ),
         if (i <
             filteredCourses.length - 1) // Add dotted line if not the last item
           Container(
-            margin: EdgeInsets.symmetric(vertical: 8),
+            margin: const EdgeInsets.symmetric(vertical: 8),
             height: 1,
             width: double.infinity,
             color: Colors.black54,
           ),
+      ]);
+    }
+
+    return widgets;
+  }
+
+
+  List<Widget> getEventWidgets(String weekday) {
+    List<Widget> widgets = [];
+
+    List<int> indexes = eventsList
+        .asMap()
+        .entries
+        .where((entry) => entry.value.weekday == weekday)
+        .map((entry) => entry.key)
+        .toList();
+
+    // Sort events by date and time
+    indexes.sort((a, b) {
+      if (eventsList[a].date!.compareTo(eventsList[b].date!) != 0) {
+        return eventsList[a].date!.compareTo(eventsList[b].date!);
+      } else {
+        return DateTime.parse("${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+            .compareTo(DateTime.parse("${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+      }
+    });
+
+    for (int i = 0; i < indexes.length; i++) {
+      widgets.addAll([
+        GestureDetector(
+          onTap: () {
+            _editEvent(eventsList[indexes[i]]);
+          },
+          onLongPress: () {
+            _confirmDeleteEvent(eventsList[indexes[i]]);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                eventsList[indexes[i]].eventName!,
+                style: const TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                eventsList[indexes[i]].location!,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
+                style: const TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              if (i < indexes.length - 1)
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  height: 1,
+                  width: double.infinity,
+                  color: Colors.black54,
+                ),
+            ],
+          ),
+        ),
       ]);
     }
 

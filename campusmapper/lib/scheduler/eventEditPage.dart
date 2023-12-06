@@ -36,6 +36,8 @@ class _EventEditPageState extends State<EventEditPage> {
     locationController = TextEditingController(text: widget.location);
     dateController = TextEditingController(text: "${widget.weekday} - ${widget.date.toString()}");
     timeController = TextEditingController(text: widget.time);
+    weekday = widget.weekday!;
+    date = widget.date!;
   }
 
   @override
@@ -51,8 +53,8 @@ class _EventEditPageState extends State<EventEditPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-      //Return to home page
-      Navigator.pushReplacementNamed(context, '/events');
+      //Return to scheduler
+      Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
 
       // Return 'false' to prevent the default back button behavior
       return false;

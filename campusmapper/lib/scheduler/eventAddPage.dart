@@ -38,7 +38,7 @@ class _EventAddPageState extends State<EventAddPage> {
     return WillPopScope(
       onWillPop: () async {
         // Return to home page
-        Navigator.pushReplacementNamed(context, '/events');
+        Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
 
         // Return 'false' to prevent the default back button behavior
         return false;

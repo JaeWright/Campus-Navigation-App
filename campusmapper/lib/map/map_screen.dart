@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/food/location.dart';
-import 'map_constants.dart';
-import 'marker_model.dart';
+import 'package:campusmapper/models/map_constants.dart';
+import 'package:campusmapper/models/firestore/marker_model.dart';
 import 'map_marker.dart';
-import 'directions.dart';
-import 'geolocation.dart';
+import 'package:campusmapper/models/geolocation/geolocation.dart';
+import 'package:campusmapper/models/openrouteservice/directions.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -300,7 +300,8 @@ class ListMapState extends State<ListMapScreen> {
                         children: <Widget>[
                           ListTile(
                             leading: displayValues.icon,
-                            title: Text(displayValues.type),
+                            title: Text(MapConstants.translateCategory(
+                                displayValues.type)),
                             subtitle: Text(
                                 (displayValues.additionalInfo != 'None')
                                     ? displayValues.additionalInfo
@@ -350,13 +351,15 @@ class ListMapState extends State<ListMapScreen> {
             padding: const EdgeInsetsDirectional.only(top: 35),
             child: Column(children: [
               Flexible(
+                  flex: 5,
                   //List of all curently implemented campus markers. Found through the MapConstants
                   child: ListView.builder(
                       controller: sc,
                       itemCount: MapConstants.categories.length,
                       itemBuilder: (BuildContext context, int index) {
                         return CheckboxListTile(
-                            title: Text(MapConstants.categories[index]),
+                            title: Text(MapConstants.translateCategory(
+                                MapConstants.categories[index])),
                             value: trueFalseArray[index],
                             onChanged: (bool? value) {
                               if (value == true) {
@@ -370,6 +373,7 @@ class ListMapState extends State<ListMapScreen> {
                             });
                       })),
               Flexible(
+                  flex: 1,
                   child: ElevatedButton(
                       style: style,
                       onPressed: () {

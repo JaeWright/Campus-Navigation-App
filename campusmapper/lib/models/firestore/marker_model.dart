@@ -3,7 +3,7 @@ Author: Luca Lotito
 Firebase access class, handles reading from the firebase database and translating the data to the mapper (and in the future, other classes)
 */
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'map_marker.dart';
+import 'package:campusmapper/map/map_marker.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 

@@ -16,7 +16,7 @@ import 'package:campusmapper/scheduler/events_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:campusmapper/map/firebase_options.dart';
+import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
 import 'helpbutton.dart';
 import 'courses/course_search_page.dart';
@@ -66,8 +66,7 @@ class CampusNavigatorApp extends StatelessWidget {
       routes: {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
-        '/scheduler': (context) =>
-            SchedulerHandlerPage(),
+        '/scheduler': (context) => SchedulerHandlerPage(),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route

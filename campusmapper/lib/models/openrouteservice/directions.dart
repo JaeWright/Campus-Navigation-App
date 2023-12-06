@@ -1,5 +1,5 @@
 import 'package:latlong2/latlong.dart';
-import 'marker_model.dart';
+import 'package:campusmapper/models/firestore/marker_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -24,7 +24,6 @@ class Directions {
       }
     }
     result.add(locationPosition);
-    print(result);
     return result;
   }
 

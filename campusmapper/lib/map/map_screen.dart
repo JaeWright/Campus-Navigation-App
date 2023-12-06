@@ -6,7 +6,7 @@ In the final submission, will handle pathfinding and Geolocation logic
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'app_constants.dart';
+import 'map_constants.dart';
 import 'marker_model.dart';
 import 'map_marker.dart';
 import 'directions.dart';
@@ -17,47 +17,54 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
 class ListMapScreen extends StatefulWidget {
-  ListMapScreen({super.key, required this.findLocation});
+  const ListMapScreen({super.key, required this.findLocation});
   //Variable used for passing in Resturant locatations to the map to be generated first
-  LatLng findLocation;
+  final LatLng findLocation;
   @override
   ListMapState createState() => ListMapState();
 }
 
 class ListMapState extends State<ListMapScreen> {
-  static final _database = MarkerModel();
-  final mapController = MapController();
-  final panelController = PanelController();
-  final geoLocatorController = GeoLocation();
-  final directionManager = Directions(
-      initialPosition: AppConstants.mapCenter,
-      locationPosition: AppConstants.mapCenter,
-      database: _database);
-  List<bool?> trueFalseArray =
-      List<bool>.filled(AppConstants.categories.length, false);
-  List<String> mapMarkers = [];
-  List? selectedIndices = [];
-  List<LatLng> routing = [];
-  bool bottomCard = false;
-  bool canFindLocation = false;
-  //Holds the vlaues for any clicked marker on the map
+  final MarkerModel _database = MarkerModel();
+  final MapController mapController = MapController();
+  final PanelController panelController = PanelController();
+  final Geolocation geoLocatorController = Geolocation();
+  Directions directionManager = Directions(
+      initialPosition: MapConstants.mapCenter,
+      locationPosition: MapConstants.mapCenter);
   MapMarker displayValues = MapMarker(
       id: '0',
-      location: AppConstants.mapCenter,
+      location: MapConstants.mapCenter,
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
   //If a Resturant location is requested, map it out
   Timer timer = Timer(const Duration(seconds: 120), () {});
+
+  List<bool?> trueFalseArray =
+      List<bool>.filled(MapConstants.categories.length, false);
+  List<String> mapMarkers = [];
+  List? selectedIndices = [];
+  List<LatLng> routing = [];
+
+  bool bottomCard = false;
+
+  //Holds the vlaues for any clicked marker on the map
+
   @override
   void initState() {
-    super.initState();
-    timer = Timer.periodic(const Duration(seconds: 10),
-        (Timer t) => (canFindLocation) ? updatePosition() : ());
+    updatePosition();
+    directionManager = Directions(
+        initialPosition: MapConstants.mapCenter,
+        locationPosition: MapConstants.mapCenter,
+        database: _database);
+    timer = Timer.periodic(
+        const Duration(seconds: 10), (Timer t) => updatePosition());
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = ["Food"];
       directionManager.setItemPos(widget.findLocation);
       setMap();
     }
+    super.initState();
   }
 
   @override
@@ -75,7 +82,6 @@ class ListMapState extends State<ListMapScreen> {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            checkLocationService();
             return Scaffold(
                 appBar: AppBar(
                   title: const Row(children: [
@@ -130,17 +136,37 @@ class ListMapState extends State<ListMapScreen> {
                     )
                   ],
                 ),
+                /*
+                floatingActionButton: Row(children: [
+                  FloatingActionButton(
+                      onPressed: () {}, child: const Icon(Icons.add)),
+                  FloatingActionButton(
+                      onPressed: () {}, child: const Icon(Icons.remove)),
+                  FloatingActionButton(
+                      onPressed: () {},
+                      child: const Icon(Icons.center_focus_strong))
+                ]),*/
                 //Handler for (as the name states) the sliding up panel at the bottom of the screen
                 body: SlidingUpPanel(
                   controller: panelController,
-                  minHeight: 50,
+                  minHeight: MediaQuery.of(context).size.height * .065,
+                  parallaxEnabled: true,
+                  parallaxOffset: 0.5,
                   panelBuilder: (ScrollController sc) => _scrollingList(sc),
-                  collapsed: const Column(
-                    children: [
-                      Icon(Icons.keyboard_arrow_up),
-                      Text("Add Icons to Map")
-                    ],
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(24.0)),
+                  collapsed: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24.0),
+                            topRight: Radius.circular(24.0)),
+                      ),
+                      child: const Column(
+                        children: [
+                          Icon(Icons.keyboard_arrow_up),
+                          Text("Add Icons to Map")
+                        ],
+                      )),
                   body: Stack(
                     children: [
                       FlutterMap(
@@ -152,14 +178,14 @@ class ListMapState extends State<ListMapScreen> {
                                 bottomCard = false;
                               });
                             },
-                            initialCenter: AppConstants.mapCenter,
+                            initialCenter: MapConstants.mapCenter,
                             initialZoom: 18,
                             maxZoom: 20,
                             minZoom: 16,
                             cameraConstraint: CameraConstraint.contain(
                                 bounds: LatLngBounds(
-                                    AppConstants.mapUpperCorner,
-                                    AppConstants.mapLowerCorner))),
+                                    MapConstants.mapUpperCorner,
+                                    MapConstants.mapLowerCorner))),
                         children: [
                           TileLayer(
                             urlTemplate:
@@ -200,17 +226,17 @@ class ListMapState extends State<ListMapScreen> {
                                           },
                                           child: snapshot.data![i].icon)),
                               if ((directionManager.initialPosition.latitude <
-                                      AppConstants.mapUpperCorner.latitude &&
+                                      MapConstants.mapUpperCorner.latitude &&
                                   directionManager.initialPosition.latitude >
-                                      AppConstants.mapLowerCorner.latitude))
+                                      MapConstants.mapLowerCorner.latitude))
                                 if ((directionManager
                                             .initialPosition.longitude <
-                                        AppConstants.mapUpperCorner.longitude &&
+                                        MapConstants.mapUpperCorner.longitude &&
                                     directionManager.initialPosition.longitude >
-                                        AppConstants.mapLowerCorner.longitude))
+                                        MapConstants.mapLowerCorner.longitude))
                                   Marker(
                                       point: directionManager.initialPosition,
-                                      child: AppConstants.circle)
+                                      child: MapConstants.circle)
                             ],
                           ),
                           PolylineLayer(polylines: [
@@ -269,18 +295,22 @@ class ListMapState extends State<ListMapScreen> {
   }
 
   Widget _scrollingList(ScrollController sc) {
-    return Scaffold(
-        body: Padding(
+    return Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
+        ),
+        child: Padding(
             padding: const EdgeInsetsDirectional.only(top: 35),
             child: Column(children: [
               Flexible(
-                  //List of all curently implemented campus markers. Found through the AppConstants
+                  //List of all curently implemented campus markers. Found through the MapConstants
                   child: ListView.builder(
                       controller: sc,
-                      itemCount: AppConstants.categories.length,
+                      itemCount: MapConstants.categories.length,
                       itemBuilder: (BuildContext context, int index) {
                         return CheckboxListTile(
-                            title: Text(AppConstants.categories[index]),
+                            title: Text(MapConstants.categories[index]),
                             value: trueFalseArray[index],
                             onChanged: (bool? value) {
                               if (value == true) {
@@ -300,7 +330,7 @@ class ListMapState extends State<ListMapScreen> {
                         setState(() {
                           for (int i = 0; i < selectedIndices!.length; i++) {
                             mapMarkers.add(
-                                AppConstants.categories[selectedIndices![i]]);
+                                MapConstants.categories[selectedIndices![i]]);
                           }
                         });
                         panelController.close();
@@ -314,44 +344,18 @@ class ListMapState extends State<ListMapScreen> {
   }
 
   void setMap() async {
+    await updatePosition();
     List<LatLng> returned = await directionManager.getDirections();
     setState(() {
       routing = returned;
     });
   }
 
-  void checkLocationService() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      canFindLocation = false;
-    } else {
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          canFindLocation = false;
-        } else {
-          canFindLocation = true;
-        }
-      } else {
-        canFindLocation = true;
-      }
-      if (permission == LocationPermission.deniedForever) {
-        // Permissions are denied forever, handle appropriately.
-        return Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.');
-      } else {
-        canFindLocation = true;
-      }
-    }
-  }
-
-  void updatePosition() async {
+  Future<bool> updatePosition() async {
     LatLng newPos = await geoLocatorController.getPosition();
     setState(() {
       directionManager.setInitPos(newPos);
     });
+    return true;
   }
 }

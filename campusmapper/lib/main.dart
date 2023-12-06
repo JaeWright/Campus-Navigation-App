@@ -28,7 +28,7 @@ import 'food.dart';
 import 'scheduler/scheduler_handler.dart';
 import 'student_login.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/map/map_maker.dart';
+import 'package:campusmapper/map/map_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

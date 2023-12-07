@@ -12,6 +12,7 @@ import 'events.dart';
 import 'courses.dart';
 import 'package:intl/intl.dart';
 import 'dateConversions.dart';
+import 'calendar_view.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -350,7 +351,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           iconSize: 25,
         ),
         title: const Row(children: [
-          Icon(Icons.calendar_month),
           Padding(
               padding: EdgeInsetsDirectional.only(start: 10),
               child: Text('Scheduler'))
@@ -361,6 +361,17 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                     icon: const Icon(Icons.add)
                 ): Container(),
 
+                isSwitched ? IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CalendarPage(events: eventsList,displayEvents: isSwitched),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.calendar_month)
+                ): Container(),
           ],
       ),
       body: Column(
@@ -488,6 +499,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
     );
   }
+
   List<Widget> selectWidgets(String weekday,bool isEvents){
     if (isEvents){
       return getEventWidgets(weekday);

@@ -5,6 +5,8 @@ and interact with the events database respectively
 */
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
+import '../../utilities/user.dart';
+import 'logged_in_model.dart';
 import 'scheduler_database_helper.dart';
 import 'dart:async';
 import 'package:campusmapper/utilities/dateConversions.dart';
@@ -115,11 +117,11 @@ class EventsModel {
   //cloud database interactions
   Future getAllEventsCloud() async {
     //make it get the user reference later when all connected
-    String userRef = "1000";
+    List<User> user= UserModel().getUser() as List<User>;
     List results = [];
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(userRef)
+        .doc(user[0].id)
         .collection("Events")
         .get()
         .then((querySnapshot) {
@@ -140,11 +142,11 @@ class EventsModel {
   Future<String> insertEventCloud(String weekday, String eventName,
       String location, String time, DateTime date) async {
     //remove test variable once fully implemented
-    String userRef = "1000";
+    List<User> user= UserModel().getUser() as List<User>;
     //adds new event to online database
     DocumentReference ref = await FirebaseFirestore.instance
         .collection("users")
-        .doc(userRef)
+        .doc(user[0].id)
         .collection("Events")
         .add(<String, dynamic>{
       'weekday': weekday,
@@ -159,10 +161,10 @@ class EventsModel {
 
   Future updateEventCloud(Event event) async {
     //remove test variable once fully implemented
-    String userRef = "1000";
+    List<User> user= UserModel().getUser() as List<User>;
     await FirebaseFirestore.instance
         .collection("users")
-        .doc(userRef)
+        .doc(user[0].id)
         .collection("Events")
         .doc(event.id)
         .update({
@@ -176,10 +178,10 @@ class EventsModel {
 
   Future deleteEventCloud(String id) async {
     //remove test variable once fully implemented
-    String userRef = "1000";
+    List<User> user= UserModel().getUser() as List<User>;
     await FirebaseFirestore.instance
         .collection("users")
-        .doc(userRef)
+        .doc(user[0].id)
         .collection("Events")
         .doc(id)
         .delete()

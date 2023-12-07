@@ -24,7 +24,18 @@ class StudentLoginPageState extends State<StudentLoginPage> {
   String id = '';
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      // Return to homepage
+      FocusScope.of(context).unfocus();
+      Future.delayed(const Duration(milliseconds: 750), () {
+        Navigator.pushNamed(context, '/');
+      });
+
+      // Return 'false' to prevent the default back button behavior
+      return false;
+    },
+    child:Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white38,
           title: Row(children: [
@@ -36,7 +47,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                     : const Text("Register an Account"))
           ]),
         ),
-        body: (loggingIn) ? login() : register());
+        body: (loggingIn) ? login() : register()));
   }
 
   Widget login() {
@@ -265,7 +276,10 @@ class StudentLoginPageState extends State<StudentLoginPage> {
       );
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(successSnackbar);
-      Navigator.pop(context);
+      FocusScope.of(context).unfocus();
+      Future.delayed(const Duration(milliseconds: 750), () {
+        Navigator.pushNamed(context, '/');
+      });
     }
   }
 

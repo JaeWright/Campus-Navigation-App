@@ -6,6 +6,8 @@ and interact with the courses database respectively
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
+import '../../utilities/user.dart';
+import 'logged_in_model.dart';
 import 'scheduler_database_helper.dart';
 import 'dart:async';
 
@@ -91,12 +93,12 @@ class CoursesModel {
 
   Future getAllCoursesCloud() async{
     //make it get the user reference later when all connected
-    String userRef = "1000";
+    List<User> user= UserModel().getUser() as List<User>;
     //returns list of user's course(s) in database
     List results = [];
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(userRef)
+        .doc(user[0].id)
         .collection("Courses")
         .get()
         .then((querySnapshot){

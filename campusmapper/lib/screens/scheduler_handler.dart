@@ -4,8 +4,11 @@ This page manages the course schedule page, which displays the user's courses an
 to the events page
 */
 import 'package:campusmapper/main.dart';
+import 'package:campusmapper/screens/student_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../models/sqflite/logged_in_model.dart';
+import '../utilities/user.dart';
 import 'eventAddPage.dart';
 import 'eventEditPage.dart';
 import 'package:campusmapper/models/sqflite/events.dart';
@@ -80,9 +83,14 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      loadCoursesData();
-      loadEventsData();
+    Future.delayed(Duration.zero, () async {
+      if (await loggedIn()){
+        loadCoursesData();
+        loadEventsData();
+      }else{
+        sendToLogin();
+      }
+
     });
   }
 
@@ -90,7 +98,37 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   void dispose() {
     super.dispose();
   }
-
+  //check if user is logged in,
+  Future<bool> loggedIn() async{
+    List<User> user= await UserModel().getUser();
+    if (user.isNotEmpty){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  //send user to the log in page if they are not logged in
+  void sendToLogin(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('User is not logged in'),
+          content: const Text('Press "Ok" to be sent to log in page '),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                //Navigator.of(context).pop(); // Close the dialog
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StudentLoginPage()),);
+              },
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   //get all the data from local databases
   void loadCoursesData() async {
     List results = [];

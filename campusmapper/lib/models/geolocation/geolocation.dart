@@ -14,7 +14,6 @@ class Geolocation {
       Position pos = await Geolocator.getCurrentPosition();
       curLoc = LatLng(pos.latitude, pos.longitude);
     }
-    print(curLoc);
     return curLoc;
   }
 

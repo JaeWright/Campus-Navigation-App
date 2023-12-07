@@ -1,5 +1,7 @@
+import 'package:campusmapper/utilities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:campusmapper/screens/student_login.dart';
+import 'package:campusmapper/models/sqflite/logged_in_model.dart';
 
 enum Label { login, logout }
 
@@ -12,9 +14,12 @@ class Dropdown extends StatefulWidget {
 class DropdownState extends State<Dropdown> {
   Label? selectedMenu;
   bool loggedin = false;
+  UserModel database = UserModel();
+  User loggedIn = User(
+      id: 0, email: 'None', firstname: 'None', lastname: 'None', sid: 'None');
   @override
   void initState() {
-    // TODO: implement initState
+    getLogInStatus();
     super.initState();
   }
 
@@ -33,18 +38,38 @@ class DropdownState extends State<Dropdown> {
         if (!loggedin)
           PopupMenuItem<Label>(
             value: Label.login,
-            child: Text('Log In'),
+            child: const Text('Log In'),
             onTap: () {
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => StudentLoginPage()));
             },
           )
         else
-          const PopupMenuItem(enabled: false, child: Text("Hello User")),
+          PopupMenuItem(
+              enabled: false, child: Text("Hello ${loggedIn.firstname}")),
         if (loggedin)
           const PopupMenuItem<Label>(
               value: Label.logout, child: Text('Log Out')),
       ],
     );
+  }
+
+  //Check to see if a user is logged in. There should only be one user in the database at a time
+  void getLogInStatus() async {
+    List<User> user = await database.getUser();
+    setState(() {
+      if (user.isEmpty) {
+        loggedin = false;
+        loggedIn = User(
+            id: 0,
+            email: 'None',
+            firstname: 'None',
+            lastname: 'None',
+            sid: 'None');
+      } else {
+        loggedin = true;
+        loggedIn = user[0];
+      }
+    });
   }
 }

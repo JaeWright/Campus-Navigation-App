@@ -9,7 +9,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/utilities/location.dart';
 import 'package:campusmapper/models/constants/map_constants.dart';
 import 'package:campusmapper/models/firestore/marker_model.dart';
-import '../models/map_marker.dart';
+import 'package:campusmapper/utilities/map_marker.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:campusmapper/models/geolocation/geolocation.dart';
 import 'package:campusmapper/models/openrouteservice/directions.dart';

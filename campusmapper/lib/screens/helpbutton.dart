@@ -6,14 +6,14 @@ guidelines for how to access each app functionality for user's assistance.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'food/restaurant_details.dart';
+import 'restaurant_details.dart';
 import 'information_centre_page.dart';
 import 'accessibility.dart';
-import 'map/map_screen.dart';
-import 'scheduler/scheduler_handler.dart';
-import 'courses/course_search_page.dart';
+import 'map_screen.dart';
+import 'scheduler_handler.dart';
+import 'course_search_page.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campusmapper/food/location.dart';
+import 'package:campusmapper/utilities/location.dart';
 
 class TutorialPage1 extends StatelessWidget {
   @override
@@ -33,7 +33,8 @@ class TutorialPage1 extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => InformationCenterPage()),
               );
             },
-          ),],
+          ),
+        ],
         title: Text('Information Center'),
         backgroundColor: Color(0xFF3498DB), // Customize header color
       ),
@@ -178,7 +179,8 @@ class TutorialPage3 extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => AccessibilityDirectoryPage()),
               );
             },
-          ),],
+          ),
+        ],
         title: Text('Accessibility'),
         backgroundColor: Color(0xFFE67E22), // Customize header color
       ),
@@ -250,7 +252,8 @@ class TutorialPage4 extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => SchedulerHandlerPage()),
               );
             },
-          ),],
+          ),
+        ],
         title: Text('My Schedule'),
         backgroundColor: Color(0xFF9B59B6), // Customize header color
       ),
@@ -318,17 +321,19 @@ class TutorialPage5 extends StatelessWidget {
             ),
             onPressed: () {
               final locationService =
-                Provider.of<LocationService>(context, listen: false);
+                  Provider.of<LocationService>(context, listen: false);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => ListMapScreen(
-                  findLocation: const LatLng(0.0, 0.0),
-                  restaurantLocations:
-                  locationService.getAllRestaurantLocations(),
-                )),
+                MaterialPageRoute(
+                    builder: (_) => ListMapScreen(
+                          findLocation: const LatLng(0.0, 0.0),
+                          restaurantLocations:
+                              locationService.getAllRestaurantLocations(),
+                        )),
               );
             },
-          ),],
+          ),
+        ],
         title: Text('Campus Map'),
         backgroundColor: Color(0xFF008080), // Customize header color
       ),
@@ -400,7 +405,8 @@ class TutorialPage6 extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => CourseSearchPage()),
               );
             },
-          ),],
+          ),
+        ],
         title: Text('Search Courses'),
         backgroundColor: Color(0xFFFFD700), // Customize header color
       ),
@@ -503,7 +509,7 @@ class _TutorialSliderState extends State<TutorialSlider> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               6, // Total number of pages
-                  (index) => Container(
+              (index) => Container(
                 margin: EdgeInsets.symmetric(horizontal: 4.0),
                 width: 8.0,
                 height: 8.0,
@@ -551,4 +557,3 @@ class HelpButton extends StatelessWidget {
     );
   }
 }
-

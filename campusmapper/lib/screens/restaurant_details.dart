@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'menu.dart';
-import 'food_main.dart';
-import 'location.dart';
+import '../models/constants/menu_constants.dart';
+import '../utilities/food_main.dart';
+import '../utilities/location.dart';
 
 class FoodPage extends StatelessWidget {
   final List<Restaurant> restaurants = [
@@ -9,7 +9,8 @@ class FoodPage extends StatelessWidget {
     Restaurant(name: 'Booster Juice', location: 'Student Center - SC126'),
     Restaurant(name: 'Drip Cafe', location: 'Student Center - SC129'),
     Restaurant(name: 'Tim Hortons', location: 'Shawenjigewining Hall - SHA126'),
-    Restaurant(name: 'Hunter Kitchen', location: 'Business and IT Building - UB1080'),
+    Restaurant(
+        name: 'Hunter Kitchen', location: 'Business and IT Building - UB1080'),
   ];
 
   @override
@@ -43,6 +44,7 @@ class FoodPage extends StatelessWidget {
       ),
     );
   }
+
   void _showRestaurantOptions(BuildContext context, Restaurant restaurant) {
     showModalBottomSheet(
       context: context,
@@ -92,12 +94,14 @@ class FoodPage extends StatelessWidget {
 
 double getRestaurantLatitude(Restaurant restaurant) {
   // Access the predefined list of RestaurantLocation instances
-  final List<RestaurantLocation> restaurantLocations = LocationService().getAllRestaurantLocations();
+  final List<RestaurantLocation> restaurantLocations =
+      LocationService().getAllRestaurantLocations();
 
   // Find the RestaurantLocation with a matching name
   final RestaurantLocation? selectedRestaurant = restaurantLocations.firstWhere(
-        (location) => location.name == restaurant.name,
-    orElse: () => RestaurantLocation(name: '', latitude: 0.0, longitude: 0.0), // Default values if not found
+    (location) => location.name == restaurant.name,
+    orElse: () => RestaurantLocation(
+        name: '', latitude: 0.0, longitude: 0.0), // Default values if not found
   );
 
   // Return the latitude of the selected restaurant
@@ -106,12 +110,14 @@ double getRestaurantLatitude(Restaurant restaurant) {
 
 double getRestaurantLongitude(Restaurant restaurant) {
   // Access the predefined list of RestaurantLocation instances
-  final List<RestaurantLocation> restaurantLocations = LocationService().getAllRestaurantLocations();
+  final List<RestaurantLocation> restaurantLocations =
+      LocationService().getAllRestaurantLocations();
 
   // Find the RestaurantLocation with a matching name
   final RestaurantLocation? selectedRestaurant = restaurantLocations.firstWhere(
-        (location) => location.name == restaurant.name,
-    orElse: () => RestaurantLocation(name: '', latitude: 0.0, longitude: 0.0), // Default values if not found
+    (location) => location.name == restaurant.name,
+    orElse: () => RestaurantLocation(
+        name: '', latitude: 0.0, longitude: 0.0), // Default values if not found
   );
 
   // Return the longitude of the selected restaurant
@@ -128,6 +134,3 @@ void _fetchMenuData(Restaurant restaurant) async {
     // Handle null or error cases when fetching menu data fails
   }
 }
-
-
-

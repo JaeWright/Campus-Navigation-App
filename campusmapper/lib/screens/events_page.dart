@@ -6,10 +6,10 @@ connects to the course scheduler page
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'events.dart';
+import 'package:campusmapper/models/sqflite/events.dart';
 import 'scheduler_handler.dart';
 import 'eventEditPage.dart';
-import 'dateConversions.dart';
+import '../utilities/dateConversions.dart';
 import 'package:intl/intl.dart';
 import 'eventAddPage.dart';
 
@@ -30,15 +30,14 @@ class EventTile {
   DateTime? date;
   DocumentReference? reference;
 
-  EventTile({
-    required this.id,
-    required this.eventName,
-    required this.location,
-    required this.weekday,
-    required this.time,
-    required this.date,
-    this.reference
-  });
+  EventTile(
+      {required this.id,
+      required this.eventName,
+      required this.location,
+      required this.weekday,
+      required this.time,
+      required this.date,
+      this.reference});
 }
 
 class MyApp extends StatelessWidget {
@@ -58,7 +57,14 @@ class MyApp extends StatelessWidget {
 }
 
 class EventsScheduler extends StatefulWidget {
-  const EventsScheduler({Key? key,required this.title, String? eventName, String? location,  String? weekday, String? time, int? id});
+  const EventsScheduler(
+      {Key? key,
+      required this.title,
+      String? eventName,
+      String? location,
+      String? weekday,
+      String? time,
+      int? id});
 
   final String title;
 
@@ -86,7 +92,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
 
       //check local first to see if any data is saved
       results = await _events.getAllEventsLocal();
-      if (results.isNotEmpty){
+      if (results.isNotEmpty) {
         for (int i = 0; i < results.length; i++) {
           eventsList.add(EventTile(
               id: results[i].id,
@@ -96,12 +102,11 @@ class _EventsSchedulerState extends State<EventsScheduler> {
               time: results[i].time,
               date: results[i].date));
         }
-      }
-      else{
+      } else {
         //check global database if no data is saved
         results = await _events.getAllEventsCloud();
-        if (results.isNotEmpty){
-          for (int i=0;i<results.length;i++){
+        if (results.isNotEmpty) {
+          for (int i = 0; i < results.length; i++) {
             eventsList.add(EventTile(
                 id: results[i].id,
                 eventName: results[i].eventName,
@@ -117,10 +122,9 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                 location: results[i].location,
                 weekday: results[i].weekday,
                 time: results[i].time,
-                date: results[i].date
-            ));
+                date: results[i].date));
           }
-          }
+        }
       }
       setState(() {}); // rebuilds everytime page is loaded
     }
@@ -144,28 +148,20 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       final String newTime = newEventData['time'];
       final DateTime newDate = newEventData['date'];
 
-    // Add the new data to the cloud + get ref id for local database
+      // Add the new data to the cloud + get ref id for local database
       String newId = await _events.insertEventCloud(
-          newWeekday,
-          newEventName,
-          newLocation,
-          newTime,
-          newDate
-      );
+          newWeekday, newEventName, newLocation, newTime, newDate);
       setState(() {
-
         eventsList.add(EventTile(
             id: newId,
             eventName: newEventName,
             location: newLocation,
             weekday: newWeekday,
             time: newTime,
-            date: newDate)
-        );
+            date: newDate));
       });
 
-
-    // Insert the new data into the local database
+      // Insert the new data into the local database
       _events.insertEventLocal(Event(
           id: newId,
           eventName: newEventName,
@@ -173,10 +169,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
           weekday: newWeekday,
           time: newTime,
           date: newDate));
-     }
+    }
   }
-
-
 
   //function to show popup for deleting events
   void _confirmDeleteEvent(EventTile eventToDelete) {
@@ -255,7 +249,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       );
 
       setState(() {
-        final index = eventsList.indexWhere((eventTile) => eventTile.id == event.id);
+        final index =
+            eventsList.indexWhere((eventTile) => eventTile.id == event.id);
         if (index != -1) {
           eventsList[index] = EventTile(
             id: updatedEvent.id,
@@ -273,10 +268,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       // Update the event in the cloud database
       await _events.updateEventCloud(updatedEvent);
       print("updated: $updated");
-
     }
   }
-
 
   //used chatgpt for this function
   List<Widget> getEventWidgets(String weekday) {
@@ -294,8 +287,10 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       if (eventsList[a].date!.compareTo(eventsList[b].date!) != 0) {
         return eventsList[a].date!.compareTo(eventsList[b].date!);
       } else {
-        return DateTime.parse("${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
-            .compareTo(DateTime.parse("${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+        return DateTime.parse(
+                "${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+            .compareTo(DateTime.parse(
+                "${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
       }
     });
 
@@ -313,8 +308,8 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             children: [
               Text(
                 eventsList[indexes[i]].eventName!,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               Text(
@@ -343,10 +338,6 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     return widgets;
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -359,7 +350,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
           },
           iconSize: 25,
         ),
-        title:  const Row(
+        title: const Row(
           children: [
             Text("Events Scheduler"),
           ],
@@ -373,8 +364,6 @@ class _EventsSchedulerState extends State<EventsScheduler> {
             iconSize: 25,
           ),
         ],
-
-
       ),
       body: Column(
         children: [

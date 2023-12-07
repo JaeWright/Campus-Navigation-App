@@ -8,10 +8,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'eventAddPage.dart';
 import 'eventEditPage.dart';
-import 'events.dart';
-import 'courses.dart';
+import 'package:campusmapper/models/sqflite/events.dart';
+import 'package:campusmapper/models/sqflite/courses.dart';
 import 'package:intl/intl.dart';
-import 'dateConversions.dart';
+import '../utilities/dateConversions.dart';
 import 'calendar_view.dart';
 
 //model for course database
@@ -31,16 +31,15 @@ class CourseTile {
   String? endTime;
   DocumentReference? reference;
 
-  CourseTile({
-    required this.id,
-    required this.weekday,
-    required this.courseName,
-    required this.profName,
-    required this.roomNum,
-    required this.endTime,
-    required this.startTime,
-    this.reference
-  });
+  CourseTile(
+      {required this.id,
+      required this.weekday,
+      required this.courseName,
+      required this.profName,
+      required this.roomNum,
+      required this.endTime,
+      required this.startTime,
+      this.reference});
 }
 
 //class to hold event tile data
@@ -53,17 +52,15 @@ class EventTile {
   DateTime? date;
   DocumentReference? reference;
 
-  EventTile({
-    required this.id,
-    required this.eventName,
-    required this.location,
-    required this.weekday,
-    required this.time,
-    required this.date,
-    this.reference
-  });
+  EventTile(
+      {required this.id,
+      required this.eventName,
+      required this.location,
+      required this.weekday,
+      required this.time,
+      required this.date,
+      this.reference});
 }
-
 
 class SchedulerHandlerPage extends StatefulWidget {
   const SchedulerHandlerPage({super.key});
@@ -90,17 +87,32 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
   }
 
   //get all the data from local databases
   void loadCoursesData() async {
-      List results = [];
+    List results = [];
 
-      //check local first to see if any data is saved
-      results = await _courses.getAllCoursesLocal();
-      if (results.isNotEmpty){
+    //check local first to see if any data is saved
+    results = await _courses.getAllCoursesLocal();
+    if (results.isNotEmpty) {
+      for (int i = 0; i < results.length; i++) {
+        coursesList.add(CourseTile(
+          id: results[i].id,
+          weekday: results[i].weekday,
+          courseName: results[i].courseName,
+          profName: results[i].profName,
+          roomNum: results[i].roomNum,
+          endTime: results[i].endTime,
+          startTime: results[i].startTime,
+        ));
+      }
+    } else {
+      //check global database if no data is saved
+      results = await _courses.getAllCoursesCloud();
+      if (results.isNotEmpty) {
         for (int i = 0; i < results.length; i++) {
           coursesList.add(CourseTile(
             id: results[i].id,
@@ -111,49 +123,43 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             endTime: results[i].endTime,
             startTime: results[i].startTime,
           ));
+          //add to local database for next load
+          await _courses.insertLocal(Course(
+            id: results[i].id,
+            weekday: results[i].weekday,
+            courseName: results[i].courseName,
+            profName: results[i].profName,
+            roomNum: results[i].roomNum,
+            endTime: results[i].endTime,
+            startTime: results[i].startTime,
+          ));
         }
-      }else{
-        //check global database if no data is saved
-        results = await _courses.getAllCoursesCloud();
-        if (results.isNotEmpty){
-          for (int i = 0; i < results.length; i++) {
-            coursesList.add(CourseTile(
-              id: results[i].id,
-              weekday: results[i].weekday,
-              courseName: results[i].courseName,
-              profName: results[i].profName,
-              roomNum: results[i].roomNum,
-              endTime: results[i].endTime,
-              startTime: results[i].startTime,
-            ));
-            //add to local database for next load
-            await _courses.insertLocal(
-                Course(
-                  id: results[i].id,
-                  weekday: results[i].weekday,
-                  courseName: results[i].courseName,
-                  profName: results[i].profName,
-                  roomNum: results[i].roomNum,
-                  endTime: results[i].endTime,
-                  startTime: results[i].startTime,
-                )
-            );
-          }
-        }else{
-          //popup that tells the user they do not have any courses registered
-        }
+      } else {
+        //popup that tells the user they do not have any courses registered
       }
-      setState(() {}); // rebuild when page is loaded
-
+    }
+    setState(() {}); // rebuild when page is loaded
   }
 
   void loadEventsData() async {
+    List results = [];
 
-      List results = [];
-
-      //check local first to see if any data is saved
-      results = await _events.getAllEventsLocal();
-      if (results.isNotEmpty){
+    //check local first to see if any data is saved
+    results = await _events.getAllEventsLocal();
+    if (results.isNotEmpty) {
+      for (int i = 0; i < results.length; i++) {
+        eventsList.add(EventTile(
+            id: results[i].id,
+            eventName: results[i].eventName,
+            location: results[i].location,
+            weekday: results[i].weekday,
+            time: results[i].time,
+            date: results[i].date));
+      }
+    } else {
+      //check global database if no data is saved
+      results = await _events.getAllEventsCloud();
+      if (results.isNotEmpty) {
         for (int i = 0; i < results.length; i++) {
           eventsList.add(EventTile(
               id: results[i].id,
@@ -162,39 +168,22 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               weekday: results[i].weekday,
               time: results[i].time,
               date: results[i].date));
+
+          //add to local database for next save
+          _events.insertEventLocal(Event(
+              id: results[i].id,
+              eventName: results[i].eventName,
+              location: results[i].location,
+              weekday: results[i].weekday,
+              time: results[i].time,
+              date: results[i].date));
         }
       }
-      else{
-        //check global database if no data is saved
-        results = await _events.getAllEventsCloud();
-        if (results.isNotEmpty){
-          for (int i=0;i<results.length;i++){
-            eventsList.add(EventTile(
-                id: results[i].id,
-                eventName: results[i].eventName,
-                location: results[i].location,
-                weekday: results[i].weekday,
-                time: results[i].time,
-                date: results[i].date));
-
-            //add to local database for next save
-            _events.insertEventLocal(Event(
-                id: results[i].id,
-                eventName: results[i].eventName,
-                location: results[i].location,
-                weekday: results[i].weekday,
-                time: results[i].time,
-                date: results[i].date
-            ));
-          }
-        }
-      }
-      setState(() {}); // rebuilds everytime page is loaded
-
+    }
+    setState(() {}); // rebuilds everytime page is loaded
   }
 
   Future<void> _addEvent() async {
-
     var newEventData = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -211,24 +200,16 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
       // Add the new data to the cloud + get ref id for local database
       String newId = await _events.insertEventCloud(
-          newWeekday,
-          newEventName,
-          newLocation,
-          newTime,
-          newDate
-      );
+          newWeekday, newEventName, newLocation, newTime, newDate);
       setState(() {
-
         eventsList.add(EventTile(
             id: newId,
             eventName: newEventName,
             location: newLocation,
             weekday: newWeekday,
             time: newTime,
-            date: newDate)
-        );
+            date: newDate));
       });
-
 
       // Insert the new data into the local database
       _events.insertEventLocal(Event(
@@ -316,7 +297,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       );
 
       setState(() {
-        final index = eventsList.indexWhere((eventTile) => eventTile.id == event.id);
+        final index =
+            eventsList.indexWhere((eventTile) => eventTile.id == event.id);
         if (index != -1) {
           eventsList[index] = EventTile(
             id: updatedEvent.id,
@@ -334,7 +316,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       // Update the event in the cloud database
       await _events.updateEventCloud(updatedEvent);
       print("updated: $updated");
-
     }
   }
 
@@ -355,24 +336,28 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               padding: EdgeInsetsDirectional.only(start: 10),
               child: Text('Scheduler'))
         ]),
-          actions: <Widget>[
-                isSwitched ? IconButton(
-                    onPressed: () {_addEvent();},
-                    icon: const Icon(Icons.add)
-                ): Container(),
-
-                isSwitched ? IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CalendarPage(events: eventsList,displayEvents: isSwitched),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.calendar_month)
-                ): Container(),
-          ],
+        actions: <Widget>[
+          isSwitched
+              ? IconButton(
+                  onPressed: () {
+                    _addEvent();
+                  },
+                  icon: const Icon(Icons.add))
+              : Container(),
+          isSwitched
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CalendarPage(
+                            events: eventsList, displayEvents: isSwitched),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.calendar_month))
+              : Container(),
+        ],
       ),
       body: Column(
         children: [
@@ -422,7 +407,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                         Expanded(
                           child: ListView(
                             shrinkWrap: true,
-                            children: selectWidgets(getWeekday(i),isSwitched),
+                            children: selectWidgets(getWeekday(i), isSwitched),
                           ),
                         ),
                       ],
@@ -457,7 +442,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                         Expanded(
                           child: ListView(
                             shrinkWrap: true,
-                            children: selectWidgets(getWeekday(i),isSwitched),
+                            children: selectWidgets(getWeekday(i), isSwitched),
                           ),
                         ),
                       ],
@@ -487,7 +472,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                   Expanded(
                     child: ListView(
                       shrinkWrap: true,
-                      children: selectWidgets(getWeekday(4),isSwitched),
+                      children: selectWidgets(getWeekday(4), isSwitched),
                     ),
                   ),
                 ],
@@ -496,17 +481,17 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           ),
         ],
       ),
-
     );
   }
 
-  List<Widget> selectWidgets(String weekday,bool isEvents){
-    if (isEvents){
+  List<Widget> selectWidgets(String weekday, bool isEvents) {
+    if (isEvents) {
       return getEventWidgets(weekday);
-    }else{
+    } else {
       return getCourseWidgets(weekday);
     }
   }
+
   //used chatgpt for this function
   List<Widget> getCourseWidgets(String weekday) {
     List<Widget> widgets = [];
@@ -550,7 +535,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     return widgets;
   }
 
-
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
@@ -566,8 +550,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       if (eventsList[a].date!.compareTo(eventsList[b].date!) != 0) {
         return eventsList[a].date!.compareTo(eventsList[b].date!);
       } else {
-        return DateTime.parse("${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
-            .compareTo(DateTime.parse("${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+        return DateTime.parse(
+                "${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+            .compareTo(DateTime.parse(
+                "${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
       }
     });
 
@@ -585,8 +571,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             children: [
               Text(
                 eventsList[indexes[i]].eventName!,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               Text(
@@ -614,5 +600,4 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
     return widgets;
   }
-
 }

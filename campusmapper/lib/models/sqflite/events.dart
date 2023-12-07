@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import 'scheduler_database_helper.dart';
 import 'dart:async';
-import 'dateConversions.dart';
+import 'package:campusmapper/utilities/dateConversions.dart';
 import 'package:intl/intl.dart';
 
 //class to hold event data
@@ -20,15 +20,14 @@ class Event {
   DateTime? date; // New field for the date
   DocumentReference? reference;
 
-  Event({
-    required this.id,
-    required this.eventName,
-    required this.location,
-    required this.weekday,
-    required this.time,
-    required this.date,
-    this.reference
-  });
+  Event(
+      {required this.id,
+      required this.eventName,
+      required this.location,
+      required this.weekday,
+      required this.time,
+      required this.date,
+      this.reference});
 
   Event.fromMapLocal(Map map) {
     id = map["id"];
@@ -39,7 +38,7 @@ class Event {
     date = DateTime.parse(map["date"]);
   }
 
-  Event.fromMapCloud(Map map,{this.reference}) {
+  Event.fromMapCloud(Map map, {this.reference}) {
     id = reference?.id;
     eventName = map["eventName"];
     location = map["location"];
@@ -65,27 +64,26 @@ class Event {
   }
 }
 
-
 //class for interaction between event class and local database
-class EventsModel{
-
-  Future getAllEventsLocal() async{
+class EventsModel {
+  Future getAllEventsLocal() async {
     //returns list of grades in database
     final db = await DBUtilsSQL.initEvents();
     final List maps = await db.query('events');
 //
     List results = [];
 
-    if (maps.isNotEmpty){
-      for (int i=0; i<maps.length; i++){
+    if (maps.isNotEmpty) {
+      for (int i = 0; i < maps.length; i++) {
         results.add(Event.fromMapLocal(maps[i]));
       }
     }
 
     return results;
   }
+
   //functions below are functional but not currently implemented in the current page
-  Future<int> insertEventLocal (Event event) async {
+  Future<int> insertEventLocal(Event event) async {
     //adds new grade to database
     final db = await DBUtilsSQL.initEvents();
     return db.insert(
@@ -93,9 +91,9 @@ class EventsModel{
       event.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-
   }
-  Future<int> updateEventLocal (Event event) async{
+
+  Future<int> updateEventLocal(Event event) async {
     final db = await DBUtilsSQL.initEvents();
     return db.update(
       'events',
@@ -103,21 +101,19 @@ class EventsModel{
       where: 'id = ?',
       whereArgs: [event.id],
     );
-
   }
 
-  Future<int> deleteEventLocal (String id) async{
+  Future<int> deleteEventLocal(String id) async {
     final db = await DBUtilsSQL.initEvents();
     return db.delete(
       'events',
       where: 'id = ?',
       whereArgs: [id],
     );
-
   }
 
   //cloud database interactions
-  Future getAllEventsCloud() async{
+  Future getAllEventsCloud() async {
     //make it get the user reference later when all connected
     String userRef = "1000";
     List results = [];
@@ -126,23 +122,23 @@ class EventsModel{
         .doc(userRef)
         .collection("Events")
         .get()
-        .then((querySnapshot){
-      for (var docSnapshot in querySnapshot.docs){
-        results.add(
-            Event(
-              id: docSnapshot.id,
-              weekday: docSnapshot["weekday"],
-              eventName: docSnapshot["eventName"],
-              location: docSnapshot["location"],
-              time: docSnapshot["time"],
-              date: DateTime.parse(docSnapshot["date"].split(" – ").first),
-            )
-        );
+        .then((querySnapshot) {
+      for (var docSnapshot in querySnapshot.docs) {
+        results.add(Event(
+          id: docSnapshot.id,
+          weekday: docSnapshot["weekday"],
+          eventName: docSnapshot["eventName"],
+          location: docSnapshot["location"],
+          time: docSnapshot["time"],
+          date: DateTime.parse(docSnapshot["date"].split(" – ").first),
+        ));
       }
     });
     return results;
   }
-  Future<String> insertEventCloud (String weekday, String eventName, String location, String time, DateTime date) async {
+
+  Future<String> insertEventCloud(String weekday, String eventName,
+      String location, String time, DateTime date) async {
     //remove test variable once fully implemented
     String userRef = "1000";
     //adds new event to online database
@@ -160,7 +156,8 @@ class EventsModel{
     //returns new id
     return ref.id;
   }
-  Future updateEventCloud (Event event) async{
+
+  Future updateEventCloud(Event event) async {
     //remove test variable once fully implemented
     String userRef = "1000";
     await FirebaseFirestore.instance
@@ -176,7 +173,8 @@ class EventsModel{
       'date': DateFormat('yyyy-MM-dd – kk:mm').format(event.date!)
     });
   }
-  Future deleteEventCloud (String id) async{
+
+  Future deleteEventCloud(String id) async {
     //remove test variable once fully implemented
     String userRef = "1000";
     await FirebaseFirestore.instance
@@ -185,11 +183,7 @@ class EventsModel{
         .collection("Events")
         .doc(id)
         .delete()
-        .then(
-            (doc) => print("Document deleted"),
-        onError: (e) => print("Error deleting document $e")
-    );
+        .then((doc) => print("Document deleted"),
+            onError: (e) => print("Error deleting document $e"));
   }
-
-
 }

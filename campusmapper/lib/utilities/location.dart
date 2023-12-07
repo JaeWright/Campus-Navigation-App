@@ -1,4 +1,4 @@
-import 'package:campusmapper/map/map_screen.dart';
+import 'package:campusmapper/screens/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 

@@ -13,17 +13,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 //class for initialization of databases for courses and events
 class DBUtilsSQL {
-
   static Future<Database> initCourses() async {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'courses_manager.db'),
       onCreate: (db, version) {
-        db.execute('CREATE TABLE courses(id TEXT PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
+        db.execute(
+            'CREATE TABLE courses(id TEXT PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
         // Call the function to insert pre-made values
         //_insertValuesCourses(db);
-
-
-
       },
       version: 1,
     );
@@ -35,10 +32,10 @@ class DBUtilsSQL {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'events_manager.db'),
       onCreate: (db, version) {
-        db.execute('CREATE TABLE events(id TEXT PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
+        db.execute(
+            'CREATE TABLE events(id TEXT PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
         // Call the function to insert pre-made values
-       //_insertValuesEvents(db);
-
+        //_insertValuesEvents(db);
       },
       version: 1,
     );
@@ -117,7 +114,6 @@ class DBUtilsSQL {
       ),
     ];
 
-
     // Insert the pre-made courses into the database
     for (final course in preMadeCourses) {
       db.insert(
@@ -127,7 +123,6 @@ class DBUtilsSQL {
       );
     }
   }
-
 
   static void _insertValuesEvents(Database db) {
     // Create a list of pre-made values (events) to insert into the database
@@ -223,5 +218,4 @@ class DBUtilsSQL {
       );
     }
   }
-
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:campusmapper/scheduler/courses.dart';// Import your Course model
+import 'package:campusmapper/models/sqflite/courses.dart'; // Import your Course model
 
 class CourseDetailsPage extends StatelessWidget {
   final Course course; // Replace Course with your actual model

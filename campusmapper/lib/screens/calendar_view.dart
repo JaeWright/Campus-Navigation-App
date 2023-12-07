@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'courses.dart';
+import 'package:campusmapper/models/sqflite/courses.dart';
 import 'scheduler_handler.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -19,10 +19,10 @@ class _CalendarPageState extends State<CalendarPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  late LinkedHashMap<DateTime,List> toDisplay;
+  late LinkedHashMap<DateTime, List> toDisplay;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     toDisplay = convertToDynamicMap(groupEventsByDay(widget.events!));
   }
@@ -30,13 +30,13 @@ class _CalendarPageState extends State<CalendarPage> {
   List getEventForDay(DateTime day) {
     return toDisplay[day] ?? [];
   }
+
   int getHashCode(DateTime key) {
     return key.day * 1000000 + key.month * 10000 + key.year;
   }
+
   @override
   Widget build(BuildContext context) {
-
-
     final _events = LinkedHashMap<DateTime, List>(
       equals: isSameDay,
       hashCode: getHashCode,
@@ -45,7 +45,6 @@ class _CalendarPageState extends State<CalendarPage> {
     List getEventForDay(DateTime day) {
       return _events[day] ?? [];
     }
-
 
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +55,7 @@ class _CalendarPageState extends State<CalendarPage> {
           children: [
             TableCalendar(
               headerStyle: const HeaderStyle(
-                formatButtonVisible : false,
+                formatButtonVisible: false,
               ),
               firstDay: DateTime.utc(2023, 1, 1),
               lastDay: DateTime.utc(2023, 12, 31),
@@ -72,7 +71,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   _focusedDay = focusedDay;
                 });
               },
-              onPageChanged: (focusedDay){
+              onPageChanged: (focusedDay) {
                 _focusedDay = focusedDay;
               },
               calendarStyle: CalendarStyle(
@@ -95,19 +94,23 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               margin: const EdgeInsets.all(10.0),
               child: ListView(
-              shrinkWrap: true,
-              children: _selectedDay != null ? getEventForDay(_selectedDay!)
-                  .map((event) => ListTile(
-                title:
-                Text(event.eventName,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                subtitle:
-                Text('${event.location} at ${event.time}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
-              ))
-                  .toList() : [],
-            ),
+                shrinkWrap: true,
+                children: _selectedDay != null
+                    ? getEventForDay(_selectedDay!)
+                        .map((event) => ListTile(
+                              title: Text(event.eventName,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
+                              subtitle: Text(
+                                  '${event.location} at ${event.time}',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                            ))
+                        .toList()
+                    : [],
+              ),
             )
             // Add other widgets or functionalities as needed below the calendar
           ],
@@ -115,6 +118,7 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
     );
   }
+
   Map<DateTime, List<EventTile>> groupEventsByDay(List<EventTile> events) {
     Map<DateTime, List<EventTile>> groupedEvents = {};
 
@@ -130,7 +134,9 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return groupedEvents;
   }
-  LinkedHashMap<DateTime, List<dynamic>> convertToDynamicMap(Map<DateTime, List<EventTile>> map) {
+
+  LinkedHashMap<DateTime, List<dynamic>> convertToDynamicMap(
+      Map<DateTime, List<EventTile>> map) {
     LinkedHashMap<DateTime, List<dynamic>> convertedMap = LinkedHashMap();
 
     map.forEach((key, value) {

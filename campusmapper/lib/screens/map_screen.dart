@@ -6,10 +6,11 @@ In the final submission, will handle pathfinding and Geolocation logic
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campusmapper/food/location.dart';
-import 'package:campusmapper/models/map_constants.dart';
+import 'package:campusmapper/utilities/location.dart';
+import 'package:campusmapper/models/constants/map_constants.dart';
 import 'package:campusmapper/models/firestore/marker_model.dart';
-import 'map_marker.dart';
+import '../models/map_marker.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:campusmapper/models/geolocation/geolocation.dart';
 import 'package:campusmapper/models/openrouteservice/directions.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -143,7 +144,8 @@ class ListMapState extends State<ListMapScreen> {
                                   ],
                                 ));
                       },
-                    )
+                    ),
+                    const Dropdown()
                   ],
                 ),
                 //Handler for (as the name states) the sliding up panel at the bottom of the screen

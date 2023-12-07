@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/scheduler/courses.dart';
+import 'package:campusmapper/models/sqflite/courses.dart';
 import 'course_details_page.dart';
-import 'schedule_provider.dart';
+import '../utilities/schedule_provider.dart';
 
 class SchedulePage extends StatelessWidget {
   @override
@@ -55,15 +55,17 @@ class SchedulePage extends StatelessWidget {
                     ),
                     if (coursesForDay != null && coursesForDay.isNotEmpty)
                       ...coursesForDay.map(
-                            (course) => ListTile(
+                        (course) => ListTile(
                           title: Text(course.courseName!),
-                          subtitle: Text('${course.startTime!} - ${course.endTime!}'),
+                          subtitle:
+                              Text('${course.startTime!} - ${course.endTime!}'),
                           onTap: () {
                             // Handle tapping on a course to show details
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CourseDetailsPage(course: course),
+                                builder: (context) =>
+                                    CourseDetailsPage(course: course),
                               ),
                             );
                           },

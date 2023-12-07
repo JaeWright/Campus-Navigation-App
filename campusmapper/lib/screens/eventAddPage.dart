@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dateConversions.dart';
+import '../utilities/dateConversions.dart';
 
 class EventAddPage extends StatefulWidget {
   @override
@@ -39,8 +39,7 @@ class _EventAddPageState extends State<EventAddPage> {
       onWillPop: () async {
         // Return to scheduler
         FocusScope.of(context).unfocus();
-        Future.delayed(const Duration(milliseconds: 750), ()
-        {
+        Future.delayed(const Duration(milliseconds: 750), () {
           Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
         });
 
@@ -79,14 +78,16 @@ class _EventAddPageState extends State<EventAddPage> {
                         firstDate: DateTime(2023),
                         lastDate: DateTime(2025),
                         selectableDayPredicate: (DateTime date) {
-                          return date.weekday != DateTime.saturday && date.weekday != DateTime.sunday;
+                          return date.weekday != DateTime.saturday &&
+                              date.weekday != DateTime.sunday;
                         },
                       );
                       if (picked != null) {
                         setState(() {
                           date = picked;
                           weekday = convertWeekday(picked);
-                          dateController.text = "${convertWeekday(picked)} on ${picked.year}-${picked.month}-${picked.day}";
+                          dateController.text =
+                              "${convertWeekday(picked)} on ${picked.year}-${picked.month}-${picked.day}";
                         });
                       }
                     },
@@ -114,7 +115,6 @@ class _EventAddPageState extends State<EventAddPage> {
                   ),
                 ),
               ),
-
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

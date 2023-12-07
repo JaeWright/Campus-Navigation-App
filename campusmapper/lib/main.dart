@@ -12,24 +12,24 @@ Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 Author: Brock Davidge
 Added functionality to connect to course search and weekly schedule.
 */
-import 'package:campusmapper/scheduler/events_page.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
-import 'helpbutton.dart';
-import 'courses/course_search_page.dart';
-import 'courses/schedule_page.dart';
-import 'courses/schedule_provider.dart';
-import 'information_centre_page.dart';
-import 'accessibility.dart';
-import 'scheduler/scheduler_handler.dart';
-import 'student_login.dart';
+import 'screens/helpbutton.dart';
+import 'screens/course_search_page.dart';
+import 'screens/schedule_page.dart';
+import 'utilities/schedule_provider.dart';
+import 'screens/information_centre_page.dart';
+import 'screens/accessibility.dart';
+import 'screens/scheduler_handler.dart';
+import 'screens/student_login.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/map/map_screen.dart';
-import 'package:campusmapper/food/location.dart';
-import 'package:campusmapper/food/restaurant_details.dart';
+import 'package:campusmapper/screens/map_screen.dart';
+import 'package:campusmapper/utilities/location.dart';
+import 'package:campusmapper/screens/restaurant_details.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -212,16 +212,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Campus Navigator'),
-        actions: isLoggedIn
-            ? [
-                IconButton(
-                  icon: Icon(Icons.exit_to_app),
-                  onPressed: logoutUser,
-                ),
-              ]
-            : [],
-      ),
+          title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
       body: GridView.count(
         crossAxisCount: 3,
         padding: EdgeInsets.all(8.0),

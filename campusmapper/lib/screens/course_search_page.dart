@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:campusmapper/scheduler/courses.dart';
 import 'course_details_page.dart';
-import 'package:campusmapper/scheduler/courses.dart';
+import 'package:campusmapper/models/sqflite/courses.dart';
 import 'package:provider/provider.dart';
-import 'schedule_provider.dart';
+import '../utilities/schedule_provider.dart';
 
 class CourseSearchPage extends StatefulWidget {
   @override
@@ -271,8 +270,8 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
     setState(() {
       filteredCourses = courses
           .where((course) =>
-      course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
-          course.profName!.toLowerCase().contains(query.toLowerCase()))
+              course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
+              course.profName!.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -290,7 +289,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
     print('Adding ${course.courseName} to schedule');
     // Access the ScheduleProvider
     ScheduleProvider scheduleProvider =
-    Provider.of<ScheduleProvider>(context, listen: false);
+        Provider.of<ScheduleProvider>(context, listen: false);
 
     // Call the addToSchedule method
     scheduleProvider.addToSchedule(course);
@@ -340,7 +339,8 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(filteredCourses[index].courseName ?? 'Unknown Course'),
-            subtitle: Text(filteredCourses[index].profName ?? 'Unknown Professor'),
+            subtitle:
+                Text(filteredCourses[index].profName ?? 'Unknown Professor'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -423,8 +423,8 @@ class CourseSearchDelegate extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     final resultList = courses
         .where((course) =>
-    course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
-        course.profName!.toLowerCase().contains(query.toLowerCase()))
+            course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
+            course.profName!.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
@@ -452,10 +452,12 @@ class CourseSearchDelegate extends SearchDelegate<String> {
     final suggestionList = query.isEmpty
         ? courses
         : courses
-        .where((course) =>
-    course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
-        course.profName!.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+            .where((course) =>
+                course.courseName!
+                    .toLowerCase()
+                    .contains(query.toLowerCase()) ||
+                course.profName!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,

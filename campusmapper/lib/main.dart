@@ -12,24 +12,23 @@ Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 Author: Brock Davidge
 Added functionality to connect to course search and weekly schedule.
 */
-import 'package:campusmapper/widgets/drop_menu.dart';
+import 'package:campusmapper/scheduler/events_page.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
-import 'screens/helpbutton.dart';
-import 'screens/course_search_page.dart';
-import 'screens/schedule_page.dart';
-import 'utilities/schedule_provider.dart';
-import 'screens/information_centre_page.dart';
-import 'screens/accessibility.dart';
-import 'screens/scheduler_handler.dart';
-import 'screens/student_login.dart';
+import 'helpbutton.dart';
+import 'courses/course_search_page.dart';
+import 'courses/schedule_page.dart';
+import 'courses/schedule_provider.dart';
+import 'information_centre_page.dart';
+import 'accessibility.dart';
+import 'scheduler/scheduler_handler.dart';
+import 'student_login.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/screens/map_screen.dart';
-import 'package:campusmapper/utilities/location.dart';
-import 'package:campusmapper/screens/restaurant_details.dart';
+import 'package:campusmapper/map/map_screen.dart';
+import 'package:campusmapper/food/location.dart';
+import 'package:campusmapper/food/restaurant_details.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +40,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => ScheduleProvider()), // Add this line
+          create: (context) => ScheduleProvider(),
+        ), // Add this line
         // Add other providers if needed
         Provider(
           create: (context) => LocationService(),
@@ -133,7 +133,6 @@ class _HomePageState extends State<HomePage> {
         title: 'My Schedule',
         color: Color(0xFF9B59B6),
         onTap: () {
-          //navigateToSection(context, SchedulerHandlerPage());
           Navigator.pushReplacementNamed(context, '/scheduler');
         },
       ),
@@ -153,12 +152,12 @@ class _HomePageState extends State<HomePage> {
           final locationService =
               Provider.of<LocationService>(context, listen: false);
           navigateToSection(
-              context,
-              ListMapScreen(
-                findLocation: const LatLng(0.0, 0.0),
-                restaurantLocations:
-                    locationService.getAllRestaurantLocations(),
-              ));
+            context,
+            ListMapScreen(
+              findLocation: const LatLng(0.0, 0.0),
+              restaurantLocations: locationService.getAllRestaurantLocations(),
+            ),
+          );
         },
       ),
       NavigationCard(
@@ -172,7 +171,9 @@ class _HomePageState extends State<HomePage> {
       Container(
         alignment: Alignment.bottomCenter,
         padding: EdgeInsets.only(bottom: 8.0),
-        child: HelpButton(
+        child: IconButton(
+          icon: Icon(Icons.help_outline), // This is the question mark icon
+          color: Colors.teal, // You can set the color to match your theme
           onPressed: () {
             showDialog(
               context: context,
@@ -212,78 +213,21 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
+        title: Text('Campus Navigator'),
+        actions: isLoggedIn
+            ? [
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: logoutUser,
+                ),
+              ]
+            : [],
+      ),
       body: GridView.count(
         crossAxisCount: 3,
         padding: EdgeInsets.all(8.0),
         childAspectRatio: 0.8 / 1.0,
         children: navigationCards,
-      ),
-    );
-  }
-}
-
-class AnimatedBackground extends StatefulWidget {
-  final Widget child;
-
-  const AnimatedBackground({Key? key, required this.child}) : super(key: key);
-
-  @override
-  _AnimatedBackgroundState createState() => _AnimatedBackgroundState();
-}
-
-class _AnimatedBackgroundState extends State<AnimatedBackground> {
-  Color _color = Colors.white;
-
-  @override
-  void initState() {
-    super.initState();
-    _animateBackgroundColor();
-  }
-
-  void _animateBackgroundColor() {
-    Future.delayed(Duration(seconds: 1)).then((_) {
-      if (mounted) {
-        setState(() {
-          _color = Color((0xFF000000 | math.Random().nextInt(0xFFFFFF)));
-        });
-        _animateBackgroundColor();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(seconds: 1),
-      color: _color,
-      child: widget.child,
-    );
-  }
-}
-
-class NotificationsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final events = [
-      {'name': 'Tech Workshop', 'date': 'Nov 10', 'location': 'Auditorium'},
-    ];
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Notifications')),
-      body: ListView.builder(
-        itemCount: events.length,
-        itemBuilder: (context, index) {
-          var event = events[index];
-          return ListTile(
-            title: Text(event['name'] ?? 'Unknown Event'),
-            subtitle: Text(
-                '${event['date'] ?? 'Date not set'} at ${event['location'] ?? 'Location not set'}'),
-            onTap: () {
-              // Your onTap code
-            },
-          );
-        },
       ),
     );
   }
@@ -307,18 +251,46 @@ class NavigationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: color,
+      elevation: 5, // Added elevation for depth effect
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15), // Rounded corners
+      ),
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(icon, size: 48.0),
-            SizedBox(height: 16.0),
-            Text(title, style: TextStyle(fontSize: 16.0)),
-          ],
+        borderRadius: BorderRadius.circular(15), // Match border radius
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
+              SizedBox(height: 16.0),
+              Text(title,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white, // Text color changed
+                    fontWeight: FontWeight.bold, // Bold text
+                  )),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+class HelpButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const HelpButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text('Help'),
+    );
+  }
+}
+

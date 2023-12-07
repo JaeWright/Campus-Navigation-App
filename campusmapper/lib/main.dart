@@ -24,7 +24,6 @@ import 'package:campusmapper/utilities/schedule_provider.dart';
 import 'package:campusmapper/screens/information_centre_page.dart';
 import 'package:campusmapper/screens/accessibility.dart';
 import 'package:campusmapper/screens/scheduler_handler.dart';
-import 'package:campusmapper/screens/student_login.dart';
 import 'package:provider/provider.dart';
 import 'package:campusmapper/screens//map_screen.dart';
 import 'package:campusmapper/utilities/location.dart';

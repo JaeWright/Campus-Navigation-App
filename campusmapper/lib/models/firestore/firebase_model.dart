@@ -71,4 +71,21 @@ class FirebaseModel {
     });
     return user;
   }
+
+  Future<String> register(String email, String password, String firstname,
+      String lastname, String sid) async {
+    String id = "None";
+    final data = {
+      "Email": email,
+      "FirstName": firstname,
+      "LastName": lastname,
+      "Password": password,
+      "StudentID": sid
+    };
+    await _firestore
+        .collection("users")
+        .add(data)
+        .then((docSnapshot) => id = docSnapshot.id);
+    return id;
+  }
 }

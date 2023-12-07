@@ -54,7 +54,11 @@ class _EventEditPageState extends State<EventEditPage> {
     return WillPopScope(
         onWillPop: () async {
       //Return to scheduler
-      Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
+          FocusScope.of(context).unfocus();
+          Future.delayed(const Duration(milliseconds: 750), ()
+          {
+            Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
+          });
 
       // Return 'false' to prevent the default back button behavior
       return false;

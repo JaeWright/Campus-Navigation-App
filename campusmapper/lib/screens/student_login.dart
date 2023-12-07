@@ -1,97 +1,25 @@
 import 'package:flutter/material.dart';
-import '../Registration.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:campusmapper/models/firestore/firebase_model.dart';
+import 'package:campusmapper/models/sqflite/logged_in_model.dart';
+import 'package:campusmapper/utilities/user.dart';
 
 class StudentLoginPage extends StatefulWidget {
+  const StudentLoginPage({super.key});
+
   @override
-  _StudentLoginPageState createState() => _StudentLoginPageState();
+  StudentLoginPageState createState() => StudentLoginPageState();
 }
 
-class _StudentLoginPageState extends State<StudentLoginPage> {
+class StudentLoginPageState extends State<StudentLoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _studentIdController = TextEditingController();
+  bool loggingIn = true;
+  final _formKey = GlobalKey<FormState>();
+  final FirebaseModel _fireDatabase = FirebaseModel();
+  final UserModel _sqlDatabase = UserModel();
 
-  bool _isLoginSelected = true; // Indicates whether login is selected
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _studentIdController.dispose();
-    super.dispose();
-  }
-
-  void _toggleLoginSignup(bool isLoginSelected) {
-    setState(() {
-      _isLoginSelected = isLoginSelected;
-    });
-  }
-
-  void _login() {
-    // Implement your login logic here...
-  }
-
-  void _register() {
-    // Check if it's a registration attempt
-    if (!_isLoginSelected) {
-      // Registration logic as per your requirements
-      String firstName = _firstNameController.text;
-      String lastName = _lastNameController.text;
-      String email = _emailController.text;
-      String password = _passwordController.text;
-      String studentId = _studentIdController.text;
-
-      // Check if the email is valid (ends with @school.net)
-      if (!email.endsWith('@school.net')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Email must end with @school.net'),
-          ),
-        );
-        return;
-      }
-
-      // Check if the password has at least 7 characters
-      if (password.length < 7) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Password must have at least 7 characters'),
-          ),
-        );
-        return;
-      }
-
-      // Check if the student ID has 1-9 digits
-      if (studentId.isEmpty ||
-          int.tryParse(studentId) == null ||
-          studentId.length < 1 ||
-          studentId.length > 9) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Student ID must be 1-9 digits long'),
-          ),
-        );
-        return;
-      }
-
-      // Your registration logic here, e.g., sending data to a backend or database
-      // If registration is successful, you can navigate back to the login page or perform any other action.
-      // If registration fails, you can show an error message.
-
-      // Example:
-      // If registration is successful, you can navigate back to the login page.
-      Navigator.of(context).pop();
-    } else {
-      // Login logic as per your requirements...
-    }
-  }
-
+  String email = '';
+  String password = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,95 +31,107 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
               padding: EdgeInsetsDirectional.only(start: 10),
               child: Text("Student Login"))
         ]),
-        actions: [
-          GestureDetector(
-            onTap: () => _toggleLoginSignup(true),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              alignment: Alignment.center,
-              child: Text(
-                'Login',
-                style: TextStyle(
-                  color: _isLoginSelected ? Colors.white : Colors.grey,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _toggleLoginSignup(false),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              alignment: Alignment.center,
-              child: Text(
-                'SignUp',
-                style: TextStyle(
-                  color: _isLoginSelected ? Colors.grey : Colors.blue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            if (!_isLoginSelected) ...[
-              TextFormField(
-                controller: _firstNameController,
-                decoration: InputDecoration(
-                  labelText: 'First Name',
-                  border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  // The validator receives the text that the user has entered.
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email cannot be null';
+                    } else {
+                      email = value;
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: InputDecoration(
-                  labelText: 'Last Name',
-                  border: OutlineInputBorder(),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  // The validator receives the text that the user has entered.
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password cannot be null';
+                    } else {
+                      password = value;
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _studentIdController,
-                decoration: InputDecoration(
-                  labelText: 'Student ID',
-                  border: OutlineInputBorder(),
+                Row(children: [
+                  const Text('Don\'t have an account?'),
+                  TextButton(onPressed: () {}, child: const Text('Sign Up'))
+                ]),
+                const Padding(padding: EdgeInsets.only(top: 30.0)),
+                SizedBox(
+                  width: 175,
+                  height: 30,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _attemptLogin(email, password);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white38,
+                          shape: const StadiumBorder()),
+                      child: const Text(
+                        "Submit",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
+                      )),
                 ),
-              ),
-            ],
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
+              ],
             ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoginSelected ? _login : _register,
-              child: Text(_isLoginSelected ? 'Login' : 'Register'),
-              style: ElevatedButton.styleFrom(
-                primary: _isLoginSelected ? Colors.blue : Colors.green,
-              ),
-            ),
-          ],
-        ),
-      ),
+          )),
     );
+  }
+
+  Future _attemptLogin(String email, String password) async {
+    User user = await _fireDatabase.login(email, password);
+    if (user.id == "None") {
+      var warningSnackbar = const SnackBar(
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.white38,
+        content: Text(
+          "Username or Password is Incorrect!",
+          style: TextStyle(fontSize: 16, color: Colors.red),
+        ),
+      );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(warningSnackbar);
+      setState(() {
+        _emailController.clear();
+        _passwordController.clear();
+      });
+    } else {
+      _sqlDatabase.insertUser(user);
+      var successSnackbar = SnackBar(
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.white38,
+        content: Text(
+          "Successfully logged in. Welcome ${user.firstname}",
+          style: const TextStyle(fontSize: 16),
+        ),
+      );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(successSnackbar);
+      Navigator.pop(context);
+    }
   }
 }

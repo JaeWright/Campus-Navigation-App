@@ -1,12 +1,12 @@
 import 'package:latlong2/latlong.dart';
-import 'package:campusmapper/models/firestore/marker_model.dart';
+import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Directions {
   LatLng initialPosition;
   LatLng locationPosition;
-  MarkerModel? database;
+  FirebaseModel? database;
   Directions(
       {required this.initialPosition,
       required this.locationPosition,

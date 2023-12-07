@@ -41,9 +41,8 @@ class UserModel {
 
   Future<int> removeUser(User user) async {
     final db = await DBUtils.init();
-    return db.delete(
+    return await db.delete(
       'user',
-      user.toMap(),
       where: 'id = ?',
       whereArgs: [user.id],
     );

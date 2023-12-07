@@ -1,5 +1,6 @@
 /*
-Author: Brock Davidge - 100787894
+Samiur Rahman -100824221
+
 This page manages the Accessibility Directory for campus buildings, displaying 
 details about accessible entrances and departments. 
 */

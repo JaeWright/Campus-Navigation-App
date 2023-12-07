@@ -171,9 +171,7 @@ class _HomePageState extends State<HomePage> {
       Container(
         alignment: Alignment.bottomCenter,
         padding: EdgeInsets.only(bottom: 8.0),
-        child: IconButton(
-          icon: Icon(Icons.help_outline), // This is the question mark icon
-          color: Colors.teal, // You can set the color to match your theme
+        child: HelpButton(
           onPressed: () {
             showDialog(
               context: context,
@@ -276,20 +274,6 @@ class NavigationCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class HelpButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const HelpButton({Key? key, required this.onPressed}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Text('Help'),
     );
   }
 }

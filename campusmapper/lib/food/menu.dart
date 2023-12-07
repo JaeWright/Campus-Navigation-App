@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 
 class MenuService {
   static Map<String, String> menuImagePaths = {
@@ -11,25 +12,39 @@ class MenuService {
   };
 
   static void showMenuImage(BuildContext context, String imagePath) {
-    // Show the menu image using the passed imagePath
-    // Implement your logic to display the menu image in a dialog or widget
-    // For example, you can use a simple dialog box to display the image:
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        content: Image.asset(imagePath), // Displaying the image in a dialog
-      ),
+      builder: (context) {
+        return Dialog(
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: PhotoView(
+                imageProvider: AssetImage(imagePath),
+                minScale: PhotoViewComputedScale.contained * 0.8,
+                maxScale: PhotoViewComputedScale.covered * 2.0,
+                initialScale: PhotoViewComputedScale.contained,
+                enableRotation: false,
+                backgroundDecoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   static String? getMenuImagePath(String restaurantName) {
     return 'assets/menu_images/${restaurantName.toLowerCase().replaceAll(" ", "")}.jpg';
-    // Assuming the image names match the restaurant names in lowercase without spaces
   }
 
-  // Simulate fetching menu data (returns image path as data)
+  // simulate fetching menu data (returns image path as data)
   static Future<String?> fetchMenu(String restaurantName) async {
-    // Use a delay to simulate fetching data from a remote server or local storage
+    // use a delay to simulate fetching data from a remote server or local storage
     await Future.delayed(Duration(seconds: 2));
 
     return getMenuImagePath(restaurantName);

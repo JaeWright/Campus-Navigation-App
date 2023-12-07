@@ -16,7 +16,7 @@ import 'package:campusmapper/scheduler/events_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:campusmapper/map/firebase_options.dart';
+import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
 import 'helpbutton.dart';
 import 'courses/course_search_page.dart';
@@ -27,7 +27,7 @@ import 'accessibility.dart';
 import 'scheduler/scheduler_handler.dart';
 import 'student_login.dart';
 import 'package:provider/provider.dart';
-import 'package:campusmapper/map/map_maker.dart';
+import 'package:campusmapper/map/map_screen.dart';
 import 'package:campusmapper/food/location.dart';
 import 'package:campusmapper/food/restaurant_details.dart';
 
@@ -66,8 +66,7 @@ class CampusNavigatorApp extends StatelessWidget {
       routes: {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
-        '/events': (context) =>
-            const EventsScheduler(title: 'Events Scheduler'),
+        '/scheduler': (context) => SchedulerHandlerPage(),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -134,7 +133,8 @@ class _HomePageState extends State<HomePage> {
         title: 'My Schedule',
         color: Color(0xFF9B59B6),
         onTap: () {
-          navigateToSection(context, SchedulerHandlerPage());
+          //navigateToSection(context, SchedulerHandlerPage());
+          Navigator.pushReplacementNamed(context, '/scheduler');
         },
       ),
       NavigationCard(
@@ -150,12 +150,14 @@ class _HomePageState extends State<HomePage> {
         title: 'Campus Map',
         color: Color(0xFF008080),
         onTap: () {
-          final locationService = Provider.of<LocationService>(context, listen: false);
+          final locationService =
+              Provider.of<LocationService>(context, listen: false);
           navigateToSection(
               context,
               ListMapScreen(
                 findLocation: const LatLng(0.0, 0.0),
-                restaurantLocations: locationService.getAllRestaurantLocations(),
+                restaurantLocations:
+                    locationService.getAllRestaurantLocations(),
               ));
         },
       ),

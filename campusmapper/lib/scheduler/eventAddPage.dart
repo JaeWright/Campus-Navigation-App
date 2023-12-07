@@ -37,8 +37,12 @@ class _EventAddPageState extends State<EventAddPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Return to home page
-        Navigator.pushReplacementNamed(context, '/events');
+        // Return to scheduler
+        FocusScope.of(context).unfocus();
+        Future.delayed(const Duration(milliseconds: 750), ()
+        {
+          Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
+        });
 
         // Return 'false' to prevent the default back button behavior
         return false;

@@ -1,6 +1,6 @@
 import "package:latlong2/latlong.dart";
 import 'package:geolocator/geolocator.dart';
-import 'map_constants.dart';
+import '../map_constants.dart';
 
 class Geolocation {
   bool canFindLocation = false;

@@ -65,21 +65,19 @@ class Course{
 class CoursesModel {
 
   Future getAllCoursesLocal() async {
-    Future getAllCoursesLocal() async {
       //returns list of grades in database
       final db = await DBUtilsSQL.initCourses();
       final List maps = await db.query('courses');
 
       List results = [];
 
-      if (maps.length > 0) {
+      if (maps.isNotEmpty) {
         for (int i = 0; i < maps.length; i++) {
           results.add(Course.fromMapLocal(maps[i]));
         }
       }
 
       return results;
-    }
   }
 
   Future insertLocal(Course course) async {

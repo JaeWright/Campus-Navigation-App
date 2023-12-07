@@ -80,14 +80,13 @@ class _EventsSchedulerState extends State<EventsScheduler> {
     });
   }
 
-  //loads data from local database
   void loadEventsData() async {
     if (ModalRoute.of(context)!.isCurrent) {
       List results = [];
 
       //check local first to see if any data is saved
       results = await _events.getAllEventsLocal();
-      if (results.length>0){
+      if (results.isNotEmpty){
         for (int i = 0; i < results.length; i++) {
           eventsList.add(EventTile(
               id: results[i].id,
@@ -101,7 +100,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       else{
         //check global database if no data is saved
         results = await _events.getAllEventsCloud();
-        if (results.length>0){
+        if (results.isNotEmpty){
           for (int i=0;i<results.length;i++){
             eventsList.add(EventTile(
                 id: results[i].id,
@@ -112,7 +111,7 @@ class _EventsSchedulerState extends State<EventsScheduler> {
                 date: results[i].date));
 
             //add to local database for next save
-            await _events.insertEventLocal(Event(
+            _events.insertEventLocal(Event(
                 id: results[i].id,
                 eventName: results[i].eventName,
                 location: results[i].location,
@@ -145,9 +144,15 @@ class _EventsSchedulerState extends State<EventsScheduler> {
       final String newTime = newEventData['time'];
       final DateTime newDate = newEventData['date'];
 
-    // Add the new data to the gradesList
-      String newId = await _events.insertEventCloud(newEventData);
-      setState(() async {
+    // Add the new data to the cloud + get ref id for local database
+      String newId = await _events.insertEventCloud(
+          newWeekday,
+          newEventName,
+          newLocation,
+          newTime,
+          newDate
+      );
+      setState(() {
 
         eventsList.add(EventTile(
             id: newId,
@@ -159,18 +164,15 @@ class _EventsSchedulerState extends State<EventsScheduler> {
         );
       });
 
-      Event newEvent = Event(
+
+    // Insert the new data into the local database
+      _events.insertEventLocal(Event(
           id: newId,
           eventName: newEventName,
           location: newLocation,
           weekday: newWeekday,
           time: newTime,
-          date: newDate);
-
-    // Insert the new data into the local database
-      _events.insertEventLocal(newEvent);
-      //insert into cloud database
-      _events.insertEventCloud(newEvent);
+          date: newDate));
      }
   }
 

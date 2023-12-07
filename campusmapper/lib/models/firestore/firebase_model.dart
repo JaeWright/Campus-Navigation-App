@@ -2,12 +2,13 @@
 Author: Luca Lotito
 Firebase access class, handles reading from the firebase database and translating the data to the mapper (and in the future, other classes)
 */
+import 'package:campusmapper/utilities/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campusmapper/utilities/map_marker.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
-class MarkerModel {
+class FirebaseModel {
   //Returns the requested marker type
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Future<List<MapMarker>> getMarkersofType(List<String> type) async {
@@ -45,5 +46,29 @@ class MarkerModel {
       }
     });
     return categories;
+  }
+
+  Future<User> login(String email, String password) async {
+    User user = User(
+        id: 'None',
+        email: 'None',
+        firstname: 'None',
+        lastname: 'None',
+        sid: 'None');
+    await _firestore.collection("users").get().then((querySnapshot) {
+      for (var docSnapshot in querySnapshot.docs) {
+        if (docSnapshot['Email'] == email &&
+            docSnapshot["Password"] == password) {
+          user = User(
+              id: docSnapshot.id,
+              email: docSnapshot["Email"],
+              firstname: docSnapshot["FirstName"],
+              lastname: docSnapshot["LastName"],
+              sid: docSnapshot["StudentID"]);
+          return user;
+        }
+      }
+    });
+    return user;
   }
 }

@@ -29,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:campusmapper/screens//map_screen.dart';
 import 'package:campusmapper/utilities/location.dart';
 import 'package:campusmapper/screens/restaurant_details.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -195,32 +196,9 @@ class _HomePageState extends State<HomePage> {
       ),
     ];
 
-    if (!isLoggedIn) {
-      navigationCards.insert(
-        1,
-        NavigationCard(
-          icon: Icons.school,
-          title: 'Student Login',
-          color: Colors.white38,
-          onTap: () {
-            navigateToSection(context, StudentLoginPage());
-          },
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Campus Navigator'),
-        actions: isLoggedIn
-            ? [
-                IconButton(
-                  icon: Icon(Icons.exit_to_app),
-                  onPressed: logoutUser,
-                ),
-              ]
-            : [],
-      ),
+          title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
       body: GridView.count(
         crossAxisCount: 3,
         padding: EdgeInsets.all(8.0),

@@ -16,15 +16,20 @@ class DropdownState extends State<Dropdown> {
   bool loggedin = false;
   UserModel database = UserModel();
   User loggedIn = User(
-      id: 0, email: 'None', firstname: 'None', lastname: 'None', sid: 'None');
+      id: 'None',
+      email: 'None',
+      firstname: 'None',
+      lastname: 'None',
+      sid: 'None');
   @override
   void initState() {
-    getLogInStatus();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    getLogInStatus();
+
     return PopupMenuButton<Label>(
       icon: const Icon(Icons.account_circle),
       initialValue: selectedMenu,
@@ -48,8 +53,12 @@ class DropdownState extends State<Dropdown> {
           PopupMenuItem(
               enabled: false, child: Text("Hello ${loggedIn.firstname}")),
         if (loggedin)
-          const PopupMenuItem<Label>(
-              value: Label.logout, child: Text('Log Out')),
+          PopupMenuItem<Label>(
+              value: Label.logout,
+              child: const Text('Log Out'),
+              onTap: () {
+                logOut();
+              }),
       ],
     );
   }
@@ -61,7 +70,7 @@ class DropdownState extends State<Dropdown> {
       if (user.isEmpty) {
         loggedin = false;
         loggedIn = User(
-            id: 0,
+            id: 'None',
             email: 'None',
             firstname: 'None',
             lastname: 'None',
@@ -70,6 +79,19 @@ class DropdownState extends State<Dropdown> {
         loggedin = true;
         loggedIn = user[0];
       }
+    });
+  }
+
+  void logOut() async {
+    await database.removeUser(loggedIn);
+    setState(() {
+      loggedIn = User(
+          id: 'None',
+          email: 'None',
+          firstname: 'None',
+          lastname: 'None',
+          sid: 'None');
+      loggedin = false;
     });
   }
 }

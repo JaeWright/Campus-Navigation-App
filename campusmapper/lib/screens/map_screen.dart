@@ -8,7 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/utilities/location.dart';
 import 'package:campusmapper/models/constants/map_constants.dart';
-import 'package:campusmapper/models/firestore/marker_model.dart';
+import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/utilities/map_marker.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:campusmapper/models/geolocation/geolocation.dart';
@@ -29,7 +29,7 @@ class ListMapScreen extends StatefulWidget {
 }
 
 class ListMapState extends State<ListMapScreen> {
-  final MarkerModel _database = MarkerModel();
+  final FirebaseModel _database = FirebaseModel();
   final MapController mapController = MapController();
   final PanelController panelController = PanelController();
   final Geolocation geoLocatorController = Geolocation();

@@ -7,12 +7,10 @@ import 'package:path/path.dart' as path;
 import 'dart:async';
 import 'courses.dart';
 import 'events.dart';
-import 'dart:developer';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 //class for initialization of databases for courses and events
 class DBUtilsSQL {
+  //initialize local courses database
   static Future<Database> initCourses() async {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'courses_manager.db'),
@@ -27,6 +25,7 @@ class DBUtilsSQL {
     return database;
   }
 
+  //initialize local events database
   static Future<Database> initEvents() async {
     final database = await openDatabase(
       path.join(await getDatabasesPath(), 'events_manager.db'),
@@ -44,8 +43,10 @@ class DBUtilsSQL {
   }
 
   //test functions for before online stuff
+
+  // Create a list of pre-made values (courses) to insert into the database
   static void _insertValuesCourses(Database db) {
-    // Create a list of pre-made values (courses) to insert into the database
+
     final List<Course> preMadeCourses = [
       Course(
         id: "1",
@@ -123,8 +124,9 @@ class DBUtilsSQL {
     }
   }
 
+  // Create a list of pre-made values (events) to insert into the database
   static void _insertValuesEvents(Database db) {
-    // Create a list of pre-made values (events) to insert into the database
+
     final List<Event> preMadeEvents = [
       Event(
         id: "1",

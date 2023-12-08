@@ -5,7 +5,6 @@ and interact with the courses database respectively
 */
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
 import '../../utilities/user.dart';
 import 'logged_in_model.dart';
 import 'scheduler_database_helper.dart';
@@ -26,6 +25,7 @@ class Course{
   Course({required this.id, required this.weekday, required this.courseName, required this.profName, required this.roomNum,
     required this.endTime, required this.startTime,this.reference});
 
+  //convert from map for sql
   Course.fromMapLocal(Map map){
     id = map["id"];
     weekday = map["weekday"];
@@ -35,7 +35,7 @@ class Course{
     startTime = map["startTime"];
     endTime = map["endTime"];
   }
-
+  //convert from map for cloud
   Course.fromMapCloud(Map map, {this.reference}){
     id = reference?.id;
     weekday = map["weekday"];
@@ -45,7 +45,7 @@ class Course{
     startTime = map["startTime"];
     endTime = map["endTime"];
   }
-
+  //convert to map for sql
   Map<String,Object> toMapLocal(){
     return{
       'id' : id!,
@@ -65,9 +65,10 @@ class Course{
 
 //class for interactions between course class and local database
 class CoursesModel {
+  //sql database interactions
 
+  //get course data from sqlLite database
   Future getAllCoursesLocal() async {
-      //returns list of grades in database
       final db = await DBUtilsSQL.initCourses();
       final List maps = await db.query('courses');
 
@@ -81,7 +82,7 @@ class CoursesModel {
 
       return results;
   }
-
+  //insert course data to sqlLite database
   Future insertLocal(Course course) async {
     final db = await DBUtilsSQL.initCourses();
     return db.insert(
@@ -91,9 +92,12 @@ class CoursesModel {
     );
   }
 
+  //cloud database interactions
+
+  //get course data from cloud database
   Future getAllCoursesCloud() async{
-    //make it get the user reference later when all connected
-    List<User> user= UserModel().getUser() as List<User>;
+    //get user id
+    List<User> user= await UserModel().getUser();
     //returns list of user's course(s) in database
     List results = [];
     await FirebaseFirestore.instance

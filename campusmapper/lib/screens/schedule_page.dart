@@ -28,7 +28,7 @@ class SchedulePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Weekly Schedule'),
         leading: IconButton(
-          icon: Icon(Icons.calendar_today),
+          icon: const Icon(Icons.calendar_today),
           onPressed: () {
             // Add any functionality you want when the icon is pressed
             // For example, you can navigate to a specific page or show a dialog
@@ -48,7 +48,7 @@ class SchedulePage extends StatelessWidget {
                   children: [
                     Text(
                       '$day:',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

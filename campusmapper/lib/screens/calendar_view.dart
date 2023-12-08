@@ -1,8 +1,13 @@
-import 'dart:collection';
+/*
+Author: Jaelen Wright - 100790481
+This page allows the user to view their events in a calendar view
+Used https://dipeshgoswami.medium.com/table-calendar-3-0-0-null-safety-818ba8d4c45e for help
+ */
 
+
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:campusmapper/models/sqflite/courses.dart';
 import 'scheduler_handler.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -16,6 +21,7 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  //preset calendar values
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -27,9 +33,6 @@ class _CalendarPageState extends State<CalendarPage> {
     toDisplay = convertToDynamicMap(groupEventsByDay(widget.events!));
   }
 
-  List getEventForDay(DateTime day) {
-    return toDisplay[day] ?? [];
-  }
 
   int getHashCode(DateTime key) {
     return key.day * 1000000 + key.month * 10000 + key.year;
@@ -37,13 +40,15 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _events = LinkedHashMap<DateTime, List>(
+    //convert list of events into a LinkedHashMap
+    final events = LinkedHashMap<DateTime, List>(
       equals: isSameDay,
       hashCode: getHashCode,
     )..addAll(toDisplay);
 
+    //gets the events per each day
     List getEventForDay(DateTime day) {
-      return _events[day] ?? [];
+      return events[day] ?? [];
     }
 
     return Scaffold(
@@ -75,7 +80,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 _focusedDay = focusedDay;
               },
               calendarStyle: CalendarStyle(
-                selectedDecoration: BoxDecoration(
+                selectedDecoration: const BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
@@ -87,6 +92,7 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
             ),
             SizedBox(height: 20),
+            //shows a List View of the events on selected day
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
@@ -118,7 +124,8 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
     );
   }
-
+  //creates a list that maps each event and sorts them by matching dates
+  //Uses chatGPT for this
   Map<DateTime, List<EventTile>> groupEventsByDay(List<EventTile> events) {
     Map<DateTime, List<EventTile>> groupedEvents = {};
 
@@ -134,7 +141,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return groupedEvents;
   }
-
+  //converts the mapped lists into a LinkedHashMap
+  //used ChatGPT for this
   LinkedHashMap<DateTime, List<dynamic>> convertToDynamicMap(
       Map<DateTime, List<EventTile>> map) {
     LinkedHashMap<DateTime, List<dynamic>> convertedMap = LinkedHashMap();

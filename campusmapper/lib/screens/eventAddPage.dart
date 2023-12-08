@@ -1,3 +1,8 @@
+/*
+Author: Jaelen Wright - 100790481
+This page allows the user to add an event to their account
+*/
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../utilities/dateConversions.dart';
@@ -8,6 +13,7 @@ class EventAddPage extends StatefulWidget {
 }
 
 class _EventAddPageState extends State<EventAddPage> {
+  //controllers for to-be-added event data
   late TextEditingController eventNameController;
   late TextEditingController locationController;
   late TextEditingController dateController;
@@ -37,7 +43,7 @@ class _EventAddPageState extends State<EventAddPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Return to scheduler
+        // Return to scheduler if back button is pressed
         FocusScope.of(context).unfocus();
         Future.delayed(const Duration(milliseconds: 750), () {
           Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
@@ -49,35 +55,39 @@ class _EventAddPageState extends State<EventAddPage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.deepPurple,
-          title: Text('Add Event'),
+          title: const Text('Add Event'),
         ),
         body: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              //enter event name
               TextFormField(
                 controller: eventNameController,
-                decoration: InputDecoration(labelText: 'Event Name'),
+                decoration: const InputDecoration(labelText: 'Event Name'),
               ),
+              //enter location
               TextFormField(
                 controller: locationController,
-                decoration: InputDecoration(labelText: 'Location'),
+                decoration: const InputDecoration(labelText: 'Location'),
               ),
+              //select date
               TextFormField(
                 readOnly: true,
                 controller: dateController,
                 decoration: InputDecoration(
                   labelText: 'Date',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_today),
+                    icon: const Icon(Icons.calendar_today),
                     onPressed: () async {
                       final DateTime? picked = await showDatePicker(
                         context: context,
-                        initialDate: setInitialDate(),
+                        initialDate: setInitialDate(), //sets initial date to monday if user is accessing on a weekend
                         firstDate: DateTime(2023),
                         lastDate: DateTime(2025),
                         selectableDayPredicate: (DateTime date) {
+                          //user cannot pick saturday or sunday
                           return date.weekday != DateTime.saturday &&
                               date.weekday != DateTime.sunday;
                         },
@@ -94,6 +104,7 @@ class _EventAddPageState extends State<EventAddPage> {
                   ),
                 ),
               ),
+              //select time
               TextFormField(
                 readOnly: true,
                 controller: timeController,
@@ -115,22 +126,25 @@ class _EventAddPageState extends State<EventAddPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  //hide keyboard before navigation (causes a renderflex error if not)
                   FocusScope.of(context).unfocus();
+                  //delay for keyboard to hide before navigation
                   Future.delayed(const Duration(milliseconds: 750), () {
-                    var updatedData = {
+                    //pass new data back to scheduler
+                    var newData = {
                       'eventName': eventNameController.text,
                       'location': locationController.text,
                       'weekday': weekday,
                       'date': date,
                       'time': timeController.text,
                     };
-                    Navigator.pop(context, updatedData);
+                    Navigator.pop(context, newData);
                   });
                 },
-                child: Text('Save Changes'),
+                child: const Text('Save Changes'),
               ),
             ],
           ),

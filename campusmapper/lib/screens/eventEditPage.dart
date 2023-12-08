@@ -1,4 +1,8 @@
-import 'package:flutter/cupertino.dart';
+/*
+Author: Jaelen Wright - 100790481
+This page allows the user to edit an event that is on their account
+*/
+
 import 'package:flutter/material.dart';
 import '../utilities/dateConversions.dart';
 
@@ -22,6 +26,7 @@ class EventEditPage extends StatefulWidget {
 }
 
 class _EventEditPageState extends State<EventEditPage> {
+  //controllers for to-be-edited event data
   late TextEditingController eventNameController;
   late TextEditingController locationController;
   late TextEditingController dateController;
@@ -35,7 +40,7 @@ class _EventEditPageState extends State<EventEditPage> {
     eventNameController = TextEditingController(text: widget.eventName);
     locationController = TextEditingController(text: widget.location);
     dateController = TextEditingController(
-        text: "${widget.weekday} - ${widget.date.toString()}");
+        text: "${widget.weekday} on ${widget.date?.year}-${widget.date?.month}-${widget.date?.day}");
     timeController = TextEditingController(text: widget.time);
     weekday = widget.weekday!;
     date = widget.date!;
@@ -54,7 +59,7 @@ class _EventEditPageState extends State<EventEditPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          //Return to scheduler
+          //Return to scheduler if user presses the back button
           FocusScope.of(context).unfocus();
           Future.delayed(const Duration(milliseconds: 750), () {
             Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
@@ -66,28 +71,31 @@ class _EventEditPageState extends State<EventEditPage> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.deepPurple,
-            title: Text('Edit Event'),
+            title: const Text('Edit Event'),
           ),
           body: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                //edit event name
                 TextFormField(
                   controller: eventNameController,
-                  decoration: InputDecoration(labelText: 'Event Name'),
+                  decoration: const InputDecoration(labelText: 'Event Name'),
                 ),
+                //edit location
                 TextFormField(
                   controller: locationController,
-                  decoration: InputDecoration(labelText: 'Location'),
+                  decoration: const InputDecoration(labelText: 'Location'),
                 ),
+                //edit date
                 TextFormField(
                   readOnly: true,
                   controller: dateController,
                   decoration: InputDecoration(
                     labelText: 'Date',
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.calendar_today),
+                      icon: const Icon(Icons.calendar_today),
                       onPressed: () async {
                         final DateTime? picked = await showDatePicker(
                           context: context,
@@ -112,6 +120,7 @@ class _EventEditPageState extends State<EventEditPage> {
                     ),
                   ),
                 ),
+                //edit time
                 TextFormField(
                   readOnly: true,
                   controller: timeController,
@@ -134,12 +143,14 @@ class _EventEditPageState extends State<EventEditPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    var times = convertToText();
+                    //hide keyboard before navigation (causes a renderflex error if not)
                     FocusScope.of(context).unfocus();
+                    //delay for keyboard to hide before navigation
                     Future.delayed(const Duration(milliseconds: 750), () {
+                      //pass updated data back to scheduler
                       var updatedData = {
                         'eventName': eventNameController.text,
                         'location': locationController.text,
@@ -150,13 +161,11 @@ class _EventEditPageState extends State<EventEditPage> {
                       Navigator.pop(context, updatedData);
                     });
                   },
-                  child: Text('Save Changes'),
+                  child: const Text('Save Changes'),
                 ),
               ],
             ),
           ),
         ));
   }
-
-  convertToText() {}
 }

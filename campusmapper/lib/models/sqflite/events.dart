@@ -9,7 +9,6 @@ import '../../utilities/user.dart';
 import 'logged_in_model.dart';
 import 'scheduler_database_helper.dart';
 import 'dart:async';
-import 'package:campusmapper/utilities/dateConversions.dart';
 import 'package:intl/intl.dart';
 
 //class to hold event data
@@ -19,7 +18,7 @@ class Event {
   String? location;
   String? weekday;
   String? time;
-  DateTime? date; // New field for the date
+  DateTime? date;
   DocumentReference? reference;
 
   Event(
@@ -31,6 +30,7 @@ class Event {
       required this.date,
       this.reference});
 
+  //convert from map for sql
   Event.fromMapLocal(Map map) {
     id = map["id"];
     eventName = map["eventName"];
@@ -39,7 +39,7 @@ class Event {
     time = map["time"];
     date = DateTime.parse(map["date"]);
   }
-
+  //convert from map for cloud
   Event.fromMapCloud(Map map, {this.reference}) {
     id = reference?.id;
     eventName = map["eventName"];
@@ -48,7 +48,7 @@ class Event {
     time = map["time"];
     date = DateTime.parse(map["date"]);
   }
-
+  //convert to map for sql
   Map<String, Object> toMap() {
     return {
       'id': id!,
@@ -68,11 +68,14 @@ class Event {
 
 //class for interaction between event class and local database
 class EventsModel {
+  //sql database interactions
+
+  //get event data from sqlLite database
   Future getAllEventsLocal() async {
-    //returns list of grades in database
+
     final db = await DBUtilsSQL.initEvents();
     final List maps = await db.query('events');
-//
+
     List results = [];
 
     if (maps.isNotEmpty) {
@@ -83,10 +86,9 @@ class EventsModel {
 
     return results;
   }
-
-  //functions below are functional but not currently implemented in the current page
+  //adds new event to sql database
   Future<int> insertEventLocal(Event event) async {
-    //adds new grade to database
+
     final db = await DBUtilsSQL.initEvents();
     return db.insert(
       'events',
@@ -94,7 +96,7 @@ class EventsModel {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-
+  //update event in sql database
   Future<int> updateEventLocal(Event event) async {
     final db = await DBUtilsSQL.initEvents();
     return db.update(
@@ -104,7 +106,7 @@ class EventsModel {
       whereArgs: [event.id],
     );
   }
-
+  //delete event from sql database
   Future<int> deleteEventLocal(String id) async {
     final db = await DBUtilsSQL.initEvents();
     return db.delete(
@@ -115,9 +117,11 @@ class EventsModel {
   }
 
   //cloud database interactions
+
+  //get event data from cloud database
   Future getAllEventsCloud() async {
-    //make it get the user reference later when all connected
-    List<User> user= UserModel().getUser() as List<User>;
+    //get user id
+    List<User> user= await UserModel().getUser();
     List results = [];
     await FirebaseFirestore.instance
         .collection('users')
@@ -138,11 +142,11 @@ class EventsModel {
     });
     return results;
   }
-
+  //insert new event data to cloud database
   Future<String> insertEventCloud(String weekday, String eventName,
       String location, String time, DateTime date) async {
-    //remove test variable once fully implemented
-    List<User> user= UserModel().getUser() as List<User>;
+    //get user id
+    List<User> user= await UserModel().getUser();
     //adds new event to online database
     DocumentReference ref = await FirebaseFirestore.instance
         .collection("users")
@@ -153,15 +157,15 @@ class EventsModel {
       'eventName': eventName,
       'location': location,
       'time': time,
-      'date': DateFormat('yyyy-MM-dd – kk:mm').format(date!)
+      'date': DateFormat('yyyy-MM-dd – kk:mm').format(date)
     });
     //returns new id
     return ref.id;
   }
-
+  //update event data in cloud database
   Future updateEventCloud(Event event) async {
-    //remove test variable once fully implemented
-    List<User> user= UserModel().getUser() as List<User>;
+    //get user id
+    List<User> user= await UserModel().getUser();
     await FirebaseFirestore.instance
         .collection("users")
         .doc(user[0].id)
@@ -175,10 +179,10 @@ class EventsModel {
       'date': DateFormat('yyyy-MM-dd – kk:mm').format(event.date!)
     });
   }
-
+  //delete event data from cloud database
   Future deleteEventCloud(String id) async {
-    //remove test variable once fully implemented
-    List<User> user= UserModel().getUser() as List<User>;
+    //get user id
+    List<User> user= await UserModel().getUser();
     await FirebaseFirestore.instance
         .collection("users")
         .doc(user[0].id)

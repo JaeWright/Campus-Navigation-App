@@ -1,13 +1,12 @@
 /*
-Author: Jaelen Wright - 100790481
-This page manages the course and event schedule page, which displays the user's courses and events
+Authors: Jaelen Wright - 100790481 Brock Davidge - 100787894
+This page manages the course schedule page, which displays the user's courses and connects
+to the events page
 */
-import 'package:campusmapper/screens/course_search_page.dart';
-import 'package:campusmapper/screens/student_login.dart';
+
+import 'package:campusmapper/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../models/sqflite/logged_in_model.dart';
-import '../utilities/user.dart';
 import 'eventAddPage.dart';
 import 'eventEditPage.dart';
 import 'package:campusmapper/models/sqflite/events.dart';
@@ -15,6 +14,7 @@ import 'package:campusmapper/models/sqflite/courses.dart';
 import 'package:intl/intl.dart';
 import '../utilities/dateConversions.dart';
 import 'calendar_view.dart';
+import 'schedule_page.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -22,7 +22,7 @@ final _courses = CoursesModel();
 //model for events database
 final _events = EventsModel();
 
-//class for holding course tile data
+//classes for holding course tile data
 class CourseTile {
   String? id;
   String? weekday;
@@ -74,22 +74,17 @@ class SchedulerHandlerPage extends StatefulWidget {
 class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   //list of courses to be populated by database
   List<CourseTile> coursesList = [];
-  // list of events to be populated by database
+  //holds list of events to be populated by database
   List<EventTile> eventsList = [];
-  //flag for switch between course and event data
+  //flag for switch
   bool isSwitched = false;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () async {
-      if (await loggedIn()){
-        loadCoursesData();
-        loadEventsData();
-      }else{
-        sendToLogin();
-      }
-
+    Future.delayed(Duration.zero, () {
+      loadCoursesData();
+      loadEventsData();
     });
   }
 
@@ -98,64 +93,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     super.dispose();
   }
 
-  //check if user is logged in,
-  Future<bool> loggedIn() async{
-    List<User> user= await UserModel().getUser();
-    if (user.isNotEmpty){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-  //send user to the log in page if they are not logged in
-  void sendToLogin(){
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('User is not logged in'),
-          content: const Text('Press "Ok" to be sent to log in page '),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                //Navigator.of(context).pop(); // Close the dialog
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StudentLoginPage()),);
-              },
-              child: const Text('Ok'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-  //inform user that they aren't registered for any courses
-  void noCourses(){
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('No courses selected'),
-          content: const Text('You are currently not registered for any courses '),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Ok'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CourseSearchPage()),);
-              },
-              child: const Text('Select Courses'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-  //get all the course data from databases
+  //get all the data from local databases
   void loadCoursesData() async {
     List results = [];
 
@@ -200,13 +138,11 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
         }
       } else {
         //popup that tells the user they do not have any courses registered
-        noCourses();
       }
     }
     setState(() {}); // rebuild when page is loaded
   }
 
-  //get all the event data from databases
   void loadEventsData() async {
     List results = [];
 
@@ -249,9 +185,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     setState(() {}); // rebuilds everytime page is loaded
   }
 
-  //add an event to the database and eventTile list
   Future<void> _addEvent() async {
-    //Navigate to EventAddPage to add event
     var newEventData = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -259,7 +193,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       ),
     );
 
-    //check if user made a new event
     if (newEventData != null) {
       final String newEventName = newEventData['eventName'];
       final String newLocation = newEventData['location'];
@@ -270,7 +203,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       // Add the new data to the cloud + get ref id for local database
       String newId = await _events.insertEventCloud(
           newWeekday, newEventName, newLocation, newTime, newDate);
-      //add to eventTile list
       setState(() {
         eventsList.add(EventTile(
             id: newId,
@@ -292,7 +224,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     }
   }
 
-  //popup for user to confirm if they want to delete their event
   void _confirmDeleteEvent(EventTile eventToDelete) {
     showDialog(
       context: context,
@@ -305,7 +236,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -315,7 +246,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.red,
               ),
-              child: const Text('Delete'),
+              child: Text('Delete'),
             ),
           ],
         );
@@ -323,26 +254,26 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     );
   }
 
-  //delete selected event from databases and eventTile list
   Future<void> _deleteEvent(String id) async {
     setState(() {
       eventsList.removeWhere((event) => event.id == id);
     });
     //delete from local database
-    int deleted = await _events.deleteEventLocal(id);
+    int deleted = await _events.deleteEventLocal(id!);
     //delete from cloud database
-    await _events.deleteEventCloud(id);
+    await _events.deleteEventCloud(id!);
+    print("index $deleted was deleted");
   }
 
-  //go to eventEditPage and update database
+  //go to eventeditpage and update database
   void _editEvent(EventTile event) async {
-    //get current event info
     final initialEventName = event.eventName;
     final initialLocation = event.location;
     final initialWeekday = event.weekday;
     final initialTime = event.time;
     final initialDate = event.date;
 
+    //used ChatGPT for the push
     var updatedData = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -368,10 +299,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       );
 
       setState(() {
-        //get the index of where to change
         final index =
             eventsList.indexWhere((eventTile) => eventTile.id == event.id);
-        //update event in eventTile list
         if (index != -1) {
           eventsList[index] = EventTile(
             id: updatedEvent.id,
@@ -388,6 +317,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       int updated = await _events.updateEventLocal(updatedEvent);
       // Update the event in the cloud database
       await _events.updateEventCloud(updatedEvent);
+      print("updated: $updated");
     }
   }
 
@@ -445,6 +375,15 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                 onChanged: (value) {
                   setState(() {
                     isSwitched = value;
+                    if (!isSwitched) {
+                      // Navigate to the SchedulePage when Courses toggle is switched off
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SchedulePage(),
+                        ),
+                      );
+                    }
                   });
                 },
               ),
@@ -524,7 +463,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             ],
           ),
 
-          // Display the third row with Friday centered horizontally
+          // Display the third row with Friday centered horizontally and NOT vertically
           Center(
             child: Container(
               margin: const EdgeInsets.all(8),
@@ -537,7 +476,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                 children: [
                   Text(
                     getWeekday(4),
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -556,7 +495,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     );
   }
 
-  //checks whether to show user's course or event data
   List<Widget> selectWidgets(String weekday, bool isEvents) {
     if (isEvents) {
       return getEventWidgets(weekday);
@@ -565,50 +503,52 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     }
   }
 
-  //used chatgpt for most of this function
+  // Update the getCourseWidgets function
   List<Widget> getCourseWidgets(String weekday) {
     List<Widget> widgets = [];
 
     List<CourseTile> filteredCourses =
-        coursesList.where((course) => course.weekday == weekday).toList();
+    coursesList.where((course) => course.weekday == weekday).toList();
 
     for (int i = 0; i < filteredCourses.length; i++) {
-      widgets.addAll([
-        Text(
-          filteredCourses[i].courseName!,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          filteredCourses[i].profName!,
-          style: const TextStyle(fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          filteredCourses[i].roomNum!,
-          style: const TextStyle(fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          '${filteredCourses[i].startTime!} - ${filteredCourses[i].endTime!}',
-          style: const TextStyle(fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-        if (i <
-            filteredCourses.length - 1) // Add dotted line if not the last item
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            height: 1,
-            width: double.infinity,
-            color: Colors.black54,
+      widgets.add(
+        ListTile(
+          title: Text(
+            filteredCourses[i].courseName!,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-      ]);
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                filteredCourses[i].profName!,
+                style: const TextStyle(fontSize: 16),
+              ),
+              Text(
+                filteredCourses[i].roomNum!,
+                style: const TextStyle(fontSize: 14),
+              ),
+              Text(
+                '${filteredCourses[i].startTime!} - ${filteredCourses[i].endTime!}',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+          onTap: () {
+            // Keep the existing onTap behavior
+          },
+        ),
+      );
+
+      if (i < filteredCourses.length - 1) {
+        widgets.add(Divider()); // Add a divider if not the last item
+      }
     }
 
     return widgets;
   }
 
-  //used chatgpt for most of this function
+// Update the getEventWidgets function
   List<Widget> getEventWidgets(String weekday) {
     List<Widget> widgets = [];
 
@@ -625,51 +565,46 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
         return eventsList[a].date!.compareTo(eventsList[b].date!);
       } else {
         return DateTime.parse(
-                "${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+            "${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
             .compareTo(DateTime.parse(
-                "${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+            "${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
       }
     });
 
     for (int i = 0; i < indexes.length; i++) {
-      widgets.addAll([
-        GestureDetector(
+      widgets.add(
+        ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjust contentPadding
+          title: Text(
+            eventsList[indexes[i]].eventName!,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                eventsList[indexes[i]].location!,
+                style: const TextStyle(fontSize: 16),
+              ),
+              Text(
+                "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
           onTap: () {
+            // Keep the existing onTap behavior
             _editEvent(eventsList[indexes[i]]);
           },
           onLongPress: () {
             _confirmDeleteEvent(eventsList[indexes[i]]);
           },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                eventsList[indexes[i]].eventName!,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                eventsList[indexes[i]].location!,
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
-                style: const TextStyle(fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
-              if (i < indexes.length - 1)
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  height: 1,
-                  width: double.infinity,
-                  color: Colors.black54,
-                ),
-            ],
-          ),
         ),
-      ]);
+      );
+
+      if (i < indexes.length - 1) {
+        widgets.add(Divider()); // Add a divider if not the last item
+      }
     }
 
     return widgets;

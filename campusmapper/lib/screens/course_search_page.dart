@@ -1,3 +1,10 @@
+/*
+Author: Brock Davidge - 100787894
+Allows users to search for and add courses to their schedule. Displays a list of courses,
+with options to view details or add to the schedule. Utilizes the CourseSearchDelegate
+class for search functionality.
+*/
+
 import 'package:flutter/material.dart';
 import 'course_details_page.dart';
 import 'package:campusmapper/models/sqflite/courses.dart';
@@ -289,7 +296,18 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
     print('Adding ${course.courseName} to schedule');
     // Access the ScheduleProvider
     ScheduleProvider scheduleProvider =
-        Provider.of<ScheduleProvider>(context, listen: false);
+    Provider.of<ScheduleProvider>(context, listen: false);
+
+    // Check if the course is already in the schedule
+    if (scheduleProvider.isCourseInSchedule(course)) {
+      // Show a SnackBar indicating that the course is a duplicate
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Course ${course.courseName} is already in the schedule.'),
+        ),
+      );
+      return;
+    }
 
     // Call the addToSchedule method
     scheduleProvider.addToSchedule(course);
@@ -314,17 +332,27 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Course Search'),
+        title: Text(
+          'Course Search',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Color.fromRGBO(255, 255, 224, 1.0),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(
+              Icons.search,
+              color: Colors.black,
+            ),
             onPressed: () async {
               final String? query = await showSearch<String>(
                 context: context,
                 delegate: CourseSearchDelegate(
                   courses: courses,
                   addToScheduleCallback: addToSchedule,
-                  scaffoldKey: _scaffoldKey, // Corrected variable name
+                  scaffoldKey: _scaffoldKey,
                 ),
               );
               if (query != null && query.isNotEmpty) {
@@ -334,41 +362,54 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: filteredCourses.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(filteredCourses[index].courseName ?? 'Unknown Course'),
-            subtitle:
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, Colors.lightBlueAccent],
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: filteredCourses.length,
+          itemBuilder: (context, index) {
+            return Card(
+              margin: const EdgeInsets.all(8),
+              elevation: 8,
+              child: ListTile(
+                title: Text(filteredCourses[index].courseName ?? 'Unknown Course'),
+                subtitle:
                 Text(filteredCourses[index].profName ?? 'Unknown Professor'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.info),
-                  onPressed: () {
-                    viewCourseDetails(filteredCourses[index]);
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.info),
+                      onPressed: () {
+                        viewCourseDetails(filteredCourses[index]);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        addToSchedule(filteredCourses[index]);
+                      },
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    addToSchedule(filteredCourses[index]);
-                  },
-                ),
-              ],
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      CourseDetailsPage(course: filteredCourses[index]),
-                ),
-              );
-            },
-          );
-        },
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CourseDetailsPage(course: filteredCourses[index]),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -377,7 +418,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
 class CourseSearchDelegate extends SearchDelegate<String> {
   final List<Course> courses;
   final Function(Course) addToScheduleCallback;
-  final GlobalKey<ScaffoldState> scaffoldKey; // Corrected the parameter name
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   CourseSearchDelegate({
     required this.courses,
@@ -398,7 +439,7 @@ class CourseSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: Icon(Icons.clear, color: Colors.black),
         onPressed: () {
           query = '';
         },
@@ -423,25 +464,33 @@ class CourseSearchDelegate extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     final resultList = courses
         .where((course) =>
-            course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
-            course.profName!.toLowerCase().contains(query.toLowerCase()))
+    course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
+        course.profName!.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
       itemCount: resultList.length,
-      itemBuilder: (context, index) => ListTile(
-        title: Text(resultList[index].courseName ?? 'Unknown Course'),
-        subtitle: Text(resultList[index].profName ?? 'Unknown Professor'),
-        onTap: () {
-          // View course details when a result is tapped
-          viewCourseDetails(resultList[index], context);
-        },
-        trailing: IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            // Add to schedule when the add button is pressed
-            addToScheduleCallback(resultList[index]);
+      itemBuilder: (context, index) => Card(
+        margin: const EdgeInsets.all(8),
+        elevation: 8,
+        child: ListTile(
+          title: Text(
+            resultList[index].courseName ?? 'Unknown Course',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            resultList[index].profName ?? 'Unknown Professor',
+            style: TextStyle(color: Colors.grey),
+          ),
+          onTap: () {
+            viewCourseDetails(resultList[index], context);
           },
+          trailing: IconButton(
+            icon: Icon(Icons.add, color: Colors.black),
+            onPressed: () {
+              addToScheduleCallback(resultList[index]);
+            },
+          ),
         ),
       ),
     );
@@ -452,30 +501,38 @@ class CourseSearchDelegate extends SearchDelegate<String> {
     final suggestionList = query.isEmpty
         ? courses
         : courses
-            .where((course) =>
-                course.courseName!
-                    .toLowerCase()
-                    .contains(query.toLowerCase()) ||
-                course.profName!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+        .where((course) =>
+    course.courseName!
+        .toLowerCase()
+        .contains(query.toLowerCase()) ||
+        course.profName!.toLowerCase().contains(query.toLowerCase()))
+        .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,
-      itemBuilder: (context, index) => ListTile(
-        title: Text(suggestionList[index].courseName ?? 'Unknown Course'),
-        subtitle: Text(suggestionList[index].profName ?? 'Unknown Professor'),
-        onTap: () {
-          query = suggestionList[index].courseName ?? '';
-          showResults(context);
-          // View course details when a suggestion is tapped
-          viewCourseDetails(suggestionList[index], context);
-        },
-        trailing: IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            // Add to schedule when the add button is pressed
-            addToScheduleCallback(suggestionList[index]);
+      itemBuilder: (context, index) => Card(
+        margin: const EdgeInsets.all(8),
+        elevation: 8,
+        child: ListTile(
+          title: Text(
+            suggestionList[index].courseName ?? 'Unknown Course',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            suggestionList[index].profName ?? 'Unknown Professor',
+            style: TextStyle(color: Colors.grey),
+          ),
+          onTap: () {
+            query = suggestionList[index].courseName ?? '';
+            showResults(context);
+            viewCourseDetails(suggestionList[index], context);
           },
+          trailing: IconButton(
+            icon: Icon(Icons.add, color: Colors.black),
+            onPressed: () {
+              addToScheduleCallback(suggestionList[index]);
+            },
+          ),
         ),
       ),
     );

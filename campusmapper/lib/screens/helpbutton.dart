@@ -269,35 +269,36 @@ class TutorialPage4 extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.check),
             title: Text(
-              'Browse the list of restaurants on Campus.',
+              'Make sure to be logged in to access your course and event data!',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
           ListTile(
             leading: Icon(Icons.check),
             title: Text(
-              'Tap on a restaurant for which you want directions or menu.',
+              'Use the toggle to switch between showing your courses and events',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
           ListTile(
             leading: Icon(Icons.check),
             title: Text(
-              'A pop-up window will appear at the bottom showing Directions and Menu options.',
+              'When looking at events, tap to edit and hold to delete',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
           ListTile(
             leading: Icon(Icons.check),
             title: Text(
-              'Click on Directions to get directions to that restaurant from your current location.',
+              'When looking at events, press the + icon in the appbar to add a new event',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
           ListTile(
             leading: Icon(Icons.check),
             title: Text(
-              'Click on Menu to view the menu of that restaurant on your screen.',
+              'When looking at events, click the calendar icon in the appbar to view your events in '
+                  'a calendar view',
               style: TextStyle(fontSize: 18.0),
             ),
           ),

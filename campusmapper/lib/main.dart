@@ -12,7 +12,8 @@ Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 Author: Brock Davidge
 Added functionality to connect to course search and weekly schedule.
 */
-import 'package:campusmapper/screens/events_page.dart';
+import 'package:campusmapper/screens/student_login.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/models/firestore/firebase_options.dart';
@@ -24,7 +25,6 @@ import 'package:campusmapper/utilities/schedule_provider.dart';
 import 'package:campusmapper/screens/information_centre_page.dart';
 import 'package:campusmapper/screens/accessibility.dart';
 import 'package:campusmapper/screens/scheduler_handler.dart';
-import 'package:campusmapper/screens/student_login.dart';
 import 'package:provider/provider.dart';
 import 'package:campusmapper/screens//map_screen.dart';
 import 'package:campusmapper/utilities/location.dart';
@@ -68,6 +68,7 @@ class CampusNavigatorApp extends StatelessWidget {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
         '/scheduler': (context) => SchedulerHandlerPage(),
+        '/login': (context) => StudentLoginPage(),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -138,14 +139,6 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       NavigationCard(
-        icon: Icons.calendar_today,
-        title: 'Weekly Schedule',
-        color: Color(0xFF9B59B6),
-        onTap: () {
-          navigateToSection(context, SchedulePage());
-        },
-      ),
-      NavigationCard(
         icon: Icons.map,
         title: 'Campus Map',
         color: Color(0xFF008080),
@@ -156,7 +149,7 @@ class _HomePageState extends State<HomePage> {
             context,
             ListMapScreen(
               findLocation: const LatLng(0.0, 0.0),
-              restaurantLocations: locationService.getAllRestaurantLocations(),
+              type: "None",
             ),
           );
         },
@@ -169,41 +162,39 @@ class _HomePageState extends State<HomePage> {
           navigateToSection(context, CourseSearchPage());
         },
       ),
-      Container(
-        alignment: Alignment.bottomCenter,
-        padding: EdgeInsets.only(bottom: 8.0),
-        child: HelpButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Help'),
-                  content: Text('This is the help message.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('OK'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
-      ),
     ];
 
     return Scaffold(
       appBar: AppBar(
           title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
-      body: GridView.count(
-        crossAxisCount: 3,
-        padding: EdgeInsets.all(8.0),
-        childAspectRatio: 0.8 / 1.0,
-        children: navigationCards,
+      body: StaggeredGridView.countBuilder(
+        crossAxisCount: 4,
+        itemCount: navigationCards.length,
+        itemBuilder: (BuildContext context, int index) => navigationCards[index],
+        staggeredTileBuilder: (int index) {
+          // Assuming 'My Schedule' is at index 3 and 'Campus Map' is at index 4
+          if (index == 3 || index == 4) {
+            return StaggeredTile.count(2, 2); // Span 2 cells horizontally and 2 cells vertically
+          }
+          return StaggeredTile.count(2, 1); // Span 2 cells horizontally and 1 vertically for other cards
+        },
+        mainAxisSpacing: 6.0,
+        crossAxisSpacing: 8.0,
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TutorialSlider(),
+            ),
+          );
+        },
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 8.0,
+        tooltip: 'Help',
+        child: const Icon(Icons.help),
       ),
     );
   }
@@ -242,12 +233,18 @@ class NavigationCard extends StatelessWidget {
             children: <Widget>[
               Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
               SizedBox(height: 16.0),
-              Text(title,
+              Flexible( // Make the text flexible to fit within the available space
+                child: Text(
+                  title,
                   style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white, // Text color changed
-                    fontWeight: FontWeight.bold, // Bold text
-                  )),
+                    fontSize: 14.0, // Reduced font size
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible, // Add ellipsis for overflowed text
+                ),
+              ),
             ],
           ),
         ),

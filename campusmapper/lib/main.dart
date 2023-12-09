@@ -138,14 +138,6 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       NavigationCard(
-        icon: Icons.calendar_today,
-        title: 'Weekly Schedule',
-        color: Color(0xFF9B59B6),
-        onTap: () {
-          navigateToSection(context, SchedulePage());
-        },
-      ),
-      NavigationCard(
         icon: Icons.map,
         title: 'Campus Map',
         color: Color(0xFF008080),

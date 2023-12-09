@@ -6,7 +6,6 @@ In the final submission, will handle pathfinding and Geolocation logic
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campusmapper/utilities/location.dart';
 import 'package:campusmapper/models/constants/map_constants.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/utilities/map_marker.dart';

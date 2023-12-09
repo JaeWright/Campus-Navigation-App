@@ -45,8 +45,9 @@ class DropdownState extends State<Dropdown> {
             value: Label.login,
             child: const Text('Log In'),
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => StudentLoginPage()));
+              if (!context.mounted) return;
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const StudentLoginPage()));
             },
           )
         else
@@ -57,6 +58,7 @@ class DropdownState extends State<Dropdown> {
               value: Label.logout,
               child: const Text('Log Out'),
               onTap: () {
+                if (!context.mounted) return;
                 logOut();
               }),
       ],
@@ -66,6 +68,7 @@ class DropdownState extends State<Dropdown> {
   //Check to see if a user is logged in. There should only be one user in the database at a time
   void getLogInStatus() async {
     List<User> user = await database.getUser();
+    if (!context.mounted) return;
     setState(() {
       if (user.isEmpty) {
         loggedin = false;

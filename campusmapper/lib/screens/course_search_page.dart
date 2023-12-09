@@ -5,7 +5,10 @@ with options to view details or add to the schedule. Utilizes the CourseSearchDe
 class for search functionality.
 */
 
+import 'package:campusmapper/screens/student_login.dart';
 import 'package:flutter/material.dart';
+import '../models/sqflite/logged_in_model.dart';
+import '../utilities/user.dart';
 import 'course_details_page.dart';
 import 'package:campusmapper/models/sqflite/courses.dart';
 import 'package:provider/provider.dart';
@@ -270,7 +273,44 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   @override
   void initState() {
     super.initState();
-    filteredCourses = List.from(courses);
+    Future.delayed(Duration.zero, () async {
+      if (await loggedIn()){
+        filteredCourses = List.from(courses);
+      }else{
+        sendToLogin();
+      }
+    });
+  }
+
+  Future<bool> loggedIn() async{
+    List<User> user= await UserModel().getUser();
+    if (user.isNotEmpty){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  //send user to the log in page if they are not logged in
+  void sendToLogin(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('User is not logged in'),
+          content: const Text('Press "Ok" to be sent to log in page '),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                //Navigator.of(context).pop(); // Close the dialog
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StudentLoginPage()),);
+              },
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void filterCourses(String query) {

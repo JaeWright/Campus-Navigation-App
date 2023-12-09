@@ -224,11 +224,10 @@ class NavigationCard extends StatelessWidget {
               Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
               SizedBox(height: 16.0),
               Text(title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16.0,
                     color: Colors.white, // Text color changed
                     fontWeight: FontWeight.bold, // Bold text
-
                   ),
                 textAlign: TextAlign.center,),
             ],

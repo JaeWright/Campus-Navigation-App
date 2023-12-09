@@ -36,18 +36,6 @@ class FirebaseModel {
     return results;
   }
 
-  //Curently unused. Was originally intended to get all the marker types (As marker types are stored as individual collections within the OntarioTech document),
-  //but decided it was easier to keep them as part of the app constants class
-  Future<List<String>> getAllCategoryTypes() async {
-    List<String> categories = [];
-    await _firestore.collection("MapMarker").get().then((querySnapshot) {
-      for (var docSnapshot in querySnapshot.docs) {
-        categories.add(docSnapshot.id);
-      }
-    });
-    return categories;
-  }
-
   Future<User> login(String email, String password) async {
     User user = User(
         id: 'None',

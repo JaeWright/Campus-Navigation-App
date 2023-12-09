@@ -18,7 +18,8 @@ class MapConstants {
     "Bookstore",
     "Health",
     "Bike_Parking",
-    "Emergency_Phone"
+    "Emergency_Phone",
+    "Accessible"
   ];
   static Widget circle = Container(
     width: 10,
@@ -36,6 +37,8 @@ class MapConstants {
       return "Emergency Phone";
     } else if (category == "Bus") {
       return "Public Transport";
+    } else if (category == "Accessible") {
+      return "Accessible Entrances";
     } else {
       return category;
     }

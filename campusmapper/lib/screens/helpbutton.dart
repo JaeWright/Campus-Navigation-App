@@ -298,7 +298,7 @@ class TutorialPage4 extends StatelessWidget {
             leading: Icon(Icons.check),
             title: Text(
               'When looking at events, click the calendar icon in the appbar to view your events in '
-                  'a calendar view',
+              'a calendar view',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
@@ -327,10 +327,7 @@ class TutorialPage5 extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (_) => ListMapScreen(
-                          findLocation: const LatLng(0.0, 0.0),
-                          restaurantLocations:
-                              locationService.getAllRestaurantLocations(),
-                        )),
+                        findLocation: const LatLng(0.0, 0.0), type: "None")),
               );
             },
           ),
@@ -524,37 +521,6 @@ class _TutorialSliderState extends State<TutorialSlider> {
           SizedBox(height: 16.0),
         ],
       ),
-    );
-  }
-}
-
-class HelpButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  HelpButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          bottom: 8.0,
-          child: FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => TutorialSlider(),
-                ),
-              );
-            },
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            elevation: 8.0,
-            child: Icon(Icons.help),
-            tooltip: 'Help',
-          ),
-        ),
-      ],
     );
   }
 }

@@ -19,11 +19,11 @@ import 'dart:async';
 
 class ListMapScreen extends StatefulWidget {
   const ListMapScreen(
-      {Key? key, required this.findLocation, required this.restaurantLocations})
+      {Key? key, required this.findLocation, required this.type})
       : super(key: key);
   //Variable used for passing in Resturant locatations to the map to be generated first
   final LatLng findLocation;
-  final List<RestaurantLocation> restaurantLocations;
+  final String type;
   @override
   ListMapState createState() => ListMapState();
 }
@@ -70,7 +70,7 @@ class ListMapState extends State<ListMapScreen> {
     timer = Timer.periodic(
         const Duration(seconds: 10), (Timer t) => updatePosition());
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
-      mapMarkers = ["Food"];
+      mapMarkers = [widget.type];
       directionManager.setItemPos(widget.findLocation);
       setMap();
     }

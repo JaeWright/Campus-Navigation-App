@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
             context,
             ListMapScreen(
               findLocation: const LatLng(0.0, 0.0),
-              restaurantLocations: locationService.getAllRestaurantLocations(),
+              type: "None",
             ),
           );
         },
@@ -169,31 +169,6 @@ class _HomePageState extends State<HomePage> {
           navigateToSection(context, CourseSearchPage());
         },
       ),
-      Container(
-        alignment: Alignment.bottomCenter,
-        padding: EdgeInsets.only(bottom: 8.0),
-        child: HelpButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Help'),
-                  content: Text('This is the help message.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('OK'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
-      ),
     ];
 
     return Scaffold(
@@ -204,6 +179,20 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(8.0),
         childAspectRatio: 0.8 / 1.0,
         children: navigationCards,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TutorialSlider(),
+            ),
+          );
+        },
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 8.0,
+        tooltip: 'Help',
+        child: const Icon(Icons.help),
       ),
     );
   }

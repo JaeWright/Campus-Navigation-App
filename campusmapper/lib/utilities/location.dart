@@ -37,8 +37,8 @@ class LocationService {
         builder: (context) => ListMapScreen(
           findLocation:
               LatLng(restaurantLocation.latitude, restaurantLocation.longitude),
-          restaurantLocations:
-              hardcodedRestaurantLocations, // Pass the list of restaurant locations to the map screen
+          type: "Food",
+          // Pass the list of restaurant locations to the map screen
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/constants/menu_constants.dart';
 import '../utilities/food_main.dart';
 import '../utilities/location.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
 
 class FoodPage extends StatelessWidget {
   final List<Restaurant> restaurants = [
@@ -25,6 +26,7 @@ class FoodPage extends StatelessWidget {
             child: Text("Restaurants on Campus"), // Update the title
           ),
         ]),
+        actions: const <Widget>[Dropdown()],
       ),
       body: ListView.builder(
         itemCount: restaurants.length,

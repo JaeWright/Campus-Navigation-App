@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/utilities/map_marker.dart';
 import 'package:campusmapper/screens/map_screen.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
 
 class AccessibilityDirectoryPage extends StatelessWidget {
   final FirebaseModel _database = FirebaseModel();
@@ -33,6 +34,7 @@ class AccessibilityDirectoryPage extends StatelessWidget {
                       padding: EdgeInsetsDirectional.only(start: 10),
                       child: Text("Accessibility")),
                 ]),
+                actions: const <Widget>[Dropdown()],
               ),
               body: ListView.builder(
                 itemCount: snapshot.data!.length,

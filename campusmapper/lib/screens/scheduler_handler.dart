@@ -3,6 +3,7 @@ Author: Jaelen Wright - 100790481
 This page manages the course and event schedule page, which displays the user's courses and events
 */
 import 'package:campusmapper/screens/course_search_page.dart';
+import 'package:campusmapper/screens/schedule_page.dart';
 import 'package:campusmapper/screens/student_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -424,6 +425,18 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                   MaterialPageRoute(
                     builder: (context) => CalendarPage(
                         events: eventsList, displayEvents: isSwitched),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.calendar_month))
+              : Container(),
+          !isSwitched
+              ? IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SchedulePage(),
                   ),
                 );
               },

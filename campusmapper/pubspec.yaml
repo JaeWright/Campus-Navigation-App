@@ -50,7 +50,7 @@ dependencies:
   intl: ^0.18.1
   path: ^1.8.3
   uuid: ^4.2.1
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -75,11 +75,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - assets/menu_images/boosterjuice.jpg
-     - assets/menu_images/hunterkitchen.jpg
-     - assets/menu_images/dripcafe.jpg
-     - assets/menu_images/cafe.jpg
-     - assets/menu_images/timhortons.jpg
+    - assets/menu_images/boosterjuice.jpg
+    - assets/menu_images/hunterkitchen.jpg
+    - assets/menu_images/dripcafe.jpg
+    - assets/menu_images/cafe.jpg
+    - assets/menu_images/timhortons.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

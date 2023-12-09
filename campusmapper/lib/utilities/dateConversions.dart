@@ -12,7 +12,7 @@ String getWeekday(int index) {
 
 //gets the short form weekday string from DateTime
 String convertWeekday(DateTime fullDate){
-    return DateFormat('EEE').format(fullDate);
+  return DateFormat('EEE').format(fullDate);
 }
 
 //set the initial date for the event add/edit to a monday if the user accesses it on a weekend

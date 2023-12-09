@@ -228,7 +228,9 @@ class NavigationCard extends StatelessWidget {
                     fontSize: 16.0,
                     color: Colors.white, // Text color changed
                     fontWeight: FontWeight.bold, // Bold text
-                  )),
+
+                  ),
+                textAlign: TextAlign.center,),
             ],
           ),
         ),

@@ -4,13 +4,13 @@ import 'package:campusmapper/widgets/drop_menu.dart';
 class HoverNewsItem extends StatefulWidget {
   final NewsItem newsItem;
 
-  HoverNewsItem({required this.newsItem});
+  const HoverNewsItem({super.key, required this.newsItem});
 
   @override
-  _HoverNewsItemState createState() => _HoverNewsItemState();
+  HoverNewsItemState createState() => HoverNewsItemState();
 }
 
-class _HoverNewsItemState extends State<HoverNewsItem> {
+class HoverNewsItemState extends State<HoverNewsItem> {
   bool _isHovering = false;
 
   @override
@@ -23,7 +23,7 @@ class _HoverNewsItemState extends State<HoverNewsItem> {
             ? Colors.lightBlueAccent.withOpacity(0.5)
             : Colors.transparent,
         child: ListTile(
-          leading: Icon(Icons.article, color: Colors.blue),
+          leading: const Icon(Icons.article, color: Colors.blue),
           title: Text(widget.newsItem.title),
           subtitle: Text(widget.newsItem.content),
         ),
@@ -114,7 +114,7 @@ class InformationCenterPage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
           title: Text('Information Center'),
-          bottom: TabBar(
+          bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.newspaper), text: 'Campus News'),
               Tab(icon: Icon(Icons.place), text: 'Resources'),
@@ -172,7 +172,7 @@ class InformationCenterPage extends StatelessWidget {
       itemBuilder: (context, index) {
         var resource = resources[index];
         return ListTile(
-          leading: Icon(Icons.local_library, color: Colors.green),
+          leading: const Icon(Icons.local_library, color: Colors.green),
           title: Text(resource.name),
           subtitle: Text('Location: ${resource.location}'),
         );
@@ -186,7 +186,7 @@ class InformationCenterPage extends StatelessWidget {
       itemBuilder: (context, index) {
         var contact = contacts[index];
         return ListTile(
-          leading: Icon(Icons.phone_in_talk, color: Colors.red),
+          leading: const Icon(Icons.phone_in_talk, color: Colors.red),
           title: Text(contact.service),
           subtitle: Text(contact.number),
           onTap: () => _callNumber(contact.number),

@@ -19,7 +19,6 @@ import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/screens/helpbutton.dart';
 import 'package:campusmapper/screens/course_search_page.dart';
-import 'package:campusmapper/screens/schedule_page.dart';
 import 'package:campusmapper/utilities/schedule_provider.dart';
 import 'package:campusmapper/screens/information_centre_page.dart';
 import 'package:campusmapper/screens/accessibility.dart';
@@ -47,7 +46,7 @@ void main() async {
           create: (context) => LocationService(),
         ),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         title: 'Grade Viewer',
         home: CampusNavigatorApp(),
       ),
@@ -56,6 +55,8 @@ void main() async {
 }
 
 class CampusNavigatorApp extends StatelessWidget {
+  const CampusNavigatorApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -79,11 +80,13 @@ class CampusNavigatorApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   bool isLoggedIn = false;
 
   void navigateToSection(BuildContext context, Widget page) {

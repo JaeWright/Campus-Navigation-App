@@ -38,7 +38,7 @@ class MapConstants {
     } else if (category == "Bus") {
       return "Public Transport";
     } else if (category == "Accessible") {
-      return "Accessible Entrances";
+      return "Accessible Entrance";
     } else {
       return category;
     }

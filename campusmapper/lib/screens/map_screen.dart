@@ -324,10 +324,11 @@ class ListMapState extends State<ListMapScreen> {
                             //Translate category allows for some backend names to be translated into more user friendly versions
                             title: Text(MapConstants.translateCategory(
                                 displayValues.type)),
-                            subtitle: Text(
-                                (displayValues.additionalInfo != 'None')
-                                    ? displayValues.additionalInfo
-                                    : ''),
+                            subtitle: Flexible(
+                                child: Text(
+                                    (displayValues.additionalInfo != 'None')
+                                        ? displayValues.additionalInfo
+                                        : '')),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -336,7 +337,7 @@ class ListMapState extends State<ListMapScreen> {
                                 style: style,
                                 child: const Text('Navigate'),
                                 onPressed: () {
-                                  setMap();
+                                  setMap("foot-walking");
                                 },
                               ),
                               const SizedBox(width: 8),
@@ -460,10 +461,10 @@ class ListMapState extends State<ListMapScreen> {
   }
 
   //Creates routing information
-  void setMap() async {
+  void setMap(String moveType) async {
     await updatePosition();
     if (isOnCampus()) {
-      List<LatLng> returned = await directionManager.getDirections();
+      List<LatLng> returned = await directionManager.getDirections(moveType);
       setState(() {
         routing = returned;
       });
@@ -480,7 +481,7 @@ class ListMapState extends State<ListMapScreen> {
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = [widget.type];
       directionManager.setItemPos(widget.findLocation);
-      setMap();
+      setMap("wheelchair");
     }
   }
 

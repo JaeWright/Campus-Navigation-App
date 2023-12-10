@@ -50,7 +50,7 @@ class AccessibilityDirectoryPage extends StatelessWidget {
                       subtitle: Text(building.buildingUse),
                       children: <Widget>[
                         ListTile(
-                          title: Text("Building Owner: ${building.owner}"),
+                          title: Text(building.owner),
                         ),
                         ListTile(
                           leading: const Icon(Icons.directions),

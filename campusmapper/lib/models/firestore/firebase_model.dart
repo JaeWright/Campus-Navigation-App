@@ -44,6 +44,7 @@ class FirebaseModel {
         .collection("MapMarker")
         .doc('OntarioTech')
         .collection('Buildings')
+        .orderBy("name")
         .get()
         .then((querySnapshot) async {
       for (var docSnapshot in querySnapshot.docs) {

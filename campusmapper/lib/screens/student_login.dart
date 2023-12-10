@@ -1,6 +1,7 @@
 //Author: Luca Lotito
 //Page that allows the user to login/register for the service. Interacts with firebase and sqflite
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/models/sqflite/logged_in_model.dart';
 import 'package:campusmapper/utilities/user.dart';
@@ -69,6 +70,8 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email cannot be null';
+                  } else if (!EmailValidator.validate(value)) {
+                    return 'Invalid Email address';
                   } else {
                     email = value;
                   }
@@ -77,6 +80,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
               ),
               TextFormField(
                 controller: _passwordController,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
@@ -143,6 +147,8 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email cannot be null';
+                  } else if (!EmailValidator.validate(value)) {
+                    return 'Invalid Email address';
                   } else {
                     email = value;
                   }

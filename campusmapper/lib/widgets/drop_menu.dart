@@ -1,3 +1,5 @@
+import 'package:campusmapper/models/sqflite/courses.dart';
+import 'package:campusmapper/models/sqflite/events.dart';
 import 'package:campusmapper/utilities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:campusmapper/screens/student_login.dart';
@@ -89,6 +91,8 @@ class DropdownState extends State<Dropdown> {
 
   void logOut() async {
     await database.removeUser(loggedIn);
+    await CoursesModel().clearLocal();
+    await EventsModel().clearLocal();
     setState(() {
       loggedIn = User(
           id: 'None',

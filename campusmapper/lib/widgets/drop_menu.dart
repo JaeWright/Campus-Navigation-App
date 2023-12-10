@@ -47,7 +47,9 @@ class DropdownState extends State<Dropdown> {
             onTap: () {
               if (!context.mounted) return;
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const StudentLoginPage()));
+                  builder: (context) => const StudentLoginPage(
+                        forced: false,
+                      )));
             },
           )
         else

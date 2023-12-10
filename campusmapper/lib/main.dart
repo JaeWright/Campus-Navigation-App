@@ -66,8 +66,10 @@ class CampusNavigatorApp extends StatelessWidget {
       routes: {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
-        '/scheduler': (context) => SchedulerHandlerPage(),
-        '/login': (context) => StudentLoginPage(),
+        '/scheduler': (context) => const SchedulerHandlerPage(),
+        '/login': (context) => const StudentLoginPage(
+              forced: false,
+            ),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -162,7 +164,6 @@ class _HomePageState extends State<HomePage> {
         },
       ),
     ];
-
     return Scaffold(
       appBar: AppBar(
           title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
@@ -223,13 +224,15 @@ class NavigationCard extends StatelessWidget {
             children: <Widget>[
               Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
               SizedBox(height: 16.0),
-              Text(title,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.white, // Text color changed
-                    fontWeight: FontWeight.bold, // Bold text
-                  ),
-                textAlign: TextAlign.center,),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.white, // Text color changed
+                  fontWeight: FontWeight.bold, // Bold text
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),

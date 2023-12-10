@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
+
 class HoverNewsItem extends StatefulWidget {
   final NewsItem newsItem;
 
@@ -7,19 +9,20 @@ class HoverNewsItem extends StatefulWidget {
   @override
   _HoverNewsItemState createState() => _HoverNewsItemState();
 }
+
 class _HoverNewsItemState extends State<HoverNewsItem> {
   bool _isHovering = false;
 
   @override
   Widget build(BuildContext context) {
-
     return MouseRegion(
       onEnter: (event) => _onHover(true),
       onExit: (event) => _onHover(false),
       child: Container(
-        color: _isHovering ? Colors.lightBlueAccent.withOpacity(0.5) : Colors.transparent,
+        color: _isHovering
+            ? Colors.lightBlueAccent.withOpacity(0.5)
+            : Colors.transparent,
         child: ListTile(
-
           leading: Icon(Icons.article, color: Colors.blue),
           title: Text(widget.newsItem.title),
           subtitle: Text(widget.newsItem.content),
@@ -41,6 +44,7 @@ class NewsItem {
 
   NewsItem({required this.title, required this.content});
 }
+
 class ClassInfo {
   final String time;
   final String room;
@@ -63,22 +67,36 @@ class EmergencyContact {
   EmergencyContact({required this.service, required this.number});
 }
 
-
 class InformationCenterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<NewsItem> campusNews = [
-      NewsItem(title: 'Spring Semester Registration', content: 'Registration for the Spring semester begins next Monday.'),
+      NewsItem(
+          title: 'Spring Semester Registration',
+          content: 'Registration for the Spring semester begins next Monday.'),
       // Add more news items
-      NewsItem(title: 'Weather Alert', content: 'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
-      NewsItem(title: 'Lockdown Drill', content: 'A campus-wide lockdown drill is scheduled for this Friday.'),
-      NewsItem(title: 'Christmas Weekend', content: 'Christmas weekend starts December 5th. Enjoy the festive season!'),
-      NewsItem(title: 'Winter Tuition Fee Due', content: 'Reminder: Winter semester tuition fees are due by the end of this month.'),
-      NewsItem(title: 'Kylie’s Day', content: 'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
+      NewsItem(
+          title: 'Weather Alert',
+          content:
+              'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
+      NewsItem(
+          title: 'Lockdown Drill',
+          content:
+              'A campus-wide lockdown drill is scheduled for this Friday.'),
+      NewsItem(
+          title: 'Christmas Weekend',
+          content:
+              'Christmas weekend starts December 5th. Enjoy the festive season!'),
+      NewsItem(
+          title: 'Winter Tuition Fee Due',
+          content:
+              'Reminder: Winter semester tuition fees are due by the end of this month.'),
+      NewsItem(
+          title: 'Kylie’s Day',
+          content:
+              'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
       //
-
     ];
-
 
     final List<CampusResource> campusResources = [
       CampusResource(name: 'Library', location: 'Building B'),
@@ -103,6 +121,7 @@ class InformationCenterPage extends StatelessWidget {
               Tab(icon: Icon(Icons.warning), text: 'Emergency'),
             ],
           ),
+          actions: const <Widget>[Dropdown()],
         ),
         body: TabBarView(
           children: [
@@ -123,7 +142,7 @@ class InformationCenterPage extends StatelessWidget {
       itemCount: news.length,
       itemBuilder: (context, index) {
         var item = news[index];
-        return HoverNewsItem(newsItem:item);
+        return HoverNewsItem(newsItem: item);
         return ListTile(
           leading: Icon(Icons.article, color: Colors.blue),
           title: Text(item.title),
@@ -132,7 +151,6 @@ class InformationCenterPage extends StatelessWidget {
       },
     );
   }
-
 
   Widget _buildScheduleList(List<ClassInfo> schedule) {
     return ListView.builder(
@@ -182,5 +200,3 @@ class InformationCenterPage extends StatelessWidget {
     print('Calling $number...');
   }
 }
-
-

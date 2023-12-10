@@ -274,25 +274,25 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      if (await loggedIn()){
+      if (await loggedIn()) {
         filteredCourses = List.from(courses);
-      }else{
+      } else {
         sendToLogin();
       }
     });
   }
 
-  Future<bool> loggedIn() async{
-    List<User> user= await UserModel().getUser();
-    if (user.isNotEmpty){
+  Future<bool> loggedIn() async {
+    List<User> user = await UserModel().getUser();
+    if (user.isNotEmpty) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
+
   //send user to the log in page if they are not logged in
-  void sendToLogin(){
+  void sendToLogin() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -303,7 +303,13 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
             TextButton(
               onPressed: () {
                 //Navigator.of(context).pop(); // Close the dialog
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StudentLoginPage()),);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const StudentLoginPage(
+                            forced: true,
+                          )),
+                );
               },
               child: const Text('Ok'),
             ),
@@ -336,14 +342,15 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
     print('Adding ${course.courseName} to schedule');
     // Access the ScheduleProvider
     ScheduleProvider scheduleProvider =
-    Provider.of<ScheduleProvider>(context, listen: false);
+        Provider.of<ScheduleProvider>(context, listen: false);
 
     // Check if the course is already in the schedule
     if (scheduleProvider.isCourseInSchedule(course)) {
       // Show a SnackBar indicating that the course is a duplicate
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Course ${course.courseName} is already in the schedule.'),
+          content:
+              Text('Course ${course.courseName} is already in the schedule.'),
         ),
       );
       return;
@@ -369,6 +376,8 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(ModalRoute.of(context)?.settings.name);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -417,9 +426,10 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
               margin: const EdgeInsets.all(8),
               elevation: 8,
               child: ListTile(
-                title: Text(filteredCourses[index].courseName ?? 'Unknown Course'),
-                subtitle:
-                Text(filteredCourses[index].profName ?? 'Unknown Professor'),
+                title:
+                    Text(filteredCourses[index].courseName ?? 'Unknown Course'),
+                subtitle: Text(
+                    filteredCourses[index].profName ?? 'Unknown Professor'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -504,8 +514,8 @@ class CourseSearchDelegate extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     final resultList = courses
         .where((course) =>
-    course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
-        course.profName!.toLowerCase().contains(query.toLowerCase()))
+            course.courseName!.toLowerCase().contains(query.toLowerCase()) ||
+            course.profName!.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
@@ -541,12 +551,12 @@ class CourseSearchDelegate extends SearchDelegate<String> {
     final suggestionList = query.isEmpty
         ? courses
         : courses
-        .where((course) =>
-    course.courseName!
-        .toLowerCase()
-        .contains(query.toLowerCase()) ||
-        course.profName!.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+            .where((course) =>
+                course.courseName!
+                    .toLowerCase()
+                    .contains(query.toLowerCase()) ||
+                course.profName!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,

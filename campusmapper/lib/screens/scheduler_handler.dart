@@ -36,13 +36,13 @@ class CourseTile {
 
   CourseTile(
       {required this.id,
-        required this.weekday,
-        required this.courseName,
-        required this.profName,
-        required this.roomNum,
-        required this.endTime,
-        required this.startTime,
-        this.reference});
+      required this.weekday,
+      required this.courseName,
+      required this.profName,
+      required this.roomNum,
+      required this.endTime,
+      required this.startTime,
+      this.reference});
 }
 
 //class to hold event tile data
@@ -57,12 +57,12 @@ class EventTile {
 
   EventTile(
       {required this.id,
-        required this.eventName,
-        required this.location,
-        required this.weekday,
-        required this.time,
-        required this.date,
-        this.reference});
+      required this.eventName,
+      required this.location,
+      required this.weekday,
+      required this.time,
+      required this.date,
+      this.reference});
 }
 
 class SchedulerHandlerPage extends StatefulWidget {
@@ -84,13 +84,12 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      if (await loggedIn()){
+      if (await loggedIn()) {
         loadCoursesData();
         loadEventsData();
-      }else{
+      } else {
         sendToLogin();
       }
-
     });
   }
 
@@ -100,17 +99,17 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   }
 
   //check if user is logged in,
-  Future<bool> loggedIn() async{
-    List<User> user= await UserModel().getUser();
-    if (user.isNotEmpty){
+  Future<bool> loggedIn() async {
+    List<User> user = await UserModel().getUser();
+    if (user.isNotEmpty) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
+
   //send user to the log in page if they are not logged in
-  void sendToLogin(){
+  void sendToLogin() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -120,8 +119,15 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 //Navigator.of(context).pop(); // Close the dialog
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StudentLoginPage()),);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const StudentLoginPage(
+                            forced: true,
+                          )),
+                );
               },
               child: const Text('Ok'),
             ),
@@ -130,14 +136,16 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       },
     );
   }
+
   //inform user that they aren't registered for any courses
-  void noCourses(){
+  void noCourses() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('No courses selected'),
-          content: const Text('You are currently not registered for any courses '),
+          content:
+              const Text('You are currently not registered for any courses '),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -147,7 +155,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CourseSearchPage()),);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => CourseSearchPage()),
+                );
               },
               child: const Text('Select Courses'),
             ),
@@ -156,6 +167,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       },
     );
   }
+
   //get all the course data from databases
   void loadCoursesData() async {
     List results = [];
@@ -371,7 +383,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       setState(() {
         //get the index of where to change
         final index =
-        eventsList.indexWhere((eventTile) => eventTile.id == event.id);
+            eventsList.indexWhere((eventTile) => eventTile.id == event.id);
         //update event in eventTile list
         if (index != -1) {
           eventsList[index] = EventTile(
@@ -394,6 +406,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(ModalRoute.of(context)?.settings.name);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
@@ -412,35 +426,35 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
         actions: <Widget>[
           isSwitched
               ? IconButton(
-              onPressed: () {
-                _addEvent();
-              },
-              icon: const Icon(Icons.add))
+                  onPressed: () {
+                    _addEvent();
+                  },
+                  icon: const Icon(Icons.add))
               : Container(),
           isSwitched
               ? IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CalendarPage(
-                        events: eventsList, displayEvents: isSwitched),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.calendar_month))
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CalendarPage(
+                            events: eventsList, displayEvents: isSwitched),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.calendar_month))
               : Container(),
           !isSwitched
               ? IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SchedulePage(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.calendar_month))
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SchedulePage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.calendar_month))
               : Container(),
         ],
       ),
@@ -550,7 +564,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                 children: [
                   Text(
                     getWeekday(4),
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -583,7 +598,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     List<Widget> widgets = [];
 
     List<CourseTile> filteredCourses =
-    coursesList.where((course) => course.weekday == weekday).toList();
+        coursesList.where((course) => course.weekday == weekday).toList();
 
     for (int i = 0; i < filteredCourses.length; i++) {
       widgets.addAll([
@@ -638,9 +653,9 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
         return eventsList[a].date!.compareTo(eventsList[b].date!);
       } else {
         return DateTime.parse(
-            "${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
+                "${DateFormat('h:mm a').parse(eventsList[a].time!.toUpperCase())}")
             .compareTo(DateTime.parse(
-            "${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
+                "${DateFormat('h:mm a').parse(eventsList[b].time!.toUpperCase())}"));
       }
     });
 
@@ -659,7 +674,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               Text(
                 eventsList[indexes[i]].eventName!,
                 style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               Text(

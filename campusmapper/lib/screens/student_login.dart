@@ -4,8 +4,8 @@ import 'package:campusmapper/models/sqflite/logged_in_model.dart';
 import 'package:campusmapper/utilities/user.dart';
 
 class StudentLoginPage extends StatefulWidget {
-  const StudentLoginPage({super.key});
-
+  const StudentLoginPage({super.key, required this.forced});
+  final bool forced;
   @override
   StudentLoginPageState createState() => StudentLoginPageState();
 }
@@ -26,28 +26,25 @@ class StudentLoginPageState extends State<StudentLoginPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-      // Return to homepage
-      FocusScope.of(context).unfocus();
-      Future.delayed(const Duration(milliseconds: 750), () {
-        Navigator.pushNamed(context, '/');
-      });
+          // Return to homepage
+          returnToMain(context);
 
-      // Return 'false' to prevent the default back button behavior
-      return false;
-    },
-    child:Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white38,
-          title: Row(children: [
-            const Icon(Icons.school),
-            Padding(
-                padding: const EdgeInsetsDirectional.only(start: 10),
-                child: (loggingIn)
-                    ? const Text("Student Login")
-                    : const Text("Register an Account"))
-          ]),
-        ),
-        body: (loggingIn) ? login() : register()));
+          // Return 'false' to prevent the default back button behavior
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white38,
+              title: Row(children: [
+                const Icon(Icons.school),
+                Padding(
+                    padding: const EdgeInsetsDirectional.only(start: 10),
+                    child: (loggingIn)
+                        ? const Text("Student Login")
+                        : const Text("Register an Account"))
+              ]),
+            ),
+            body: (loggingIn) ? login() : register()));
   }
 
   Widget login() {
@@ -276,10 +273,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
       );
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(successSnackbar);
-      FocusScope.of(context).unfocus();
-      Future.delayed(const Duration(milliseconds: 750), () {
-        Navigator.pushNamed(context, '/');
-      });
+      returnToMain(context);
     }
   }
 
@@ -305,7 +299,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
       );
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(successSnackbar);
-      Navigator.pop(context);
+      returnToMain(context);
     } else {
       var warningSnackbar = const SnackBar(
         duration: Duration(seconds: 2),
@@ -322,5 +316,19 @@ class StudentLoginPageState extends State<StudentLoginPage> {
         _passwordController.clear();
       });
     }
+  }
+
+  //Becuase the login page can be called from the widget on the appbar or forced, unique ways to exit are needed
+  //Could probably be neater, but with how the project was built, I don't know where to refactor to make the code neater
+  void returnToMain(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    Future.delayed(const Duration(milliseconds: 750), () {
+      //If coming from the widget, poping till home screen is fine
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      //If coming from a forced dialog, need to specify the route
+      if (widget.forced) {
+        Navigator.pushNamed(context, '/');
+      }
+    });
   }
 }

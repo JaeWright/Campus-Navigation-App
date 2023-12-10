@@ -60,24 +60,18 @@ class ListMapState extends State<ListMapScreen> {
 
   @override
   void initState() {
-    //Getting location permissions allowed.
-    setUpLocation();
     //Setting up the direction manager database
     directionManager = Directions(
         initialPosition: MapConstants.mapCenter,
         locationPosition: MapConstants.mapCenter,
         database: _database);
-    //Finds initial position, is generally delayed due to geolocation services starting up
-    updatePosition();
     //Timer triggers a location check every 10 seconds
+    //If an initial value is being passed in,
     timer = Timer.periodic(
         const Duration(seconds: 10), (Timer t) => updatePosition());
-    //If an initial value is being passed in,
-    if (widget.findLocation != const LatLng(0.0, 0.0)) {
-      mapMarkers = [widget.type];
-      directionManager.setItemPos(widget.findLocation);
-      setMap();
-    }
+    //Preforms async setups
+    setUp();
+
     super.initState();
   }
 
@@ -459,9 +453,10 @@ class ListMapState extends State<ListMapScreen> {
 
   //Checks location service, then updates position
   //If location services are disabled, the position will always be the center of Campus
-  void setUpLocation() async {
+  Future<bool> setUpLocation() async {
     await geoLocatorController.checkLocationService();
-    updatePosition();
+    await updatePosition();
+    return true;
   }
 
   //Creates routing information
@@ -474,6 +469,18 @@ class ListMapState extends State<ListMapScreen> {
       });
     } else {
       displayOffCampus();
+    }
+  }
+
+  void setUp() async {
+    //Getting location permissions allowed.
+    await setUpLocation();
+    //Finds initial position, is generally delayed due to geolocation services starting up
+    await updatePosition();
+    if (widget.findLocation != const LatLng(0.0, 0.0)) {
+      mapMarkers = [widget.type];
+      directionManager.setItemPos(widget.findLocation);
+      setMap();
     }
   }
 

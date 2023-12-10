@@ -10,6 +10,7 @@ import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/utilities/map_marker.dart';
 import 'package:campusmapper/screens/map_screen.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
+import 'package:latlong2/latlong.dart';
 
 class AccessibilityDirectoryPage extends StatelessWidget {
   final FirebaseModel _database = FirebaseModel();
@@ -18,10 +19,10 @@ class AccessibilityDirectoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Uses the map marker, as it has all the required information in it's calss
-    return FutureBuilder<List<MapMarker>>(
-        future: _database.getMarkersofType(["Accessible"]),
+    return FutureBuilder<List<Building>>(
+        future: _database.getBuildings(),
         builder:
-            (BuildContext context, AsyncSnapshot<List<MapMarker>> snapshot) {
+            (BuildContext context, AsyncSnapshot<List<Building>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             //Blank screen while loading
             return const Scaffold();
@@ -43,13 +44,23 @@ class AccessibilityDirectoryPage extends StatelessWidget {
               body: ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  MapMarker building = snapshot.data![index];
-                  return ListTile(
-                    title: Text(building.additionalInfo),
-                    onTap: () {
-                      _showAccessibilityOptions(context, building);
-                    },
-                  );
+                  Building building = snapshot.data![index];
+                  return ExpansionTile(
+                      title: Text(building.buildingName),
+                      subtitle: Text(building.buildingUse),
+                      children: <Widget>[
+                        ListTile(
+                          title: Text("Building Owner: ${building.owner}"),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.directions),
+                          title: const Text("Find Accessible Entrance"),
+                          onTap: () {
+                            _showAccessibilityOptions(
+                                context, building.accessibleEntrance);
+                          },
+                        )
+                      ]);
                 },
               ),
             );
@@ -58,30 +69,14 @@ class AccessibilityDirectoryPage extends StatelessWidget {
   }
 
   //Menu that when clicked, takes the user to the map to plot the directions to the location
-  void _showAccessibilityOptions(BuildContext context, MapMarker entrance) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.directions),
-              title: const Text('Directions'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ListMapScreen(
-                        findLocation: entrance.location,
-                        type: "Accessible",
-                      ),
-                    ));
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void _showAccessibilityOptions(BuildContext context, LatLng entrance) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ListMapScreen(
+            findLocation: entrance,
+            type: "Accessible",
+          ),
+        ));
   }
 }

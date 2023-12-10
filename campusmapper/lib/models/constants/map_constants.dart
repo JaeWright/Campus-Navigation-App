@@ -19,7 +19,6 @@ class MapConstants {
     "Health",
     "Bike_Parking",
     "Emergency_Phone",
-    "Accessible"
   ];
   //Circle widget for user locations
   static Widget circle = Container(

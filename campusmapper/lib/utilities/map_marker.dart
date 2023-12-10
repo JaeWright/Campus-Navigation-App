@@ -19,3 +19,15 @@ class MapMarker {
       required this.icon,
       required this.additionalInfo});
 }
+
+class Building {
+  final LatLng accessibleEntrance;
+  final String buildingName;
+  final String owner;
+  final String buildingUse;
+  Building(
+      {required this.accessibleEntrance,
+      required this.buildingName,
+      required this.owner,
+      required this.buildingUse});
+}

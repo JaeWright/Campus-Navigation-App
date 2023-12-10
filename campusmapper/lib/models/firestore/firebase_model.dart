@@ -36,6 +36,28 @@ class FirebaseModel {
     return results;
   }
 
+  Future<List<Building>> getBuildings() async {
+    List<Building> results = [];
+    //Firebase database is stared as a collection in a collection. Made it less messier if the document was the University, instead of the individual marker
+
+    await _firestore
+        .collection("MapMarker")
+        .doc('OntarioTech')
+        .collection('Buildings')
+        .get()
+        .then((querySnapshot) async {
+      for (var docSnapshot in querySnapshot.docs) {
+        results.add(Building(
+            accessibleEntrance: LatLng(docSnapshot["entrance"].latitude,
+                docSnapshot["entrance"].longitude),
+            buildingName: docSnapshot["name"],
+            owner: docSnapshot["owner"],
+            buildingUse: docSnapshot["use"]));
+      }
+    });
+    return results;
+  }
+
   //Checks to see if a user exists
   Future<User> login(String email, String password) async {
     User user = User(

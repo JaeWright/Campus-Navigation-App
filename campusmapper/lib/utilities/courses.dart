@@ -99,6 +99,12 @@ class CoursesModel {
     );
   }
 
+  //clear local database when the user logs out
+  Future clearLocal() async {
+    databaseFactory.deleteDatabase(
+        "/data/data/com.example.campusmapper/databases/courses_manager.db");
+  }
+
   //cloud database interactions
 
   //get course data from cloud database

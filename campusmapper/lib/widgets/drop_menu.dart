@@ -1,9 +1,11 @@
 //Author: Luca Lotito
-//Widget displayed in the top right corner, which allows user login and out
+//Calls which creates and manages the widget that allows the user to log in and out
 import 'package:campusmapper/utilities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:campusmapper/screens/student_login.dart';
 import 'package:campusmapper/models/sqflite/logged_in_model.dart';
+import 'package:campusmapper/utilities/events.dart';
+import 'package:campusmapper/utilities/courses.dart';
 
 enum Label { login, logout }
 
@@ -97,6 +99,8 @@ class DropdownState extends State<Dropdown> {
   //Logs the user out
   void logOut() async {
     await database.removeUser(loggedIn);
+    await CoursesModel().clearLocal();
+    await EventsModel().clearLocal();
     setState(() {
       loggedIn = User(
           id: 'None',

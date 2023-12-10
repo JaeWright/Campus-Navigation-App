@@ -36,6 +36,7 @@ class FirebaseModel {
     return results;
   }
 
+  //Checks to see if a user exists
   Future<User> login(String email, String password) async {
     User user = User(
         id: 'None',
@@ -44,6 +45,7 @@ class FirebaseModel {
         lastname: 'None',
         sid: 'None');
     await _firestore.collection("users").get().then((querySnapshot) {
+      //If a user exixsts for that combonation email and password, return the id
       for (var docSnapshot in querySnapshot.docs) {
         if (docSnapshot['Email'] == email &&
             docSnapshot["Password"] == password) {
@@ -60,6 +62,7 @@ class FirebaseModel {
     return user;
   }
 
+  //Creates a new user. The checks if the user can be created were done earlier
   Future<String> register(String email, String password, String firstname,
       String lastname, String sid) async {
     String id = "None";

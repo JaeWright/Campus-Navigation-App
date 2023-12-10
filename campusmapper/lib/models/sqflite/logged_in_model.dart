@@ -1,3 +1,5 @@
+//Author: Luca Lotito
+//SQL database managing the currently logged in user. Used for checking the user accross multiple pages, and for persistence
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
@@ -7,7 +9,7 @@ class DBUtils {
   static Future init() async {
     //set up the database
     var database = openDatabase(
-      path.join(await getDatabasesPath(), 'tweetb_manager.db'),
+      path.join(await getDatabasesPath(), 'user_manager.db'),
       onCreate: (db, version) {
         db.execute(
             'CREATE TABLE user(id TEXT PRIMARY KEY, email TEXT, firstname TEXT, lastname TEXT, sid TEXT)');
@@ -20,6 +22,7 @@ class DBUtils {
 }
 
 class UserModel {
+  //Gets the current user
   Future<List<User>> getUser() async {
     final db = await DBUtils.init();
     final List maps = await db.query('user');
@@ -30,6 +33,7 @@ class UserModel {
     return result;
   }
 
+  //Places a user in the database. Should only be at most one user at any time
   Future<int> insertUser(User user) async {
     final db = await DBUtils.init();
     return db.insert(
@@ -39,6 +43,7 @@ class UserModel {
     );
   }
 
+  //Clears the database
   Future<int> removeUser(User user) async {
     final db = await DBUtils.init();
     return await db.delete(

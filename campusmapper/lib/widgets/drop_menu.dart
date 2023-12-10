@@ -1,3 +1,5 @@
+//Author: Luca Lotito
+//Widget displayed in the top right corner, which allows user login and out
 import 'package:campusmapper/utilities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:campusmapper/screens/student_login.dart';
@@ -12,9 +14,12 @@ class Dropdown extends StatefulWidget {
 }
 
 class DropdownState extends State<Dropdown> {
+  //Item that's selected
   Label? selectedMenu;
+  //Current state
   bool loggedin = false;
   UserModel database = UserModel();
+  //Default state
   User loggedIn = User(
       id: 'None',
       email: 'None',
@@ -28,6 +33,7 @@ class DropdownState extends State<Dropdown> {
 
   @override
   Widget build(BuildContext context) {
+    //Checks if user is logged in
     getLogInStatus();
 
     return PopupMenuButton<Label>(
@@ -55,6 +61,7 @@ class DropdownState extends State<Dropdown> {
         else
           PopupMenuItem(
               enabled: false, child: Text("Hello ${loggedIn.firstname}")),
+        //Needed it's own if statement, as didn't want to work properly in the else
         if (loggedin)
           PopupMenuItem<Label>(
               value: Label.logout,
@@ -87,6 +94,7 @@ class DropdownState extends State<Dropdown> {
     });
   }
 
+  //Logs the user out
   void logOut() async {
     await database.removeUser(loggedIn);
     setState(() {

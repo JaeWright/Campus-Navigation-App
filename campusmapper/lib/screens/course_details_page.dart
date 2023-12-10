@@ -5,7 +5,7 @@ room, day, and time. Additional details can be added as needed.
 */
 
 import 'package:flutter/material.dart';
-import 'package:campusmapper/models/sqflite/courses.dart'; // Import your Course model
+import 'package:campusmapper/utilities/courses.dart'; // Import your Course model
 import 'package:provider/provider.dart';
 import '../utilities/schedule_provider.dart';
 
@@ -79,14 +79,15 @@ class CourseDetailsPage extends StatelessWidget {
                 onPressed: () {
                   // Remove the course from the schedule
                   ScheduleProvider scheduleProvider =
-                  Provider.of<ScheduleProvider>(context, listen: false);
+                      Provider.of<ScheduleProvider>(context, listen: false);
                   scheduleProvider.removeFromSchedule(course);
 
                   // Navigate back to the previous screen
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromRGBO(255, 255, 224, 1.0), // Banana yellow color
+                  primary:
+                      Color.fromRGBO(255, 255, 224, 1.0), // Banana yellow color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -118,8 +119,3 @@ class CourseDetailsPage extends StatelessWidget {
     );
   }
 }
-
-
-
-
-

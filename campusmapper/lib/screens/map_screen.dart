@@ -1,7 +1,6 @@
 /*
 Author: Luca Lotito
 This class handles the logic for displaying the map along with placing markers on the map.
-In the final submission, will handle pathfinding and Geolocation logic
 */
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -32,42 +31,48 @@ class ListMapState extends State<ListMapScreen> {
   final MapController mapController = MapController();
   final PanelController panelController = PanelController();
   final Geolocation geoLocatorController = Geolocation();
+  //Sets the button style used throughout the map
   final ButtonStyle style = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
       backgroundColor: Colors.cyan);
-
+  //DirectionManager deals with User current location, the the location of the place they want to go to
   Directions directionManager = Directions(
       initialPosition: MapConstants.mapCenter,
       locationPosition: MapConstants.mapCenter);
+  //Handles marker display
   MapMarker displayValues = MapMarker(
       id: '0',
       type: 'Null',
       location: MapConstants.mapCenter,
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
-  //If a Resturant location is requested, map it out
+  //Timer used for updating user location
   Timer timer = Timer(const Duration(seconds: 120), () {});
-
+  //Used for displaying selected mapmarkers
   List<bool?> trueFalseArray =
       List<bool>.filled(MapConstants.categories.length, false);
   List<String> mapMarkers = [];
   List? selectedIndices = [];
   List<LatLng> routing = [];
-
+//If the bottom card is displayed
   bool bottomCard = false;
-
-  //Holds the vlaues for any clicked marker on the map
 
   @override
   void initState() {
-    updatePosition();
+    //Getting location permissions allowed.
+    setUpLocation();
+    //Setting up the direction manager database
     directionManager = Directions(
         initialPosition: MapConstants.mapCenter,
         locationPosition: MapConstants.mapCenter,
         database: _database);
+    //Finds initial position, is generally delayed due to geolocation services starting up
+    updatePosition();
+    //Timer triggers a location check every 10 seconds
     timer = Timer.periodic(
         const Duration(seconds: 10), (Timer t) => updatePosition());
+    //If an initial value is being passed in,
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = [widget.type];
       directionManager.setItemPos(widget.findLocation);
@@ -76,6 +81,7 @@ class ListMapState extends State<ListMapScreen> {
     super.initState();
   }
 
+  //Removes timer. Does not work properly on first timer dispose however
   @override
   void dispose() {
     timer.cancel();
@@ -84,6 +90,7 @@ class ListMapState extends State<ListMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //Updates whenever the user selects more markers
     return FutureBuilder<List<MapMarker>>(
         future: _database.getMarkersofType(mapMarkers),
         builder:
@@ -106,7 +113,7 @@ class ListMapState extends State<ListMapScreen> {
                       onPressed: () {
                         showDialog(
                             context: context,
-                            //Popup box displaying sourcing for the map
+                            //Popup box displaying sourcing for the map and routing
                             builder: (context) => AlertDialog(
                                   title: const Text('Map Information'),
                                   content: SingleChildScrollView(
@@ -201,8 +208,6 @@ class ListMapState extends State<ListMapScreen> {
                         },*/
                           ),
                           //Marker handler logic
-                          //On the current OpenStreetMap tile provider there are static icons already on the map.
-                          //Again, this is just for testing purposes, the final release map will not have static icons
                           MarkerLayer(
                             markers: [
                               if (snapshot.data != null)
@@ -227,6 +232,8 @@ class ListMapState extends State<ListMapScreen> {
                                             });
                                           },
                                           child: snapshot.data![i].icon)),
+                              //Since the app is a campus mapper, can't really map directions if you're off campus
+                              //(And saving us some questionable API calls)
                               if (isOnCampus())
                                 Marker(
                                     point: directionManager.initialPosition,
@@ -241,6 +248,26 @@ class ListMapState extends State<ListMapScreen> {
                           ])
                         ],
                       ),
+                      //Button to clear routes on the map
+                      Visibility(
+                          visible: routing.isNotEmpty,
+                          child: Positioned(
+                            left: MediaQuery.of(context).size.width * .03,
+                            top: MediaQuery.of(context).size.height * .05,
+                            child: Container(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: FloatingActionButton(
+                                    heroTag: 'hero_exit',
+                                    onPressed: () {
+                                      setState(() {
+                                        routing = [];
+                                      });
+                                    },
+                                    backgroundColor: Colors.white,
+                                    child: const Icon(Icons.close,
+                                        color: Colors.cyan))),
+                          )),
+                      //Map control buttons
                       Positioned(
                           right: MediaQuery.of(context).size.width * .03,
                           bottom: MediaQuery.of(context).size.height * .265,
@@ -292,7 +319,6 @@ class ListMapState extends State<ListMapScreen> {
                   ),
                 ),
                 //When a Map Marker is pressed, a card will pop up displaying information about the marker
-                //Currently very WIP
                 bottomSheet: Visibility(
                     visible: bottomCard,
                     child: Card(
@@ -301,6 +327,7 @@ class ListMapState extends State<ListMapScreen> {
                         children: <Widget>[
                           ListTile(
                             leading: displayValues.icon,
+                            //Translate category allows for some backend names to be translated into more user friendly versions
                             title: Text(MapConstants.translateCategory(
                                 displayValues.type)),
                             subtitle: Text(
@@ -314,9 +341,6 @@ class ListMapState extends State<ListMapScreen> {
                               ElevatedButton(
                                 style: style,
                                 child: const Text('Navigate'),
-
-                                //For the full release, pressing this will display the route a user needs to take using pathways in the campus
-                                //As Geolocation and OSM pathway information is not implemented yet, the UI is the only thing that is implemented right now
                                 onPressed: () {
                                   setMap();
                                 },
@@ -342,6 +366,7 @@ class ListMapState extends State<ListMapScreen> {
         });
   }
 
+  //List with all the markers
   Widget _scrollingList(ScrollController sc) {
     return Container(
         decoration: const BoxDecoration(
@@ -353,7 +378,7 @@ class ListMapState extends State<ListMapScreen> {
             child: Column(children: [
               Flexible(
                   flex: 5,
-                  //List of all curently implemented campus markers. Found through the MapConstants
+                  //List of all campus markers. Found through the MapConstants
                   child: ListView.builder(
                       controller: sc,
                       itemCount: MapConstants.categories.length,
@@ -391,6 +416,7 @@ class ListMapState extends State<ListMapScreen> {
             ])));
   }
 
+  //Checks if within range of the map area
   bool isOnCampus() {
     if ((directionManager.initialPosition.latitude <
             MapConstants.mapUpperCorner.latitude &&
@@ -406,6 +432,7 @@ class ListMapState extends State<ListMapScreen> {
     return false;
   }
 
+  //Warns the user that they are off campus
   Future<dynamic> displayOffCampus() {
     return showDialog(
         context: context,
@@ -430,6 +457,14 @@ class ListMapState extends State<ListMapScreen> {
             ));
   }
 
+  //Checks location service, then updates position
+  //If location services are disabled, the position will always be the center of Campus
+  void setUpLocation() async {
+    await geoLocatorController.checkLocationService();
+    updatePosition();
+  }
+
+  //Creates routing information
   void setMap() async {
     await updatePosition();
     if (isOnCampus()) {
@@ -442,6 +477,7 @@ class ListMapState extends State<ListMapScreen> {
     }
   }
 
+  //Updates position on the map
   Future<bool> updatePosition() async {
     LatLng newPos = await geoLocatorController.getPosition();
     setState(() {

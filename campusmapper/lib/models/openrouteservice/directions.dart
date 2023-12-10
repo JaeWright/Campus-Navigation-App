@@ -1,3 +1,6 @@
+//Author: Luca Lotito
+//Helper class which finds the route between two locations
+
 import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +14,8 @@ class Directions {
       {required this.initialPosition,
       required this.locationPosition,
       this.database});
-
+  //Directions are done through a call to openrouteservice
+  //Also some more API key exposure
   Future<List<LatLng>> getDirections() async {
     List<LatLng> result = [];
     result.add(initialPosition);
@@ -27,6 +31,7 @@ class Directions {
     return result;
   }
 
+  //Setters
   void setInitPos(LatLng initPos) {
     initialPosition = initPos;
   }

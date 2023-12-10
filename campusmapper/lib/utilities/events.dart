@@ -6,8 +6,8 @@ and interact with the events database respectively
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../utilities/user.dart';
-import 'logged_in_model.dart';
-import 'scheduler_database_helper.dart';
+import 'package:campusmapper/models/sqflite/logged_in_model.dart';
+import 'package:campusmapper/models/sqflite/scheduler_database_helper.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 
@@ -72,7 +72,6 @@ class EventsModel {
 
   //get event data from sqlLite database
   Future getAllEventsLocal() async {
-
     final db = await DBUtilsSQL.initEvents();
     final List maps = await db.query('events');
 
@@ -86,9 +85,9 @@ class EventsModel {
 
     return results;
   }
+
   //adds new event to sql database
   Future<int> insertEventLocal(Event event) async {
-
     final db = await DBUtilsSQL.initEvents();
     return db.insert(
       'events',
@@ -96,6 +95,7 @@ class EventsModel {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
   //update event in sql database
   Future<int> updateEventLocal(Event event) async {
     final db = await DBUtilsSQL.initEvents();
@@ -106,6 +106,7 @@ class EventsModel {
       whereArgs: [event.id],
     );
   }
+
   //delete event from sql database
   Future<int> deleteEventLocal(String id) async {
     final db = await DBUtilsSQL.initEvents();
@@ -121,7 +122,7 @@ class EventsModel {
   //get event data from cloud database
   Future getAllEventsCloud() async {
     //get user id
-    List<User> user= await UserModel().getUser();
+    List<User> user = await UserModel().getUser();
     List results = [];
     await FirebaseFirestore.instance
         .collection('users')
@@ -142,11 +143,12 @@ class EventsModel {
     });
     return results;
   }
+
   //insert new event data to cloud database
   Future<String> insertEventCloud(String weekday, String eventName,
       String location, String time, DateTime date) async {
     //get user id
-    List<User> user= await UserModel().getUser();
+    List<User> user = await UserModel().getUser();
     //adds new event to online database
     DocumentReference ref = await FirebaseFirestore.instance
         .collection("users")
@@ -162,10 +164,11 @@ class EventsModel {
     //returns new id
     return ref.id;
   }
+
   //update event data in cloud database
   Future updateEventCloud(Event event) async {
     //get user id
-    List<User> user= await UserModel().getUser();
+    List<User> user = await UserModel().getUser();
     await FirebaseFirestore.instance
         .collection("users")
         .doc(user[0].id)
@@ -179,10 +182,11 @@ class EventsModel {
       'date': DateFormat('yyyy-MM-dd – kk:mm').format(event.date!)
     });
   }
+
   //delete event data from cloud database
   Future deleteEventCloud(String id) async {
     //get user id
-    List<User> user= await UserModel().getUser();
+    List<User> user = await UserModel().getUser();
     await FirebaseFirestore.instance
         .collection("users")
         .doc(user[0].id)

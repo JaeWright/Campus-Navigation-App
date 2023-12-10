@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import '../models/sqflite/logged_in_model.dart';
 import '../utilities/user.dart';
 import 'course_details_page.dart';
-import 'package:campusmapper/models/sqflite/courses.dart';
+import 'package:campusmapper/utilities/courses.dart';
 import 'package:provider/provider.dart';
 import '../utilities/schedule_provider.dart';
 

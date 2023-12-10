@@ -5,8 +5,8 @@ This page initializes the courses and events databases, and adds premade values 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'dart:async';
-import 'courses.dart';
-import 'events.dart';
+import 'package:campusmapper/utilities/courses.dart';
+import 'package:campusmapper/utilities/events.dart';
 
 //class for initialization of databases for courses and events
 class DBUtilsSQL {
@@ -46,7 +46,6 @@ class DBUtilsSQL {
 
   // Create a list of pre-made values (courses) to insert into the database
   static void _insertValuesCourses(Database db) {
-
     final List<Course> preMadeCourses = [
       Course(
         id: "1",
@@ -126,7 +125,6 @@ class DBUtilsSQL {
 
   // Create a list of pre-made values (events) to insert into the database
   static void _insertValuesEvents(Database db) {
-
     final List<Event> preMadeEvents = [
       Event(
         id: "1",

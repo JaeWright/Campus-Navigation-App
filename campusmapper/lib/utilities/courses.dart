@@ -6,13 +6,12 @@ and interact with the courses database respectively
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../utilities/user.dart';
-import 'logged_in_model.dart';
-import 'scheduler_database_helper.dart';
+import 'package:campusmapper/models/sqflite/logged_in_model.dart';
+import 'package:campusmapper/models/sqflite/scheduler_database_helper.dart';
 import 'dart:async';
 
-
 //class to hold course data
-class Course{
+class Course {
   String? id;
   String? weekday;
   String? courseName;
@@ -22,43 +21,50 @@ class Course{
   String? endTime;
   DocumentReference? reference;
 
-  Course({required this.id, required this.weekday, required this.courseName, required this.profName, required this.roomNum,
-    required this.endTime, required this.startTime,this.reference});
+  Course(
+      {required this.id,
+      required this.weekday,
+      required this.courseName,
+      required this.profName,
+      required this.roomNum,
+      required this.endTime,
+      required this.startTime,
+      this.reference});
 
   //convert from map for sql
-  Course.fromMapLocal(Map map){
+  Course.fromMapLocal(Map map) {
     id = map["id"];
     weekday = map["weekday"];
     courseName = map["courseName"];
-    profName= map["profName"];
+    profName = map["profName"];
     roomNum = map["roomNum"];
     startTime = map["startTime"];
     endTime = map["endTime"];
   }
   //convert from map for cloud
-  Course.fromMapCloud(Map map, {this.reference}){
+  Course.fromMapCloud(Map map, {this.reference}) {
     id = reference?.id;
     weekday = map["weekday"];
     courseName = map["courseName"];
-    profName= map["profName"];
+    profName = map["profName"];
     roomNum = map["roomNum"];
     startTime = map["startTime"];
     endTime = map["endTime"];
   }
   //convert to map for sql
-  Map<String,Object> toMapLocal(){
-    return{
-      'id' : id!,
-      'weekday' : weekday!,
+  Map<String, Object> toMapLocal() {
+    return {
+      'id': id!,
+      'weekday': weekday!,
       'courseName': courseName!,
       'profName': profName!,
       'roomNum': roomNum!,
       'startTime': startTime!,
-      'endTime' : endTime!
+      'endTime': endTime!
     };
   }
 
-  String toString(){
+  String toString() {
     return "id: $id, weekday: $weekday, course: $courseName, prof: $profName, roomNum: $roomNum, start: $startTime, end: $endTime ";
   }
 }
@@ -69,19 +75,20 @@ class CoursesModel {
 
   //get course data from sqlLite database
   Future getAllCoursesLocal() async {
-      final db = await DBUtilsSQL.initCourses();
-      final List maps = await db.query('courses');
+    final db = await DBUtilsSQL.initCourses();
+    final List maps = await db.query('courses');
 
-      List results = [];
+    List results = [];
 
-      if (maps.isNotEmpty) {
-        for (int i = 0; i < maps.length; i++) {
-          results.add(Course.fromMapLocal(maps[i]));
-        }
+    if (maps.isNotEmpty) {
+      for (int i = 0; i < maps.length; i++) {
+        results.add(Course.fromMapLocal(maps[i]));
       }
+    }
 
-      return results;
+    return results;
   }
+
   //insert course data to sqlLite database
   Future insertLocal(Course course) async {
     final db = await DBUtilsSQL.initCourses();
@@ -95,9 +102,9 @@ class CoursesModel {
   //cloud database interactions
 
   //get course data from cloud database
-  Future getAllCoursesCloud() async{
+  Future getAllCoursesCloud() async {
     //get user id
-    List<User> user= await UserModel().getUser();
+    List<User> user = await UserModel().getUser();
     //returns list of user's course(s) in database
     List results = [];
     await FirebaseFirestore.instance
@@ -105,18 +112,16 @@ class CoursesModel {
         .doc(user[0].id)
         .collection("Courses")
         .get()
-        .then((querySnapshot){
-      for (var docSnapshot in querySnapshot.docs){
-        results.add(
-            Course(
-                id: docSnapshot.id,
-                weekday: docSnapshot["weekday"],
-                courseName: docSnapshot["courseName"],
-                profName: docSnapshot["profName"],
-                roomNum: docSnapshot["roomNum"],
-                endTime: docSnapshot["endTime"],
-                startTime: docSnapshot["startTime"])
-        );
+        .then((querySnapshot) {
+      for (var docSnapshot in querySnapshot.docs) {
+        results.add(Course(
+            id: docSnapshot.id,
+            weekday: docSnapshot["weekday"],
+            courseName: docSnapshot["courseName"],
+            profName: docSnapshot["profName"],
+            roomNum: docSnapshot["roomNum"],
+            endTime: docSnapshot["endTime"],
+            startTime: docSnapshot["startTime"]));
       }
     });
 

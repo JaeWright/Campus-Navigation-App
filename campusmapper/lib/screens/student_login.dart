@@ -1,3 +1,5 @@
+//Author: Luca Lotito
+//Page that allows the user to login/register for the service. Interacts with firebase and sqflite
 import 'package:flutter/material.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/models/sqflite/logged_in_model.dart';
@@ -5,6 +7,8 @@ import 'package:campusmapper/utilities/user.dart';
 
 class StudentLoginPage extends StatefulWidget {
   const StudentLoginPage({super.key, required this.forced});
+  //Forced is if the call comes from a feature that requires user login.
+  ////Needed due to issues found while exiting the method, recursive calls
   final bool forced;
   @override
   StudentLoginPageState createState() => StudentLoginPageState();
@@ -13,6 +17,7 @@ class StudentLoginPage extends StatefulWidget {
 class StudentLoginPageState extends State<StudentLoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  //Controls what menu the user interacts with
   bool loggingIn = true;
   final _formKey = GlobalKey<FormState>();
   final FirebaseModel _fireDatabase = FirebaseModel();
@@ -29,7 +34,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
           // Return to homepage
           returnToMain(context);
 
-          // Return 'false' to prevent the default back button behavior
+          // Return 'false' to prevent recursive menu calls
           return false;
         },
         child: Scaffold(
@@ -61,7 +66,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email cannot be null';
@@ -77,7 +81,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Password cannot be null';
@@ -137,7 +140,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email cannot be null';
@@ -153,7 +155,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Password cannot be null';
@@ -169,7 +170,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'First name',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'First name cannot be null';
@@ -184,7 +184,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'Last name',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Last name cannot be null';
@@ -199,7 +198,6 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   labelText: 'Student ID',
                   border: OutlineInputBorder(),
                 ),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'SID cannot be null';
@@ -244,8 +242,10 @@ class StudentLoginPageState extends State<StudentLoginPage> {
         ));
   }
 
+  //Tries to log the user in
   Future _attemptLogin(String email, String password) async {
     User user = await _fireDatabase.login(email, password);
+    //If the user id doesn't exist with email and password, not a user
     if (user.id == "None") {
       var warningSnackbar = const SnackBar(
         duration: Duration(seconds: 2),
@@ -261,6 +261,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
         _emailController.clear();
         _passwordController.clear();
       });
+      //If user id exists with email and password, exists
     } else {
       _sqlDatabase.insertUser(user);
       var successSnackbar = SnackBar(
@@ -277,12 +278,15 @@ class StudentLoginPageState extends State<StudentLoginPage> {
     }
   }
 
+  //Attempts to create a new user account
   Future _attemptRegistration(String email, String password, String firstname,
       String lastname, String sid) async {
     User user = await _fireDatabase.login(email, password);
+    //Unlike login, no user id means an account can be created
     if (user.id == "None") {
       id = await _fireDatabase.register(
           email, password, firstname, lastname, sid);
+      //Creates the user
       _sqlDatabase.insertUser(User(
           id: id,
           email: email,
@@ -300,6 +304,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(successSnackbar);
       returnToMain(context);
+      //If user already exists
     } else {
       var warningSnackbar = const SnackBar(
         duration: Duration(seconds: 2),

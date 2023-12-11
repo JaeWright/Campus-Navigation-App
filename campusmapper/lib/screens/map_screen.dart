@@ -121,10 +121,28 @@ class ListMapState extends State<ListMapScreen> {
                                             alignment: Alignment.centerLeft,
                                             child: TextButton(
                                                 child: const Text(
+                                                    'Map data © Mapbox'),
+                                                onPressed: () => launchUrl(
+                                                      Uri.parse(
+                                                          'https://www.mapbox.com/about/maps/'),
+                                                    ))),
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                                child: const Text(
                                                     'Map data © OpenStreetMap contributors'),
                                                 onPressed: () => launchUrl(
                                                       Uri.parse(
                                                           'https://openstreetmap.org/copyright'),
+                                                    ))),
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                                child: const Text(
+                                                    'Improve this map'),
+                                                onPressed: () => launchUrl(
+                                                      Uri.parse(
+                                                          'https://www.mapbox.com/map-feedback/#/-74.5/40/10'),
                                                     ))),
                                         Align(
                                             alignment: Alignment.centerLeft,
@@ -195,15 +213,11 @@ class ListMapState extends State<ListMapScreen> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            //Current tile provider is OSM for testing purpsoes,a s there is no API limit for limited use
-                            //Final app will use a free MapBox map. It is not currently used due to the API limit that may be hit during testing
-                            userAgentPackageName: 'com.example.app',
-                            /*'https://api.mapbox.com/styles/v1/luc-lot/{mapStyleId}/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}',
-                        additionalOptions: {
-                          'mapStyleId': mapBoxStyleId,
-                          'accessToken': mapBoxAccessToken,
-                        },*/
+                                'https://api.mapbox.com/styles/v1/luc-lot/{mapStyleId}/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}',
+                            additionalOptions: const {
+                              'mapStyleId': MapConstants.mapBoxStyleId,
+                              'accessToken': MapConstants.mapBoxAccessToken,
+                            },
                           ),
                           //Marker handler logic
                           MarkerLayer(

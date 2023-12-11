@@ -7,7 +7,7 @@ import 'package:latlong2/latlong.dart';
 
 class MapConstants {
   //Exposing some API keys. Nice
-  static const String mapBoxStyleId = 'clomgqnky006x01qo1d507vrk';
+  static const String mapBoxStyleId = 'clq16jzmw00ad01qma0cvfg32';
   static const String mapBoxAccessToken =
       'pk.eyJ1IjoibHVjLWxvdCIsImEiOiJjbG9tNHpzdnkwam92MnFuMzgwNm5mNDRzIn0.45jDosysBYOtEdWZj39kTg';
   static const List<String> categories = [

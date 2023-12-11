@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+// Ensure 'drop_menu.dart' exists and is correct; if not, this line should be commented out or fixed.
+// import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HoverNewsItem extends StatefulWidget {
   final NewsItem newsItem;
@@ -74,38 +78,39 @@ class InformationCenterPage extends StatelessWidget {
       NewsItem(
           title: 'Spring Semester Registration',
           content: 'Registration for the Spring semester begins next Monday.'),
-      // Add more news items
       NewsItem(
           title: 'Weather Alert',
-          content:
-              'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
+          content: 'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
       NewsItem(
           title: 'Lockdown Drill',
-          content:
-              'A campus-wide lockdown drill is scheduled for this Friday.'),
+          content: 'A campus-wide lockdown drill is scheduled for this Friday.'),
       NewsItem(
           title: 'Christmas Weekend',
-          content:
-              'Christmas weekend starts December 5th. Enjoy the festive season!'),
+          content: 'Christmas weekend starts December 5th. Enjoy the festive season!'),
       NewsItem(
           title: 'Winter Tuition Fee Due',
-          content:
-              'Reminder: Winter semester tuition fees are due by the end of this month.'),
+          content: 'Reminder: Winter semester tuition fees are due by the end of this month.'),
       NewsItem(
           title: 'Kylie’s Day',
-          content:
-              'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
-      //
+          content: 'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
     ];
 
     final List<CampusResource> campusResources = [
       CampusResource(name: 'Library', location: 'Building B'),
-      // Add more resources
+      // Add more resources as needed
     ];
 
     final List<EmergencyContact> emergencyContacts = [
       EmergencyContact(service: 'Campus Security', number: '123-456-7890'),
-      // Add more contacts
+      EmergencyContact(service: 'Campus Medical', number: '287-654-3210'),
+      EmergencyContact(service: 'Campus FacultyScience', number: '387-654-3210'),
+      EmergencyContact(service: 'Campus FacultyBusines', number: '487-654-3210'),
+      EmergencyContact(service: 'Campus FacultyMedical', number: '587-654-3210'),
+      EmergencyContact(service: 'Campus FacutyRecreational', number: '687-654-3210'),
+      EmergencyContact(service: 'Campus FacultyEngineering', number: '787-654-3210'),
+      EmergencyContact(service: 'Campus Registration', number: '887-654-3210'),
+
+      // Add more contacts as needed
     ];
 
     return DefaultTabController(
@@ -121,15 +126,14 @@ class InformationCenterPage extends StatelessWidget {
               Tab(icon: Icon(Icons.warning), text: 'Emergency'),
             ],
           ),
-          actions: const <Widget>[Dropdown()],
+          actions: const <Widget>[
+            //Dropdown(), // Make sure you have this widget defined or remove this line.
+          ],
         ),
         body: TabBarView(
           children: [
-            // Campus News Tab
             _buildNewsList(campusNews),
-            // Resources Tab
             _buildResourceList(campusResources),
-            // Emergency Contacts Tab
             _buildContactList(emergencyContacts),
           ],
         ),
@@ -141,26 +145,11 @@ class InformationCenterPage extends StatelessWidget {
     return ListView.builder(
       itemCount: news.length,
       itemBuilder: (context, index) {
-        var item = news[index];
-        return HoverNewsItem(newsItem: item);
+        var newsItem = news[index];
         return ListTile(
-          leading: Icon(Icons.article, color: Colors.blue),
-          title: Text(item.title),
-          subtitle: Text(item.content),
-        );
-      },
-    );
-  }
-
-  Widget _buildScheduleList(List<ClassInfo> schedule) {
-    return ListView.builder(
-      itemCount: schedule.length,
-      itemBuilder: (context, index) {
-        var classInfo = schedule[index];
-        return ListTile(
-          leading: Icon(Icons.class_, color: Colors.blue),
-          title: Text('${classInfo.time} - ${classInfo.room}'),
-          subtitle: Text('Lecturer: ${classInfo.lecturer}'),
+          leading: const Icon(Icons.article, color: Colors.blue),
+          title: Text(newsItem.title),
+          subtitle: Text(newsItem.content),
         );
       },
     );
@@ -189,14 +178,86 @@ class InformationCenterPage extends StatelessWidget {
           leading: const Icon(Icons.phone_in_talk, color: Colors.red),
           title: Text(contact.service),
           subtitle: Text(contact.number),
-          onTap: () => _callNumber(contact.number),
+          onTap: () {
+            _showContactOptions(
+                context, contact); //Implement your calling functionality here
+          },
         );
       },
     );
   }
 
-  void _callNumber(String number) {
-    // Implement functionality to call the number
-    print('Calling $number...');
+  void _showContactOptions(BuildContext context, EmergencyContact contact) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.phone),
+              title: const Text('Call'),
+              onTap: () => _callNumber(contact.number),
+            ),
+            ListTile(
+              leading: const Icon(Icons.message),
+              title: const Text('Send Text Message'),
+              onTap: () => _sendTextMessage(contact.number),
+            ),
+            ListTile(
+              leading: const Icon(Icons.content_copy),
+              title: const Text('Copy Number'),
+              onTap: () => _copyToClipboard(context, contact.number),
+            ),
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: const Text('Send Email'),
+              onTap: () {
+                // Replace with actual email address if available
+                _sendEmail('email@example.com');
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _callNumber(String number) async {
+    Uri uri = Uri.parse('tel:$number');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch $uri';
+    }
+  }
+
+  void _sendTextMessage(String number) async {
+    Uri uri = Uri.parse('sms:$number');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch $uri';
+    }
+  }
+
+  void _copyToClipboard(BuildContext context, String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    Navigator.pop(context); // Close the bottom sheet after copying
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Copied $text to clipboard'),
+      ),
+    );
+  }
+
+  void _sendEmail(String email) async {
+    Uri uri = Uri.parse('mailto:$email');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch $uri';
+    }
   }
 }

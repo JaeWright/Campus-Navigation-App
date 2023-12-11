@@ -1,263 +1,254 @@
+/* 
+Author: Samiur Rahman - 100824221
+The main application entry point, CampusNavigatorApp, defines a HomePage with a grid of NavigationCard 
+widgets representing different sections of the app. The app includes features such as information center, 
+campus food, accessibility directory, user schedule, and a campus map. Firebase is initialized for potential 
+backend integration. Additionally, a login functionality is implemented, with the UI dynamically adjusting 
+based on the user's login status.
+
+Author: Darshilkumar Patel
+Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
+
+Author: Brock Davidge
+Added functionality to connect to course search and weekly schedule.
+*/
+import 'package:campusmapper/screens/student_login.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
-// Ensure 'drop_menu.dart' exists and is correct; if not, this line should be commented out or fixed.
-// import 'package:campusmapper/widgets/drop_menu.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:campusmapper/models/firestore/firebase_options.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:campusmapper/screens/helpbutton.dart';
+import 'package:campusmapper/screens/course_search_page.dart';
+import 'package:campusmapper/screens/schedule_page.dart';
+import 'package:campusmapper/utilities/schedule_provider.dart';
+import 'package:campusmapper/screens/information_centre_page.dart';
+import 'package:campusmapper/screens/accessibility.dart';
+import 'package:campusmapper/screens/scheduler_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:campusmapper/screens//map_screen.dart';
+import 'package:campusmapper/utilities/location.dart';
+import 'package:campusmapper/screens/restaurant_details.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
-import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class HoverNewsItem extends StatefulWidget {
-  final NewsItem newsItem;
-
-  const HoverNewsItem({super.key, required this.newsItem});
-
-  @override
-  HoverNewsItemState createState() => HoverNewsItemState();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    // Wrap your app with MultiProvider to provide multiple providers
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ScheduleProvider(),
+        ), // Add this line
+        // Add other providers if needed
+        Provider(
+          create: (context) => LocationService(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Grade Viewer',
+        home: CampusNavigatorApp(),
+      ),
+    ),
+  );
 }
 
-class HoverNewsItemState extends State<HoverNewsItem> {
-  bool _isHovering = false;
-
+class CampusNavigatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (event) => _onHover(true),
-      onExit: (event) => _onHover(false),
-      child: Container(
-        color: _isHovering
-            ? Colors.lightBlueAccent.withOpacity(0.5)
-            : Colors.transparent,
-        child: ListTile(
-          leading: const Icon(Icons.article, color: Colors.blue),
-          title: Text(widget.newsItem.title),
-          subtitle: Text(widget.newsItem.content),
-        ),
+    return MaterialApp(
+      title: 'Campus Navigator',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      routes: {
+        '/home': (context) =>
+            HomePage(), // Assign route name '/' to the HomePage
+        '/scheduler': (context) => SchedulerHandlerPage(),
+        '/login': (context) => StudentLoginPage(),
+        // Other named routes if needed
+      },
+      initialRoute: '/', // Set the initial route
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool isLoggedIn = false;
+
+  void navigateToSection(BuildContext context, Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => page),
     );
   }
 
-  void _onHover(bool isHovering) {
+  void loginUser() {
     setState(() {
-      _isHovering = isHovering;
+      isLoggedIn = true;
     });
   }
-}
 
-class NewsItem {
-  final String title;
-  final String content;
+  void logoutUser() {
+    setState(() {
+      isLoggedIn = false;
+    });
+  }
 
-  NewsItem({required this.title, required this.content});
-}
-
-class ClassInfo {
-  final String time;
-  final String room;
-  final String lecturer;
-
-  ClassInfo({required this.time, required this.room, required this.lecturer});
-}
-
-class CampusResource {
-  final String name;
-  final String location;
-
-  CampusResource({required this.name, required this.location});
-}
-
-class EmergencyContact {
-  final String service;
-  final String number;
-
-  EmergencyContact({required this.service, required this.number});
-}
-
-class InformationCenterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final List<NewsItem> campusNews = [
-      NewsItem(
-          title: 'Spring Semester Registration',
-          content: 'Registration for the Spring semester begins next Monday.'),
-      NewsItem(
-          title: 'Weather Alert',
-          content: 'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
-      NewsItem(
-          title: 'Lockdown Drill',
-          content: 'A campus-wide lockdown drill is scheduled for this Friday.'),
-      NewsItem(
-          title: 'Christmas Weekend',
-          content: 'Christmas weekend starts December 5th. Enjoy the festive season!'),
-      NewsItem(
-          title: 'Winter Tuition Fee Due',
-          content: 'Reminder: Winter semester tuition fees are due by the end of this month.'),
-      NewsItem(
-          title: 'Kylie’s Day',
-          content: 'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
+    List<Widget> navigationCards = [
+      NavigationCard(
+        icon: Icons.info,
+        title: 'Information Center',
+        color: Color(0xFF3498DB),
+        onTap: () {
+          navigateToSection(context, InformationCenterPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.fastfood_sharp,
+        title: 'CampusFood',
+        color: Color(0xFF2ECC71),
+        onTap: () {
+          navigateToSection(context, FoodPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.accessible,
+        title: 'Accessibility',
+        color: Color(0xFFE67E22),
+        onTap: () {
+          navigateToSection(context, AccessibilityDirectoryPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.calendar_month,
+        title: 'My Schedule',
+        color: Color(0xFF9B59B6),
+        onTap: () {
+          Navigator.pushReplacementNamed(context, '/scheduler');
+        },
+      ),
+      NavigationCard(
+        icon: Icons.map,
+        title: 'Campus Map',
+        color: Color(0xFF008080),
+        onTap: () {
+          final locationService =
+          Provider.of<LocationService>(context, listen: false);
+          navigateToSection(
+            context,
+            ListMapScreen(
+              findLocation: const LatLng(0.0, 0.0),
+              type: "None",
+            ),
+          );
+        },
+      ),
+      NavigationCard(
+        icon: Icons.search,
+        title: 'Search Courses',
+        color: Color(0xFFFFD700),
+        onTap: () {
+          navigateToSection(context, CourseSearchPage());
+        },
+      ),
     ];
 
-    final List<CampusResource> campusResources = [
-      CampusResource(name: 'Library', location: 'Building B'),
-      // Add more resources as needed
-    ];
+    return Scaffold(
+      appBar: AppBar(
+          title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
+      body: StaggeredGridView.countBuilder(
+        crossAxisCount: 4,
+        itemCount: navigationCards.length,
+        itemBuilder: (BuildContext context, int index) => navigationCards[index],
+        staggeredTileBuilder: (int index) {
+          // Assuming 'My Schedule' is at index 3 and 'Campus Map' is at index 4
+          if (index == 3 || index == 4) {
+            return StaggeredTile.count(2, 2); // Span 2 cells horizontally and 2 cells vertically
+          }
+          return StaggeredTile.count(2, 1); // Span 2 cells horizontally and 1 vertically for other cards
+        },
+        mainAxisSpacing: 6.0,
+        crossAxisSpacing: 8.0,
+      ),
 
-    final List<EmergencyContact> emergencyContacts = [
-      EmergencyContact(service: 'Campus Security', number: '123-456-7890'),
-      EmergencyContact(service: 'Campus Medical', number: '287-654-3210'),
-      EmergencyContact(service: 'Campus FacultyScience', number: '387-654-3210'),
-      EmergencyContact(service: 'Campus FacultyBusines', number: '487-654-3210'),
-      EmergencyContact(service: 'Campus FacultyMedical', number: '587-654-3210'),
-      EmergencyContact(service: 'Campus FacutyRecreational', number: '687-654-3210'),
-      EmergencyContact(service: 'Campus FacultyEngineering', number: '787-654-3210'),
-      EmergencyContact(service: 'Campus Registration', number: '887-654-3210'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TutorialSlider(),
+            ),
+          );
+        },
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 8.0,
+        tooltip: 'Help',
+        child: const Icon(Icons.help),
+      ),
+    );
+  }
+}
 
-      // Add more contacts as needed
-    ];
+class NavigationCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Color color;
+  final VoidCallback onTap;
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blueAccent,
-          title: Text('Information Center'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.newspaper), text: 'Campus News'),
-              Tab(icon: Icon(Icons.place), text: 'Resources'),
-              Tab(icon: Icon(Icons.warning), text: 'Emergency'),
+  const NavigationCard({
+    Key? key,
+    required this.icon,
+    required this.title,
+    required this.color,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: color,
+      elevation: 5, // Added elevation for depth effect
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15), // Rounded corners
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15), // Match border radius
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
+              SizedBox(height: 16.0),
+              Flexible( // Make the text flexible to fit within the available space
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14.0, // Reduced font size
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible, // Add ellipsis for overflowed text
+                ),
+              ),
             ],
           ),
-          actions: const <Widget>[
-            //Dropdown(), // Make sure you have this widget defined or remove this line.
-          ],
-        ),
-        body: TabBarView(
-          children: [
-            _buildNewsList(campusNews),
-            _buildResourceList(campusResources),
-            _buildContactList(emergencyContacts),
-          ],
         ),
       ),
     );
-  }
-
-  Widget _buildNewsList(List<NewsItem> news) {
-    return ListView.builder(
-      itemCount: news.length,
-      itemBuilder: (context, index) {
-        var newsItem = news[index];
-        return ListTile(
-          leading: const Icon(Icons.article, color: Colors.blue),
-          title: Text(newsItem.title),
-          subtitle: Text(newsItem.content),
-        );
-      },
-    );
-  }
-
-  Widget _buildResourceList(List<CampusResource> resources) {
-    return ListView.builder(
-      itemCount: resources.length,
-      itemBuilder: (context, index) {
-        var resource = resources[index];
-        return ListTile(
-          leading: const Icon(Icons.local_library, color: Colors.green),
-          title: Text(resource.name),
-          subtitle: Text('Location: ${resource.location}'),
-        );
-      },
-    );
-  }
-
-  Widget _buildContactList(List<EmergencyContact> contacts) {
-    return ListView.builder(
-      itemCount: contacts.length,
-      itemBuilder: (context, index) {
-        var contact = contacts[index];
-        return ListTile(
-          leading: const Icon(Icons.phone_in_talk, color: Colors.red),
-          title: Text(contact.service),
-          subtitle: Text(contact.number),
-          onTap: () {
-            _showContactOptions(
-                context, contact); //Implement your calling functionality here
-          },
-        );
-      },
-    );
-  }
-
-  void _showContactOptions(BuildContext context, EmergencyContact contact) {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.phone),
-              title: const Text('Call'),
-              onTap: () => _callNumber(contact.number),
-            ),
-            ListTile(
-              leading: const Icon(Icons.message),
-              title: const Text('Send Text Message'),
-              onTap: () => _sendTextMessage(contact.number),
-            ),
-            ListTile(
-              leading: const Icon(Icons.content_copy),
-              title: const Text('Copy Number'),
-              onTap: () => _copyToClipboard(context, contact.number),
-            ),
-            ListTile(
-              leading: const Icon(Icons.email),
-              title: const Text('Send Email'),
-              onTap: () {
-                // Replace with actual email address if available
-                _sendEmail('email@example.com');
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _callNumber(String number) async {
-    Uri uri = Uri.parse('tel:$number');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'Could not launch $uri';
-    }
-  }
-
-  void _sendTextMessage(String number) async {
-    Uri uri = Uri.parse('sms:$number');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'Could not launch $uri';
-    }
-  }
-
-  void _copyToClipboard(BuildContext context, String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    Navigator.pop(context); // Close the bottom sheet after copying
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Copied $text to clipboard'),
-      ),
-    );
-  }
-
-  void _sendEmail(String email) async {
-    Uri uri = Uri.parse('mailto:$email');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'Could not launch $uri';
-    }
   }
 }

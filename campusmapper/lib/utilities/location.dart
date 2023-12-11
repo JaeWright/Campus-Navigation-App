@@ -31,7 +31,9 @@ class LocationService {
     RestaurantLocation(
         name: 'Tim Hortons', latitude: 43.9453491, longitude: -78.8976195),
     RestaurantLocation(
-        name: 'Hunter Kitchen', latitude: 43.9455932, longitude: -78.896558),
+        name: 'North 2200 Grill', latitude: 43.9507576, longitude: -78.8983646),
+    RestaurantLocation(
+        name: 'Tim Hortons Food', latitude: 43.9437509, longitude: -78.897145),
     // Add other restaurant locations here
   ];
 

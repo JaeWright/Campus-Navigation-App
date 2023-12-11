@@ -8,6 +8,8 @@ class MenuService {
     'Drip Cafe': 'assets/menu_images/dripcafe.jpg',
     'Tim Hortons': 'assets/menu_images/timhortons.jpg',
     'Hunter Kitchen': 'assets/menu_images/hunterkitchen.jpg',
+    'North 2200 Grill': 'assets/menu_images/north2200grill.jpg',
+    'Tim Hortons Food': 'assets/menu_images/timhortonsfood.jpg',
     // Add other restaurant menu image paths here
   };
 

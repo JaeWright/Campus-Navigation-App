@@ -82,6 +82,8 @@ flutter:
     - assets/menu_images/dripcafe.jpg
     - assets/menu_images/cafe.jpg
     - assets/menu_images/timhortons.jpg
+    - assets/menu_images/north2200grill.jpg
+    - assets/menu_images/timhortonsfood.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

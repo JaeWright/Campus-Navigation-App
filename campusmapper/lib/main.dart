@@ -12,15 +12,14 @@ Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 Author: Brock Davidge
 Added functionality to connect to course search and weekly schedule.
 */
-import 'package:campusmapper/screens/student_login.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:campusmapper/screens/student_login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/screens/helpbutton.dart';
 import 'package:campusmapper/screens/course_search_page.dart';
-import 'package:campusmapper/screens/schedule_page.dart';
 import 'package:campusmapper/utilities/schedule_provider.dart';
 import 'package:campusmapper/screens/information_centre_page.dart';
 import 'package:campusmapper/screens/accessibility.dart';
@@ -30,6 +29,8 @@ import 'package:campusmapper/screens//map_screen.dart';
 import 'package:campusmapper/utilities/location.dart';
 import 'package:campusmapper/screens/restaurant_details.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
+
+import 'FAQ.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +49,7 @@ void main() async {
           create: (context) => LocationService(),
         ),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         title: 'Grade Viewer',
         home: CampusNavigatorApp(),
       ),
@@ -57,6 +58,8 @@ void main() async {
 }
 
 class CampusNavigatorApp extends StatelessWidget {
+  const CampusNavigatorApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,8 +70,10 @@ class CampusNavigatorApp extends StatelessWidget {
       routes: {
         '/home': (context) =>
             HomePage(), // Assign route name '/' to the HomePage
-        '/scheduler': (context) => SchedulerHandlerPage(),
-        '/login': (context) => StudentLoginPage(),
+        '/scheduler': (context) => const SchedulerHandlerPage(),
+        '/login': (context) => const StudentLoginPage(
+          forced: false,
+        ),
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
@@ -78,11 +83,13 @@ class CampusNavigatorApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   bool isLoggedIn = false;
 
   void navigateToSection(BuildContext context, Widget page) {
@@ -162,26 +169,33 @@ class _HomePageState extends State<HomePage> {
           navigateToSection(context, CourseSearchPage());
         },
       ),
+      NavigationCard(
+        icon: Icons.question_answer,
+        title: 'FAQ',
+        color: Color(0xFFE67E22),
+        onTap: () {
+          navigateToSection(context, FAQPage());
+        },
+      ),
     ];
-
     return Scaffold(
       appBar: AppBar(
           title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
-      body: StaggeredGridView.countBuilder(
-        crossAxisCount: 4,
-        itemCount: navigationCards.length,
-        itemBuilder: (BuildContext context, int index) => navigationCards[index],
-        staggeredTileBuilder: (int index) {
-          // Assuming 'My Schedule' is at index 3 and 'Campus Map' is at index 4
-          if (index == 3 || index == 4) {
-            return StaggeredTile.count(2, 2); // Span 2 cells horizontally and 2 cells vertically
-          }
-          return StaggeredTile.count(2, 1); // Span 2 cells horizontally and 1 vertically for other cards
-        },
-        mainAxisSpacing: 6.0,
-        crossAxisSpacing: 8.0,
-      ),
+    body: StaggeredGridView.countBuilder(
+    crossAxisCount: 4,
+    itemCount: navigationCards.length,
+    itemBuilder: (BuildContext context, int index) => navigationCards[index],
+    staggeredTileBuilder: (int index) {
+    // Assuming 'My Schedule' is at index 3 and 'Campus Map' is at index 4
+    if (index == 3 || index == 4) {
+    return StaggeredTile.count(2, 2); // Span 2 cells horizontally and 2 cells vertically
+    }
+    return StaggeredTile.count(2, 1); // Span 2 cells horizontally and 1 vertically for other cards
+    },
+    mainAxisSpacing: 6.0,
+    crossAxisSpacing: 8.0,
 
+    ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
@@ -196,7 +210,9 @@ class _HomePageState extends State<HomePage> {
         tooltip: 'Help',
         child: const Icon(Icons.help),
       ),
+
     );
+
   }
 }
 
@@ -231,19 +247,17 @@ class NavigationCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
+              Icon(icon, size: 32.0, color: Colors.white), // Icon color changed
               SizedBox(height: 16.0),
-              Flexible( // Make the text flexible to fit within the available space
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14.0, // Reduced font size
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.visible, // Add ellipsis for overflowed text
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.white, // Text color changed
+                  fontWeight: FontWeight.bold, // Bold text
                 ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.visible,
               ),
             ],
           ),

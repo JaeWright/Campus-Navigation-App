@@ -10,8 +10,7 @@ class FoodPage extends StatelessWidget {
     Restaurant(name: 'Booster Juice', location: 'Student Center - SC126'),
     Restaurant(name: 'Drip Cafe', location: 'Student Center - SC129'),
     Restaurant(name: 'Tim Hortons', location: 'Shawenjigewining Hall - SHA126'),
-    Restaurant(
-        name: 'Hunter Kitchen', location: 'Business and IT Building - UB1080'),
+    Restaurant(name: 'Hunter Kitchen', location: 'Business and IT Building - UB1080'),
   ];
 
   @override
@@ -19,13 +18,19 @@ class FoodPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orangeAccent,
-        title: const Row(children: [
-          Icon(Icons.fastfood_sharp),
-          Padding(
-            padding: EdgeInsetsDirectional.only(start: 10),
-            child: Text("Restaurants on Campus"), // Update the title
-          ),
-        ]),
+        title: Row(
+          children: [
+            Icon(Icons.fastfood_sharp),
+            SizedBox(width: 10), // Add some spacing between the icon and text
+            Expanded(
+              child: Text(
+                "Restaurants on Campus with a potentially long title",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1, // Limit the title to a single line
+              ),
+            ),
+          ],
+        ),
         actions: const <Widget>[Dropdown()],
       ),
       body: ListView.builder(
@@ -46,6 +51,7 @@ class FoodPage extends StatelessWidget {
       ),
     );
   }
+
 
   void _showRestaurantOptions(BuildContext context, Restaurant restaurant) {
     showModalBottomSheet(

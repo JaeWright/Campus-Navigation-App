@@ -1,3 +1,9 @@
+/*
+Author: Darshilkumar Patel
+Facilitates handling restaurant locations, navigating to them on a map,
+and managing the map screen.
+*/
+
 import 'package:campusmapper/screens/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';

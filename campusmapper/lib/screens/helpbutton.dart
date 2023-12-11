@@ -1,6 +1,6 @@
 /*
 Author: Darshilkumar Patel - 100832600
-This page manages the HelpButton shown on home page and when clicked on it there are detaild
+This page manages the HelpButton shown on home page and when clicked on it there are detailed
 guidelines for how to access each app functionality for user's assistance.
 */
 

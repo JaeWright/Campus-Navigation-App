@@ -1,3 +1,10 @@
+/*
+Author: Darshilkumar Patel
+ Presents a list of campus restaurants,
+ allowing users to view location details and access menus or
+ directions for each restaurant through interactive elements.
+*/
+
 import 'package:flutter/material.dart';
 import '../models/constants/menu_constants.dart';
 import '../utilities/food_main.dart';
@@ -51,7 +58,6 @@ class FoodPage extends StatelessWidget {
       ),
     );
   }
-
 
   void _showRestaurantOptions(BuildContext context, Restaurant restaurant) {
     showModalBottomSheet(

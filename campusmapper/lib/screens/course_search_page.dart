@@ -384,16 +384,14 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         title: Text(
           'Course Search',
           style: TextStyle(
-            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color.fromRGBO(255, 255, 224, 1.0),
+        backgroundColor: Colors.yellow,
         actions: [
           IconButton(
             icon: Icon(
               Icons.search,
-              color: Colors.black,
             ),
             onPressed: () async {
               final String? query = await showSearch<String>(

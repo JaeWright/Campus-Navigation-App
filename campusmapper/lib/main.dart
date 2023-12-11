@@ -12,6 +12,7 @@ Added helpbutton on homepage. Designed Navigationcards widgets to user friendly.
 Author: Brock Davidge
 Added functionality to connect to course search and weekly schedule.
 */
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:campusmapper/screens/student_login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -121,22 +122,6 @@ class HomePageState extends State<HomePage> {
         },
       ),
       NavigationCard(
-        icon: Icons.fastfood_sharp,
-        title: 'CampusFood',
-        color: Color(0xFF2ECC71),
-        onTap: () {
-          navigateToSection(context, FoodPage());
-        },
-      ),
-      NavigationCard(
-        icon: Icons.accessible,
-        title: 'Accessibility',
-        color: Color(0xFFE67E22),
-        onTap: () {
-          navigateToSection(context, AccessibilityDirectoryPage());
-        },
-      ),
-      NavigationCard(
         icon: Icons.calendar_month,
         title: 'My Schedule',
         color: Color(0xFF9B59B6),
@@ -145,12 +130,18 @@ class HomePageState extends State<HomePage> {
         },
       ),
       NavigationCard(
+        icon: Icons.search,
+        title: 'Search Courses',
+        color: Color(0xFFFFD700),
+        onTap: () {
+          navigateToSection(context, CourseSearchPage());
+        },
+      ),
+      NavigationCard(
         icon: Icons.map,
         title: 'Campus Map',
-        color: Color(0xFF008080),
+        color: Colors.cyan,
         onTap: () {
-          final locationService =
-              Provider.of<LocationService>(context, listen: false);
           navigateToSection(
             context,
             ListMapScreen(
@@ -161,11 +152,19 @@ class HomePageState extends State<HomePage> {
         },
       ),
       NavigationCard(
-        icon: Icons.search,
-        title: 'Search Courses',
-        color: Color(0xFFFFD700),
+        icon: Icons.accessible,
+        title: 'Accessibility',
+        color: Colors.redAccent,
         onTap: () {
-          navigateToSection(context, CourseSearchPage());
+          navigateToSection(context, AccessibilityDirectoryPage());
+        },
+      ),
+      NavigationCard(
+        icon: Icons.fastfood_sharp,
+        title: 'Campus Food',
+        color: Color(0xFF2ECC71),
+        onTap: () {
+          navigateToSection(context, FoodPage());
         },
       ),
       NavigationCard(
@@ -180,13 +179,27 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
           title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
-      body: GridView.count(
-        crossAxisCount: 3,
-        padding: EdgeInsets.all(8.0),
-        childAspectRatio: 0.8 / 1.0,
-        children: navigationCards,
+      body: StaggeredGridView.countBuilder(
+        crossAxisCount: 4,
+        itemCount: navigationCards.length,
+        itemBuilder: (BuildContext context, int index) =>
+            navigationCards[index],
+        staggeredTileBuilder: (int index) {
+          // Assuming 'My Schedule' is at index 3 and 'Campus Map' is at index 4
+          if (index == 1 || index == 3) {
+            return const StaggeredTile.count(
+                2, 2); // Span 2 cells horizontally and 2 cells vertically
+          } else if (index == 6) {
+            return const StaggeredTile.count(
+                4, 1); // Span 2 cells horizontally and 2 cells vertically
+          }
+          return const StaggeredTile.count(2,
+              1); // Span 2 cells horizontally and 1 vertically for other cards
+        },
+        mainAxisSpacing: 6.0,
+        crossAxisSpacing: 8.0,
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.large(
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -199,7 +212,6 @@ class HomePageState extends State<HomePage> {
         elevation: 8.0,
         tooltip: 'Help',
         child: const Icon(Icons.help),
-
       ),
     );
   }
@@ -236,16 +248,17 @@ class NavigationCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(icon, size: 48.0, color: Colors.white), // Icon color changed
+              Icon(icon, size: 32.0, color: Colors.white), // Icon color changed
               SizedBox(height: 16.0),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 14.0,
                   color: Colors.white, // Text color changed
                   fontWeight: FontWeight.bold, // Bold text
                 ),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.visible,
               ),
             ],
           ),

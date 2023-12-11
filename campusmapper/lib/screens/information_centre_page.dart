@@ -80,41 +80,46 @@ class InformationCenterPage extends StatelessWidget {
           content: 'Registration for the Spring semester begins next Monday.'),
       NewsItem(
           title: 'Weather Alert',
-          content: 'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
+          content:
+              'There is a rainy weather forecast for the upcoming week. Please plan accordingly.'),
       NewsItem(
           title: 'Lockdown Drill',
-          content: 'A campus-wide lockdown drill is scheduled for this Friday.'),
+          content:
+              'A campus-wide lockdown drill is scheduled for this Friday.'),
       NewsItem(
           title: 'Christmas Weekend',
-          content: 'Christmas weekend starts December 5th. Enjoy the festive season!'),
+          content:
+              'Christmas weekend starts December 5th. Enjoy the festive season!'),
       NewsItem(
           title: 'Winter Tuition Fee Due',
-          content: 'Reminder: Winter semester tuition fees are due by the end of this month.'),
+          content:
+              'Reminder: Winter semester tuition fees are due by the end of this month.'),
       NewsItem(
           title: 'Kylie’s Day',
-          content: 'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
-    ];
-
-    final List<CampusResource> campusResources = [
-      CampusResource(name: 'Library', location: 'Building B'),
-      // Add more resources as needed
+          content:
+              'Special Event: Kylie Jenner visits our school for a meet and greet on March 12th.'),
     ];
 
     final List<EmergencyContact> emergencyContacts = [
       EmergencyContact(service: 'Campus Security', number: '123-456-7890'),
       EmergencyContact(service: 'Campus Medical', number: '287-654-3210'),
-      EmergencyContact(service: 'Campus FacultyScience', number: '387-654-3210'),
-      EmergencyContact(service: 'Campus FacultyBusines', number: '487-654-3210'),
-      EmergencyContact(service: 'Campus FacultyMedical', number: '587-654-3210'),
-      EmergencyContact(service: 'Campus FacutyRecreational', number: '687-654-3210'),
-      EmergencyContact(service: 'Campus FacultyEngineering', number: '787-654-3210'),
+      EmergencyContact(
+          service: 'Campus FacultyScience', number: '387-654-3210'),
+      EmergencyContact(
+          service: 'Campus FacultyBusines', number: '487-654-3210'),
+      EmergencyContact(
+          service: 'Campus FacultyMedical', number: '587-654-3210'),
+      EmergencyContact(
+          service: 'Campus FacutyRecreational', number: '687-654-3210'),
+      EmergencyContact(
+          service: 'Campus FacultyEngineering', number: '787-654-3210'),
       EmergencyContact(service: 'Campus Registration', number: '887-654-3210'),
 
       // Add more contacts as needed
     ];
 
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
@@ -122,18 +127,16 @@ class InformationCenterPage extends StatelessWidget {
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.newspaper), text: 'Campus News'),
-              Tab(icon: Icon(Icons.place), text: 'Resources'),
               Tab(icon: Icon(Icons.warning), text: 'Emergency'),
             ],
           ),
           actions: const <Widget>[
-            //Dropdown(), // Make sure you have this widget defined or remove this line.
+            Dropdown(),
           ],
         ),
         body: TabBarView(
           children: [
             _buildNewsList(campusNews),
-            _buildResourceList(campusResources),
             _buildContactList(emergencyContacts),
           ],
         ),

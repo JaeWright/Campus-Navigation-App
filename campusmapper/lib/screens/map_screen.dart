@@ -478,10 +478,7 @@ class ListMapState extends State<ListMapScreen> {
   //Creates routing information
   void setMap(String moveType) async {
     //Preforms a check for location before getting path, os it isn't a default to center
-    //The reason why this exisst is so when a location is precalled, the location is set from your current location to their
-    //If the one time call wasn't there, the route call would be made with the center of Polonsky as the coordinate instead
 
-    await getPosition();
     if (isOnCampus()) {
       List<LatLng> returned = await directionManager.getDirections(moveType);
       setState(() {
@@ -496,12 +493,16 @@ class ListMapState extends State<ListMapScreen> {
     //Getting location permissions allowed.
     await checkLocationService();
     //Starts location finder widget
-    startListener();
+
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = [widget.type];
       directionManager.setItemPos(widget.findLocation);
+      //The reason why this exists is so when a location is precalled, the location is set from your current location to their
+      //If the one time call wasn't there, the route call would be made with the center of Polonsky as the coordinate instead
+      directionManager.setInitPos(await getPosition());
       setMap("wheelchair");
     }
+    startListener();
   }
 
   //Updates position on the map
@@ -511,7 +512,6 @@ class ListMapState extends State<ListMapScreen> {
     LatLng curLoc = MapConstants.mapCenter;
     if (canFindLocation) {
       Position pos = await Geolocator.getCurrentPosition(
-          forceAndroidLocationManager: true,
           desiredAccuracy: LocationAccuracy.high);
       curLoc = LatLng(pos.latitude, pos.longitude);
     }

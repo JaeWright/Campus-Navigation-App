@@ -1,6 +1,7 @@
 /*
 Author: Luca Lotito
 This class handles the logic for displaying the map along with placing markers on the map.
+This class also deals with locating the user, as well as requesting user permission
 */
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,9 +10,10 @@ import 'package:campusmapper/models/constants/map_constants.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/utilities/map_marker.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
-import 'package:campusmapper/models/geolocation/geolocation.dart';
 import 'package:campusmapper/models/openrouteservice/directions.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:geolocator/geolocator.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
@@ -30,12 +32,17 @@ class ListMapState extends State<ListMapScreen> {
   final FirebaseModel _database = FirebaseModel();
   final MapController mapController = MapController();
   final PanelController panelController = PanelController();
-  final Geolocation geoLocatorController = Geolocation();
   //Sets the button style used throughout the map
   final ButtonStyle style = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
       backgroundColor: Colors.cyan);
+  //Creates geolocation settings
+  final LocationSettings locationSettings = const LocationSettings(
+    accuracy: LocationAccuracy.high,
+    distanceFilter: 5, //Updates when a change in this many meters is detected
+  );
+  late StreamSubscription<Position> positionStream;
   //DirectionManager deals with User current location, the the location of the place they want to go to
   Directions directionManager = Directions(
       initialPosition: MapConstants.mapCenter,
@@ -47,9 +54,7 @@ class ListMapState extends State<ListMapScreen> {
       location: MapConstants.mapCenter,
       icon: const Icon(Icons.abc),
       additionalInfo: 'Null');
-  //Timer used for updating user location
-  Timer timer = Timer(const Duration(seconds: 120), () {});
-  //Used for displaying selected mapmarkers
+  //Array for choosing what markers to place on the map
   List<bool?> trueFalseArray =
       List<bool>.filled(MapConstants.categories.length, false);
   List<String> mapMarkers = [];
@@ -57,6 +62,7 @@ class ListMapState extends State<ListMapScreen> {
   List<LatLng> routing = [];
 //If the bottom card is displayed
   bool bottomCard = false;
+  bool canFindLocation = false;
 
   @override
   void initState() {
@@ -67,8 +73,6 @@ class ListMapState extends State<ListMapScreen> {
         database: _database);
     //Timer triggers a location check every 10 seconds
     //If an initial value is being passed in,
-    timer = Timer.periodic(
-        const Duration(seconds: 10), (Timer t) => updatePosition());
     //Preforms async setups
     setUp();
 
@@ -78,7 +82,7 @@ class ListMapState extends State<ListMapScreen> {
   //Removes timer. Does not work properly on first timer dispose however
   @override
   void dispose() {
-    timer.cancel();
+    positionStream.cancel();
     super.dispose();
   }
 
@@ -320,16 +324,14 @@ class ListMapState extends State<ListMapScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           ListTile(
-                            leading: displayValues.icon,
-                            //Translate category allows for some backend names to be translated into more user friendly versions
-                            title: Text(MapConstants.translateCategory(
-                                displayValues.type)),
-                            subtitle: Flexible(
-                                child: Text(
-                                    (displayValues.additionalInfo != 'None')
-                                        ? displayValues.additionalInfo
-                                        : '')),
-                          ),
+                              leading: displayValues.icon,
+                              //Translate category allows for some backend names to be translated into more user friendly versions
+                              title: Text(MapConstants.translateCategory(
+                                  displayValues.type)),
+                              subtitle: Text(
+                                  (displayValues.additionalInfo != 'None')
+                                      ? displayValues.additionalInfo
+                                      : '')),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
@@ -455,14 +457,17 @@ class ListMapState extends State<ListMapScreen> {
   //Checks location service, then updates position
   //If location services are disabled, the position will always be the center of Campus
   Future<bool> setUpLocation() async {
-    await geoLocatorController.checkLocationService();
-    await updatePosition();
+    await checkLocationService();
     return true;
   }
 
   //Creates routing information
   void setMap(String moveType) async {
-    await updatePosition();
+    //Preforms a check for location before getting path, os it isn't a default to center
+    //The reason why this exisst is so when a location is precalled, the location is set from your current location to their
+    //If the one time call wasn't there, the route call would be made with the center of Polonsky as the coordinate instead
+
+    await getPosition();
     if (isOnCampus()) {
       List<LatLng> returned = await directionManager.getDirections(moveType);
       setState(() {
@@ -475,9 +480,9 @@ class ListMapState extends State<ListMapScreen> {
 
   void setUp() async {
     //Getting location permissions allowed.
-    await setUpLocation();
-    //Finds initial position, is generally delayed due to geolocation services starting up
-    await updatePosition();
+    await checkLocationService();
+    //Starts location finder widget
+    startListener();
     if (widget.findLocation != const LatLng(0.0, 0.0)) {
       mapMarkers = [widget.type];
       directionManager.setItemPos(widget.findLocation);
@@ -486,11 +491,62 @@ class ListMapState extends State<ListMapScreen> {
   }
 
   //Updates position on the map
-  Future<bool> updatePosition() async {
-    LatLng newPos = await geoLocatorController.getPosition();
-    setState(() {
-      directionManager.setInitPos(newPos);
-    });
-    return true;
+
+  Future<LatLng> getPosition() async {
+    //Default location
+    LatLng curLoc = MapConstants.mapCenter;
+    if (canFindLocation) {
+      Position pos = await Geolocator.getCurrentPosition(
+          forceAndroidLocationManager: true,
+          desiredAccuracy: LocationAccuracy.high);
+      curLoc = LatLng(pos.latitude, pos.longitude);
+    }
+    return curLoc;
+  }
+
+  //Checker to see if location services are enabled
+  //Triggers upon reopening the map for the second time if not allowed,
+  //as the deniedForever permission appears to be bugged and only properly updates after
+  //being denied twice
+  Future<bool> checkLocationService() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      canFindLocation = false;
+    } else {
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          canFindLocation = false;
+        } else {
+          canFindLocation = true;
+        }
+      } else {
+        canFindLocation = true;
+      }
+      if (permission == LocationPermission.deniedForever) {
+        canFindLocation = false;
+      }
+    }
+    return canFindLocation;
+  }
+
+  //Creates a stream for geolocating
+  //I wanted to put it in it's own class, but didn't know how to get map_screen to get the sream updates
+  void startListener() {
+    if (canFindLocation) {
+      positionStream =
+          Geolocator.getPositionStream(locationSettings: locationSettings)
+              .listen((Position? position) {
+        if (position != null) {
+          setState(() {
+            directionManager
+                .setInitPos(LatLng(position.latitude, position.longitude));
+          });
+        }
+      });
+    }
   }
 }

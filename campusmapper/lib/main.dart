@@ -29,6 +29,8 @@ import 'package:campusmapper/utilities/location.dart';
 import 'package:campusmapper/screens/restaurant_details.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 
+import 'FAQ.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -166,6 +168,14 @@ class HomePageState extends State<HomePage> {
           navigateToSection(context, CourseSearchPage());
         },
       ),
+      NavigationCard(
+        icon: Icons.question_answer,
+        title: 'FAQ',
+        color: Color(0xFFE67E22),
+        onTap: () {
+          navigateToSection(context, FAQPage());
+        },
+      ),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -189,6 +199,7 @@ class HomePageState extends State<HomePage> {
         elevation: 8.0,
         tooltip: 'Help',
         child: const Icon(Icons.help),
+
       ),
     );
   }

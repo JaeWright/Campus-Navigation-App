@@ -17,8 +17,9 @@ class FoodPage extends StatelessWidget {
     Restaurant(name: 'Booster Juice', location: 'Student Center - SC126'),
     Restaurant(name: 'Drip Cafe', location: 'Student Center - SC129'),
     Restaurant(name: 'Tim Hortons', location: 'Shawenjigewining Hall - SHA126'),
-    Restaurant(
-        name: 'Hunter Kitchen', location: 'Business and IT Building - UB1080'),
+    Restaurant(name: 'Hunter Kitchen', location: 'Business and IT Building - UB1080'),
+    Restaurant(name: 'North 2200 Grill', location: 'Campus Ice center - Floor 2'),
+    Restaurant(name: 'Tim Hortons Food', location: 'Gordon Wiley - B218')
   ];
 
   @override

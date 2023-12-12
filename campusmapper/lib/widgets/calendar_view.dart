@@ -13,15 +13,16 @@ class CalendarPage extends StatefulWidget {
   final List<EventTile>? events;
   final bool displayEvents;
 
-  CalendarPage({required this.events, required this.displayEvents});
+  const CalendarPage(
+      {super.key, required this.events, required this.displayEvents});
 
   @override
-  _CalendarPageState createState() => _CalendarPageState();
+  CalendarPageState createState() => CalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
+class CalendarPageState extends State<CalendarPage> {
   //preset calendar values
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  final CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   late LinkedHashMap<DateTime, List> toDisplay;
@@ -51,7 +52,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Calendar'),
+        title: const Text('Flutter Calendar'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -89,7 +90,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 outsideDaysVisible: false,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             //shows a List View of the events on selected day
             Container(
               decoration: BoxDecoration(

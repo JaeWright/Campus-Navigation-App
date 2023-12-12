@@ -37,8 +37,6 @@ class DBUtilsSQL {
       },
       version: 1,
     );
-    print("created DB $database");
-
     return database;
   }
 

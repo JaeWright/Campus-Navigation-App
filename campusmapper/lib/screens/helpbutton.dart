@@ -5,28 +5,25 @@ guidelines for how to access each app functionality for user's assistance.
 */
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'restaurant_details.dart';
-import 'information_centre_page.dart';
+import '../utilities/restaurant_details.dart';
 import 'accessibility.dart';
-import 'map_screen.dart';
 import 'scheduler_handler.dart';
 import 'course_search_page.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:campusmapper/utilities/location.dart';
 
 class TutorialPage1 extends StatelessWidget {
+  const TutorialPage1({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Information Center'),
-        backgroundColor: Color(0xFF3498DB), // Customize header color
+        title: const Text('Information Center'),
+        backgroundColor: const Color(0xFF3498DB), // Customize header color
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ListTile(
             title: Text(
               'Instructions:',
@@ -65,12 +62,10 @@ class TutorialPage1 extends StatelessWidget {
       ),
     );
   }
-
 }
 
-
 class TutorialPage2 extends StatelessWidget {
-  @override
+  const TutorialPage2({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +73,7 @@ class TutorialPage2 extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.fastfood_sharp,
               color: Colors.black,
             ),
@@ -90,12 +85,12 @@ class TutorialPage2 extends StatelessWidget {
             },
           ),
         ],
-        title: Text('Campus Food'),
-        backgroundColor: Color(0xFF2ECC71), // Customize header color
+        title: const Text('Campus Food'),
+        backgroundColor: const Color(0xFF2ECC71), // Customize header color
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ListTile(
             title: Text(
               'Instructions:',
@@ -141,10 +136,11 @@ class TutorialPage2 extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class TutorialPage3 extends StatelessWidget {
+  const TutorialPage3({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +148,7 @@ class TutorialPage3 extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.accessible,
               color: Colors.black,
             ),
@@ -164,19 +160,18 @@ class TutorialPage3 extends StatelessWidget {
             },
           ),
         ],
-        title: Text('Accessibility'),
-        backgroundColor: Color(0xFFE67E22), // Customize header color
+        title: const Text('Accessibility'),
+        backgroundColor: const Color(0xFFE67E22), // Customize header color
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ListTile(
             title: Text(
               'Instructions:',
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
           ),
-
           ListTile(
             leading: Icon(Icons.accessible_forward),
             title: Text(
@@ -209,34 +204,35 @@ class TutorialPage3 extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class TutorialPage4 extends StatelessWidget {
+  const TutorialPage4({super.key});
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.calendar_month,
               color: Colors.black,
             ),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => SchedulerHandlerPage()),
+                MaterialPageRoute(builder: (_) => const SchedulerHandlerPage()),
               );
             },
           ),
         ],
-        title: Text('My Schedule'),
-        backgroundColor: Color(0xFF9B59B6), // Customize header color
+        title: const Text('My Schedule'),
+        backgroundColor: const Color(0xFF9B59B6), // Customize header color
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ListTile(
             title: Text(
               'Instructions:',
@@ -282,21 +278,22 @@ class TutorialPage4 extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class TutorialPage5 extends StatelessWidget {
+  const TutorialPage5({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Campus Map'),
-        backgroundColor: Color(0xFF008080), // Customize header color
+        title: const Text('Campus Map'),
+        backgroundColor: const Color(0xFF008080), // Customize header color
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ListTile(
             title: Text(
               'Instructions:',
@@ -342,34 +339,35 @@ class TutorialPage5 extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class TutorialPage6 extends StatelessWidget {
+  const TutorialPage6({super.key});
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.search,
               color: Colors.black,
             ),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => CourseSearchPage()),
+                MaterialPageRoute(builder: (_) => const CourseSearchPage()),
               );
             },
           ),
         ],
-        title: Text('Search Courses'),
-        backgroundColor: Color(0xFFFFD700), // Customize header color
+        title: const Text('Search Courses'),
+        backgroundColor: const Color(0xFFFFD700), // Customize header color
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ListTile(
             title: Text(
               'Instructions:',
@@ -415,17 +413,18 @@ class TutorialPage6 extends StatelessWidget {
       ),
     );
   }
-
 }
 
 // Implement TutorialPage2 and TutorialPage3 similarly
 
 class TutorialSlider extends StatefulWidget {
+  const TutorialSlider({super.key});
+
   @override
-  _TutorialSliderState createState() => _TutorialSliderState();
+  TutorialSliderState createState() => TutorialSliderState();
 }
 
-class _TutorialSliderState extends State<TutorialSlider> {
+class TutorialSliderState extends State<TutorialSlider> {
   final _pageController = PageController();
   int _currentPage = 0;
 
@@ -439,8 +438,8 @@ class _TutorialSliderState extends State<TutorialSlider> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tutorial'),
-        backgroundColor: Color(0xFFE0F2F1), // Customize header color
+        title: const Text('Tutorial'),
+        backgroundColor: const Color(0xFFE0F2F1), // Customize header color
       ),
       body: Column(
         children: [
@@ -452,7 +451,7 @@ class _TutorialSliderState extends State<TutorialSlider> {
                   _currentPage = page;
                 });
               },
-              children: [
+              children: const [
                 TutorialPage1(),
                 TutorialPage2(),
                 TutorialPage3(),
@@ -468,7 +467,7 @@ class _TutorialSliderState extends State<TutorialSlider> {
             children: List.generate(
               6, // Total number of pages
               (index) => Container(
-                margin: EdgeInsets.symmetric(horizontal: 4.0),
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
                 width: 8.0,
                 height: 8.0,
                 decoration: BoxDecoration(
@@ -478,7 +477,7 @@ class _TutorialSliderState extends State<TutorialSlider> {
               ),
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
         ],
       ),
     );

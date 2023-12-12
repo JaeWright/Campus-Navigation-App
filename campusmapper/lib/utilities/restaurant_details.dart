@@ -7,8 +7,8 @@ Author: Darshilkumar Patel
 
 import 'package:flutter/material.dart';
 import '../models/constants/menu_constants.dart';
-import '../utilities/food_main.dart';
-import '../utilities/location.dart';
+import 'food_main.dart';
+import 'location.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 
 class FoodPage extends StatelessWidget {
@@ -24,12 +24,14 @@ class FoodPage extends StatelessWidget {
         name: 'North 2200 Grill', location: 'Campus Ice center - Floor 2'),
   ];
 
+  FoodPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF2ECC71),
-        title: Row(
+        backgroundColor: const Color(0xFF2ECC71),
+        title: const Row(
           children: [
             Icon(Icons.fastfood_sharp),
             SizedBox(width: 10), // Add some spacing between the icon and text
@@ -50,12 +52,9 @@ class FoodPage extends StatelessWidget {
           var restaurant = restaurants[index];
           return ListTile(
             title: Text(restaurant.name),
-            subtitle: Text('${restaurant.location}'),
+            subtitle: Text(restaurant.location),
             onTap: () {
               _showRestaurantOptions(context, restaurant);
-              // // TODO: Navigate to the menu/details screen for the selected restaurant
-              // // You'll implement navigation logic here
-              // print('Selected Restaurant: ${restaurant.name}');
             },
           );
         },
@@ -67,34 +66,32 @@ class FoodPage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          child: Wrap(
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.directions),
-                title: Text('Directions'),
-                onTap: () {
-                  Navigator.pop(context);
-                  LocationService().navigateToRestaurantLocation(
-                    context,
-                    RestaurantLocation(
-                      name: restaurant.name,
-                      latitude: getRestaurantLatitude(restaurant),
-                      longitude: getRestaurantLongitude(restaurant),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.restaurant_menu),
-                title: Text('Menu'),
-                onTap: () {
-                  _showMenuImage(context, restaurant);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.directions),
+              title: const Text('Directions'),
+              onTap: () {
+                Navigator.pop(context);
+                LocationService().navigateToRestaurantLocation(
+                  context,
+                  RestaurantLocation(
+                    name: restaurant.name,
+                    latitude: getRestaurantLatitude(restaurant),
+                    longitude: getRestaurantLongitude(restaurant),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.restaurant_menu),
+              title: const Text('Menu'),
+              onTap: () {
+                _showMenuImage(context, restaurant);
+                Navigator.pop(context);
+              },
+            ),
+          ],
         );
       },
     );
@@ -141,7 +138,7 @@ double getRestaurantLongitude(Restaurant restaurant) {
   // Return the longitude of the selected restaurant
   return selectedRestaurant?.longitude ?? 0.0;
 }
-
+/*
 void _fetchMenuData(Restaurant restaurant) async {
   final String? menuData = await MenuService.fetchMenu(restaurant.name);
 
@@ -152,3 +149,4 @@ void _fetchMenuData(Restaurant restaurant) async {
     // Handle null or error cases when fetching menu data fails
   }
 }
+*/

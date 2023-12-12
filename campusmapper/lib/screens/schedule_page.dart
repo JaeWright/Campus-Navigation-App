@@ -14,6 +14,8 @@ import 'course_details_page.dart';
 import '../utilities/schedule_provider.dart';
 
 class SchedulePage extends StatelessWidget {
+  const SchedulePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Listen to changes in the ScheduleProvider
@@ -36,7 +38,7 @@ class SchedulePage extends StatelessWidget {
     return Scaffold(
       // Inside the SchedulePage widget, update the appBar property
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Weekly Schedule',
           style: TextStyle(
             color: Colors.white,
@@ -59,7 +61,7 @@ class SchedulePage extends StatelessWidget {
                   children: [
                     Text(
                       '$day:',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

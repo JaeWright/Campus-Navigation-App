@@ -20,7 +20,7 @@ class MenuService {
         return Dialog(
           child: GestureDetector(
             onTap: () => Navigator.of(context).pop(),
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: PhotoView(
@@ -29,7 +29,7 @@ class MenuService {
                 maxScale: PhotoViewComputedScale.covered * 2.0,
                 initialScale: PhotoViewComputedScale.contained,
                 enableRotation: false,
-                backgroundDecoration: BoxDecoration(
+                backgroundDecoration: const BoxDecoration(
                   color: Colors.white,
                 ),
               ),
@@ -47,7 +47,7 @@ class MenuService {
   // simulate fetching menu data (returns image path as data)
   static Future<String?> fetchMenu(String restaurantName) async {
     // use a delay to simulate fetching data from a remote server or local storage
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     return getMenuImagePath(restaurantName);
   }

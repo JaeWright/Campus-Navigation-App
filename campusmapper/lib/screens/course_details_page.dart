@@ -12,23 +12,23 @@ import '../utilities/schedule_provider.dart';
 class CourseDetailsPage extends StatelessWidget {
   final Course course;
 
-  CourseDetailsPage({required this.course});
+  const CourseDetailsPage({super.key, required this.course});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Course Details',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color.fromRGBO(255, 255, 224, 1.0),
+        backgroundColor: const Color.fromRGBO(255, 255, 224, 1.0),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -40,41 +40,41 @@ class CourseDetailsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 course.courseName ?? 'Unknown Course',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Professor: ${course.profName ?? 'Unknown Professor'}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Room: ${course.roomNum ?? 'Unknown Room'}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Time: ${course.startTime ?? 'Unknown'} - ${course.endTime ?? 'Unknown'}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.black,
                 ),
               ),
               // ... other details
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   // Remove the course from the schedule
@@ -86,21 +86,21 @@ class CourseDetailsPage extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary:
-                      Color.fromRGBO(255, 255, 224, 1.0), // Banana yellow color
+                  backgroundColor: const Color.fromRGBO(
+                      255, 255, 224, 1.0), // Banana yellow color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   elevation: 8.0,
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                 ),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(8.0),
                       child: Text(
                         'Remove from Schedule',
                         style: TextStyle(

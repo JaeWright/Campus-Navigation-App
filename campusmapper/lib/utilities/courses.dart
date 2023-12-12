@@ -64,6 +64,7 @@ class Course {
     };
   }
 
+  @override
   String toString() {
     return "id: $id, weekday: $weekday, course: $courseName, prof: $profName, roomNum: $roomNum, start: $startTime, end: $endTime ";
   }

@@ -27,10 +27,10 @@ import 'package:campusmapper/screens/scheduler_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:campusmapper/screens//map_screen.dart';
 import 'package:campusmapper/utilities/location.dart';
-import 'package:campusmapper/screens/restaurant_details.dart';
+import 'package:campusmapper/utilities/restaurant_details.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 
-import 'FAQ.dart';
+import 'screens/FAQ.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,7 +69,7 @@ class CampusNavigatorApp extends StatelessWidget {
       ),
       routes: {
         '/home': (context) =>
-            HomePage(), // Assign route name '/' to the HomePage
+            const HomePage(), // Assign route name '/' to the HomePage
         '/scheduler': (context) => const SchedulerHandlerPage(),
         '/login': (context) => const StudentLoginPage(
               forced: false,
@@ -77,7 +77,7 @@ class CampusNavigatorApp extends StatelessWidget {
         // Other named routes if needed
       },
       initialRoute: '/', // Set the initial route
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
@@ -116,7 +116,7 @@ class HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.info,
         title: 'Information Center',
-        color: Color(0xFF3498DB),
+        color: const Color(0xFF3498DB),
         onTap: () {
           navigateToSection(context, InformationCenterPage());
         },
@@ -124,7 +124,7 @@ class HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.calendar_month,
         title: 'My Schedule',
-        color: Color(0xFF9B59B6),
+        color: const Color(0xFF9B59B6),
         onTap: () {
           Navigator.pushReplacementNamed(context, '/scheduler');
         },
@@ -132,9 +132,9 @@ class HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.search,
         title: 'Search Courses',
-        color: Color(0xFFFFD700),
+        color: const Color(0xFFFFD700),
         onTap: () {
-          navigateToSection(context, CourseSearchPage());
+          navigateToSection(context, const CourseSearchPage());
         },
       ),
       NavigationCard(
@@ -144,8 +144,8 @@ class HomePageState extends State<HomePage> {
         onTap: () {
           navigateToSection(
             context,
-            ListMapScreen(
-              findLocation: const LatLng(0.0, 0.0),
+            const ListMapScreen(
+              findLocation: LatLng(0.0, 0.0),
               type: "None",
             ),
           );
@@ -162,7 +162,7 @@ class HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.fastfood_sharp,
         title: 'Campus Food',
-        color: Color(0xFF2ECC71),
+        color: const Color(0xFF2ECC71),
         onTap: () {
           navigateToSection(context, FoodPage());
         },
@@ -170,15 +170,16 @@ class HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.question_answer,
         title: 'FAQ',
-        color: Color(0xFFE67E22),
+        color: const Color(0xFFE67E22),
         onTap: () {
-          navigateToSection(context, FAQPage());
+          navigateToSection(context, const FAQPage());
         },
       ),
     ];
     return Scaffold(
       appBar: AppBar(
-          title: Text('Campus Navigator'), actions: const <Widget>[Dropdown()]),
+          title: const Text('Campus Navigator'),
+          actions: const <Widget>[Dropdown()]),
       body: StaggeredGridView.countBuilder(
         crossAxisCount: 4,
         itemCount: navigationCards.length,
@@ -203,7 +204,7 @@ class HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => TutorialSlider(),
+              builder: (context) => const TutorialSlider(),
             ),
           );
         },
@@ -243,13 +244,13 @@ class NavigationCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(15), // Match border radius
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(icon, size: 32.0, color: Colors.white), // Icon color changed
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Text(
                 title,
                 style: const TextStyle(

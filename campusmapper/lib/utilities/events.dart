@@ -118,8 +118,9 @@ class EventsModel {
   }
 
   //clear local database when user logs out
-  Future clearLocal() async{
-    databaseFactory.deleteDatabase("/data/data/com.example.campusmapper/databases/events_manager.db");
+  Future clearLocal() async {
+    databaseFactory.deleteDatabase(
+        "/data/data/com.example.campusmapper/databases/events_manager.db");
   }
 
   //cloud database interactions
@@ -201,6 +202,4 @@ class EventsModel {
         .then((doc) => print("Document deleted"),
             onError: (e) => print("Error deleting document $e"));
   }
-
-
 }

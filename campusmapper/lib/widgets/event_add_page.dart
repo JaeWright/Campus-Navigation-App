@@ -3,16 +3,17 @@ Author: Jaelen Wright - 100790481
 This page allows the user to add an event to their account
 */
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../utilities/dateConversions.dart';
 
 class EventAddPage extends StatefulWidget {
+  const EventAddPage({super.key});
+
   @override
-  _EventAddPageState createState() => _EventAddPageState();
+  EventAddPageState createState() => EventAddPageState();
 }
 
-class _EventAddPageState extends State<EventAddPage> {
+class EventAddPageState extends State<EventAddPage> {
   //controllers for to-be-added event data
   late TextEditingController eventNameController;
   late TextEditingController locationController;
@@ -83,7 +84,8 @@ class _EventAddPageState extends State<EventAddPage> {
                     onPressed: () async {
                       final DateTime? picked = await showDatePicker(
                         context: context,
-                        initialDate: setInitialDate(), //sets initial date to monday if user is accessing on a weekend
+                        initialDate:
+                            setInitialDate(), //sets initial date to monday if user is accessing on a weekend
                         firstDate: DateTime(2023),
                         lastDate: DateTime(2025),
                         selectableDayPredicate: (DateTime date) {

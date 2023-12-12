@@ -15,11 +15,13 @@ import 'package:provider/provider.dart';
 import '../utilities/schedule_provider.dart';
 
 class CourseSearchPage extends StatefulWidget {
+  const CourseSearchPage({super.key});
+
   @override
-  _CourseSearchPageState createState() => _CourseSearchPageState();
+  CourseSearchPageState createState() => CourseSearchPageState();
 }
 
-class _CourseSearchPageState extends State<CourseSearchPage> {
+class CourseSearchPageState extends State<CourseSearchPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Course> courses = [
@@ -339,7 +341,6 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   }
 
   void addToSchedule(Course course) {
-    print('Adding ${course.courseName} to schedule');
     // Access the ScheduleProvider
     ScheduleProvider scheduleProvider =
         Provider.of<ScheduleProvider>(context, listen: false);
@@ -376,12 +377,10 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context)?.settings.name);
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Course Search',
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -390,7 +389,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         backgroundColor: Colors.yellow,
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.search,
             ),
             onPressed: () async {
@@ -410,7 +409,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -432,13 +431,13 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.info),
+                      icon: const Icon(Icons.info),
                       onPressed: () {
                         viewCourseDetails(filteredCourses[index]);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.add),
+                      icon: const Icon(Icons.add),
                       onPressed: () {
                         addToSchedule(filteredCourses[index]);
                       },
@@ -487,7 +486,7 @@ class CourseSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear, color: Colors.black),
+        icon: const Icon(Icons.clear, color: Colors.black),
         onPressed: () {
           query = '';
         },
@@ -524,17 +523,17 @@ class CourseSearchDelegate extends SearchDelegate<String> {
         child: ListTile(
           title: Text(
             resultList[index].courseName ?? 'Unknown Course',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             resultList[index].profName ?? 'Unknown Professor',
-            style: TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey),
           ),
           onTap: () {
             viewCourseDetails(resultList[index], context);
           },
           trailing: IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
+            icon: const Icon(Icons.add, color: Colors.black),
             onPressed: () {
               addToScheduleCallback(resultList[index]);
             },
@@ -564,11 +563,11 @@ class CourseSearchDelegate extends SearchDelegate<String> {
         child: ListTile(
           title: Text(
             suggestionList[index].courseName ?? 'Unknown Course',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             suggestionList[index].profName ?? 'Unknown Professor',
-            style: TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey),
           ),
           onTap: () {
             query = suggestionList[index].courseName ?? '';
@@ -576,7 +575,7 @@ class CourseSearchDelegate extends SearchDelegate<String> {
             viewCourseDetails(suggestionList[index], context);
           },
           trailing: IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
+            icon: const Icon(Icons.add, color: Colors.black),
             onPressed: () {
               addToScheduleCallback(suggestionList[index]);
             },

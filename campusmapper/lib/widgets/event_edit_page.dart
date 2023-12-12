@@ -13,7 +13,8 @@ class EventEditPage extends StatefulWidget {
   final String? time;
   final DateTime? date;
 
-  EventEditPage({
+  const EventEditPage({
+    super.key,
     required this.eventName,
     required this.location,
     required this.weekday,
@@ -22,10 +23,10 @@ class EventEditPage extends StatefulWidget {
   });
 
   @override
-  _EventEditPageState createState() => _EventEditPageState();
+  EventEditPageState createState() => EventEditPageState();
 }
 
-class _EventEditPageState extends State<EventEditPage> {
+class EventEditPageState extends State<EventEditPage> {
   //controllers for to-be-edited event data
   late TextEditingController eventNameController;
   late TextEditingController locationController;
@@ -40,7 +41,8 @@ class _EventEditPageState extends State<EventEditPage> {
     eventNameController = TextEditingController(text: widget.eventName);
     locationController = TextEditingController(text: widget.location);
     dateController = TextEditingController(
-        text: "${widget.weekday} on ${widget.date?.year}-${widget.date?.month}-${widget.date?.day}");
+        text:
+            "${widget.weekday} on ${widget.date?.year}-${widget.date?.month}-${widget.date?.day}");
     timeController = TextEditingController(text: widget.time);
     weekday = widget.weekday!;
     date = widget.date!;

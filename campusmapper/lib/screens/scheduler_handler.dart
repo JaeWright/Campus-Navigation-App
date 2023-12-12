@@ -15,7 +15,7 @@ import 'package:campusmapper/utilities/events.dart';
 import 'package:campusmapper/utilities/courses.dart';
 import 'package:intl/intl.dart';
 import '../utilities/dateConversions.dart';
-import 'calendar_view.dart';
+import '../widgets/calendar_view.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -157,7 +157,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => CourseSearchPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const CourseSearchPage()),
                 );
               },
               child: const Text('Select Courses'),
@@ -268,7 +269,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     var newEventData = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventAddPage(), // Navigate to EventAddPage
+        builder: (context) => const EventAddPage(), // Navigate to EventAddPage
       ),
     );
 
@@ -342,7 +343,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       eventsList.removeWhere((event) => event.id == id);
     });
     //delete from local database
-    int deleted = await _events.deleteEventLocal(id);
+    await _events.deleteEventLocal(id);
     //delete from cloud database
     await _events.deleteEventCloud(id);
   }
@@ -398,7 +399,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       });
 
       // Update the event in the local database
-      int updated = await _events.updateEventLocal(updatedEvent);
+      await _events.updateEventLocal(updatedEvent);
       // Update the event in the cloud database
       await _events.updateEventCloud(updatedEvent);
     }
@@ -406,8 +407,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context)?.settings.name);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
@@ -450,7 +449,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SchedulePage(),
+                        builder: (context) => const SchedulePage(),
                       ),
                     );
                   },

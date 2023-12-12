@@ -9,11 +9,13 @@ class FAQ {
 }
 
 class FAQPage extends StatefulWidget {
+  const FAQPage({super.key});
+
   @override
-  _FAQPageState createState() => _FAQPageState();
+  FAQPageState createState() => FAQPageState();
 }
 
-class _FAQPageState extends State<FAQPage> {
+class FAQPageState extends State<FAQPage> {
   List<FAQ> faqs = [
     // ... Your FAQs here
     FAQ(
@@ -93,7 +95,7 @@ class _FAQPageState extends State<FAQPage> {
               child: Text("Campus Map"))
         ]),
         backgroundColor: Color(0xFFE67E22),
-        actions: [Dropdown()],
+        actions: const [Dropdown()],
       ),
       body: Column(
         children: [
@@ -101,7 +103,7 @@ class _FAQPageState extends State<FAQPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: _updateSearchQuery,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Search FAQs',
                 border: OutlineInputBorder(),
                 suffixIcon: Icon(Icons.search),

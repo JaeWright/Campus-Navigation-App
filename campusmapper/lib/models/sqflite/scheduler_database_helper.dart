@@ -20,7 +20,7 @@ class DBUtilsSQL {
         // Call the function to insert pre-made values
         //_insertValuesCourses(db);
       },
-      version: 1,
+      version: 2,
     );
     return database;
   }
@@ -35,7 +35,7 @@ class DBUtilsSQL {
         // Call the function to insert pre-made values
         //_insertValuesEvents(db);
       },
-      version: 1,
+      version: 2,
     );
     return database;
   }
@@ -82,8 +82,8 @@ class CoursesModel {
 
   //clear local database when the user logs out
   Future clearLocal() async {
-    databaseFactory.deleteDatabase(
-        "/data/data/com.example.campusmapper/databases/courses_manager.db");
+    Database db = await DBUtilsSQL.initCourses();
+    return await db.rawDelete("DELETE FROM courses");
   }
 }
 
@@ -140,7 +140,7 @@ class EventsModel {
 
   //clear local database when user logs out
   Future clearLocal() async {
-    databaseFactory.deleteDatabase(
-        "/data/data/com.example.campusmapper/databases/events_manager.db");
+    Database db = await DBUtilsSQL.initEvents();
+    return await db.rawDelete("DELETE FROM events");
   }
 }

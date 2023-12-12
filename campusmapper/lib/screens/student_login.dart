@@ -161,6 +161,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   )),
               TextFormField(
                 controller: _passwordController,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),

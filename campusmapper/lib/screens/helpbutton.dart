@@ -38,13 +38,6 @@ class TutorialPage1 extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.library_books),
-            title: Text(
-              'Access a wide range of resources available in the campus library.',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          ),
-          ListTile(
             leading: Icon(Icons.contact_phone),
             title: Text(
               'Find contact information for emergency services and make direct phone calls.',
@@ -175,7 +168,7 @@ class TutorialPage3 extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.accessible_forward),
             title: Text(
-              'Select any location to view detailed accessibility information and find accessible entrances.',
+              'Select buildings to view detailed accessibility information and find accessible entrances.',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
@@ -187,16 +180,9 @@ class TutorialPage3 extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.info_outline),
+            leading: Icon(Icons.map),
             title: Text(
-              'Information on accessible parking spots and restrooms is also available.',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.phone_in_talk),
-            title: Text(
-              'For assistance or emergencies, use the in-app feature to call campus support services directly.',
+              'This will bring you to the Campus Map, showing you the way to your destination.',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
@@ -250,13 +236,6 @@ class TutorialPage4 extends StatelessWidget {
             leading: Icon(Icons.swap_horiz),
             title: Text(
               'Use the toggle to switch between showing your courses and events',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.edit),
-            title: Text(
-              'When looking at events, tap to edit and hold to delete',
               style: TextStyle(fontSize: 18.0),
             ),
           ),
@@ -343,7 +322,7 @@ class TutorialPage5 extends StatelessWidget {
 
 class TutorialPage6 extends StatelessWidget {
   const TutorialPage6({super.key});
-
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

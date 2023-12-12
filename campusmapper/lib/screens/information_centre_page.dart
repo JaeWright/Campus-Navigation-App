@@ -72,6 +72,8 @@ class EmergencyContact {
 }
 
 class InformationCenterPage extends StatelessWidget {
+  const InformationCenterPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final List<NewsItem> campusNews = [

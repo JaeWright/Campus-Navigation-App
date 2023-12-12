@@ -2,8 +2,8 @@
 Author: Jaelen Wright - 100790481
 This page initializes the courses and events databases, and helper functions
 */
-import 'package:campusmapper/utilities/events.dart';
-import 'package:campusmapper/utilities/courses.dart';
+import 'package:campusmapper/utilities/classes/events.dart';
+import 'package:campusmapper/utilities/classes/courses.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'dart:async';

@@ -6,7 +6,7 @@ listeners about any changes in the schedule.
 */
 
 import 'package:flutter/material.dart';
-import 'package:campusmapper/utilities/courses.dart'; // Import your Course model
+import 'package:campusmapper/utilities/classes/courses.dart'; // Import your Course model
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/models/sqflite/scheduler_database_helper.dart';
 

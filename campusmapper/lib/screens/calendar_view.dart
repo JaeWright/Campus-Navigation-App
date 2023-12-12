@@ -5,7 +5,7 @@ Used https://dipeshgoswami.medium.com/table-calendar-3-0-0-null-safety-818ba8d4c
  */
 
 import 'dart:collection';
-import 'package:campusmapper/utilities/events.dart';
+import 'package:campusmapper/utilities/classes/events.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../screens/scheduler_handler.dart';

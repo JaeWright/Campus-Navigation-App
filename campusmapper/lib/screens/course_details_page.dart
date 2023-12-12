@@ -5,7 +5,7 @@ room, day, and time. Additional details can be added as needed.
 */
 
 import 'package:flutter/material.dart';
-import 'package:campusmapper/utilities/courses.dart'; // Import your Course model
+import 'package:campusmapper/utilities/classes/courses.dart'; // Import your Course model
 import 'package:provider/provider.dart';
 import 'package:campusmapper/utilities/schedule_provider.dart';
 

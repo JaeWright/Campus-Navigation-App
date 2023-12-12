@@ -8,7 +8,7 @@ names and times. Tapping on a course navigates to the CourseDetailsPage.
 */
 
 import 'package:flutter/material.dart';
-import 'package:campusmapper/utilities/courses.dart';
+import 'package:campusmapper/utilities/classes/courses.dart';
 import 'course_details_page.dart';
 
 class SchedulePage extends StatefulWidget {

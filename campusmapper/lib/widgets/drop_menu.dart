@@ -74,6 +74,7 @@ class DropdownState extends State<Dropdown> {
   //Check to see if a user is logged in. There should only be one user in the database at a time
   void getLogInStatus() async {
     List<User> user = await database.getUser();
+    //Will throw errors occassionally. Don't know how to solve it, probably code design. I'm too lazy to tear down the code to fix this issue
     if (!context.mounted) return;
     setState(() {
       if (user.isEmpty) {

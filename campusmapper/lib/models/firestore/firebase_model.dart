@@ -70,9 +70,10 @@ class FirebaseModel {
     User user =
         User(id: 'None', email: 'None', firstname: 'None', lastname: 'None');
     await _firestore.collection("users").get().then((querySnapshot) {
-      //If a user exixsts for that combonation email and password, return the id
+      //If a user exists for that combonation email and password, return the id
       for (var docSnapshot in querySnapshot.docs) {
-        if (docSnapshot['Email'] == email &&
+        if (docSnapshot['Email'].toString().toLowerCase() ==
+                email.toLowerCase() &&
             docSnapshot["Password"] == password) {
           user = User(
               id: docSnapshot.id,

@@ -100,6 +100,16 @@ class CoursesModel {
     );
   }
 
+  //delete course from sql database
+  Future<int> deleteCourseLocal(String id) async {
+    final db = await DBUtilsSQL.initCourses();
+    return db.delete(
+      'courses',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   //clear local database when the user logs out
   Future clearLocal() async {
     databaseFactory.deleteDatabase(
@@ -133,5 +143,41 @@ class CoursesModel {
     });
 
     return results;
+  }
+
+  //insert course into cloud database
+  Future<String> insertCourseCloud(String weekday, String courseName,
+      String profName, String roomNum, String endTime, String startTime) async {
+    //get user id
+    List<User> user = await UserModel().getUser();
+    //adds new event to online database
+    DocumentReference ref = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user[0].id)
+        .collection("Courses")
+        .add(<String, dynamic>{
+      'weekday': weekday,
+      'courseName': courseName,
+      'profName': profName,
+      'roomNum': roomNum,
+      'endTime': endTime,
+      'startTime': startTime
+    });
+    //returns new id
+    return ref.id;
+  }
+
+  //delete event data from cloud database
+  Future deleteCourseCloud(String id) async {
+    //get user id
+    List<User> user = await UserModel().getUser();
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user[0].id)
+        .collection("Courses")
+        .doc(id)
+        .delete()
+        .then((doc) => print("Document deleted"),
+        onError: (e) => print("Error deleting document $e"));
   }
 }

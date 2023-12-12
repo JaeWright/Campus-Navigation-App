@@ -26,7 +26,7 @@ import 'package:campusmapper/screens/accessibility.dart';
 import 'package:campusmapper/screens/scheduler_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:campusmapper/screens//map_screen.dart';
-import 'package:campusmapper/utilities/location.dart';
+import 'package:campusmapper/utilities/classes/location.dart';
 import 'package:campusmapper/widgets/restaurant_details.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 
@@ -50,6 +50,7 @@ void main() async {
         ),
       ],
       child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Grade Viewer',
         home: CampusNavigatorApp(),
       ),
@@ -63,6 +64,7 @@ class CampusNavigatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Campus Navigator',
       theme: ThemeData(
         primarySwatch: Colors.blue,

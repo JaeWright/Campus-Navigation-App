@@ -325,6 +325,7 @@ class StudentLoginPageState extends State<StudentLoginPage> {
     FocusScope.of(context).unfocus();
     Future.delayed(const Duration(milliseconds: 750), () {
       //If coming from the widget, poping till home screen is fine
+      if (!context.mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
       //If coming from a forced dialog, need to specify the route
       if (widget.forced) {

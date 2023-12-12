@@ -123,7 +123,12 @@ class InformationCenterPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
-          title: Text('Information Center'),
+          title: const Row(children: [
+            Icon(Icons.info),
+            Padding(
+                padding: EdgeInsetsDirectional.only(start: 10),
+                child: Text("Information Center"))
+          ]),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.newspaper), text: 'Campus News'),

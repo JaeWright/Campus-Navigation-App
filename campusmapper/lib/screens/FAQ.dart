@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:campusmapper/widgets/drop_menu.dart';
 
 class FAQ {
   final String question;
@@ -85,8 +86,14 @@ class _FAQPageState extends State<FAQPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('FAQ'),
+        title: const Row(children: [
+          Icon(Icons.question_answer),
+          Padding(
+              padding: EdgeInsetsDirectional.only(start: 10),
+              child: Text("Campus Map"))
+        ]),
         backgroundColor: Color(0xFFE67E22),
+        actions: [Dropdown()],
       ),
       body: Column(
         children: [

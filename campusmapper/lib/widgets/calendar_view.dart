@@ -4,11 +4,10 @@ This page allows the user to view their events in a calendar view
 Used https://dipeshgoswami.medium.com/table-calendar-3-0-0-null-safety-818ba8d4c45e for help
  */
 
-
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'scheduler_handler.dart';
+import '../screens/scheduler_handler.dart';
 
 class CalendarPage extends StatefulWidget {
   final List<EventTile>? events;
@@ -32,7 +31,6 @@ class _CalendarPageState extends State<CalendarPage> {
     super.initState();
     toDisplay = convertToDynamicMap(groupEventsByDay(widget.events!));
   }
-
 
   int getHashCode(DateTime key) {
     return key.day * 1000000 + key.month * 10000 + key.year;
@@ -124,6 +122,7 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
     );
   }
+
   //creates a list that maps each event and sorts them by matching dates
   //Uses chatGPT for this
   Map<DateTime, List<EventTile>> groupEventsByDay(List<EventTile> events) {
@@ -141,6 +140,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return groupedEvents;
   }
+
   //converts the mapped lists into a LinkedHashMap
   //used ChatGPT for this
   LinkedHashMap<DateTime, List<dynamic>> convertToDynamicMap(

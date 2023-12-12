@@ -7,7 +7,7 @@ Allows the user to get directions to these locations
 */
 import 'package:flutter/material.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
-import 'package:campusmapper/utilities/map_marker.dart';
+import 'package:campusmapper/utilities/classes/map_marker.dart';
 import 'package:campusmapper/screens/map_screen.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:latlong2/latlong.dart';

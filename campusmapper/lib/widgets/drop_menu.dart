@@ -1,11 +1,10 @@
 //Author: Luca Lotito
 //Calls which creates and manages the widget that allows the user to log in and out
-import 'package:campusmapper/utilities/user.dart';
+import 'package:campusmapper/utilities/classes/user.dart';
 import 'package:flutter/material.dart';
 import 'package:campusmapper/screens/student_login.dart';
 import 'package:campusmapper/models/sqflite/logged_in_model.dart';
-import 'package:campusmapper/utilities/events.dart';
-import 'package:campusmapper/utilities/courses.dart';
+import 'package:campusmapper/models/sqflite/scheduler_database_helper.dart';
 
 enum Label { login, logout }
 
@@ -22,12 +21,8 @@ class DropdownState extends State<Dropdown> {
   bool loggedin = false;
   UserModel database = UserModel();
   //Default state
-  User loggedIn = User(
-      id: 'None',
-      email: 'None',
-      firstname: 'None',
-      lastname: 'None',
-      sid: 'None');
+  User loggedIn =
+      User(id: 'None', email: 'None', firstname: 'None', lastname: 'None');
   @override
   void initState() {
     super.initState();
@@ -84,11 +79,7 @@ class DropdownState extends State<Dropdown> {
       if (user.isEmpty) {
         loggedin = false;
         loggedIn = User(
-            id: 'None',
-            email: 'None',
-            firstname: 'None',
-            lastname: 'None',
-            sid: 'None');
+            id: 'None', email: 'None', firstname: 'None', lastname: 'None');
       } else {
         loggedin = true;
         loggedIn = user[0];
@@ -102,12 +93,8 @@ class DropdownState extends State<Dropdown> {
     await CoursesModel().clearLocal();
     await EventsModel().clearLocal();
     setState(() {
-      loggedIn = User(
-          id: 'None',
-          email: 'None',
-          firstname: 'None',
-          lastname: 'None',
-          sid: 'None');
+      loggedIn =
+          User(id: 'None', email: 'None', firstname: 'None', lastname: 'None');
       loggedin = false;
     });
   }

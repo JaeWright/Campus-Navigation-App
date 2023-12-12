@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
-import 'package:campusmapper/utilities/user.dart';
+import 'package:campusmapper/utilities/classes/user.dart';
 
 class DBUtils {
   static Future init() async {

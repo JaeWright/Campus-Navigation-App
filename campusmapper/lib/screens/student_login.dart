@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
 import 'package:campusmapper/models/sqflite/logged_in_model.dart';
-import 'package:campusmapper/utilities/user.dart';
+import 'package:campusmapper/utilities/classes/user.dart';
 
 class StudentLoginPage extends StatefulWidget {
   const StudentLoginPage({super.key, required this.forced});
@@ -61,23 +61,25 @@ class StudentLoginPageState extends State<StudentLoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email cannot be null';
-                  } else if (!EmailValidator.validate(value)) {
-                    return 'Invalid Email address';
-                  } else {
-                    email = value;
-                  }
-                  return null;
-                },
-              ),
+              Container(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email cannot be null';
+                      } else if (!EmailValidator.validate(value)) {
+                        return 'Invalid Email address';
+                      } else {
+                        email = value;
+                      }
+                      return null;
+                    },
+                  )),
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
@@ -138,23 +140,25 @@ class StudentLoginPageState extends State<StudentLoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email cannot be null';
-                  } else if (!EmailValidator.validate(value)) {
-                    return 'Invalid Email address';
-                  } else {
-                    email = value;
-                  }
-                  return null;
-                },
-              ),
+              Container(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email cannot be null';
+                      } else if (!EmailValidator.validate(value)) {
+                        return 'Invalid Email address';
+                      } else {
+                        email = value;
+                      }
+                      return null;
+                    },
+                  )),
               TextFormField(
                 controller: _passwordController,
                 decoration: const InputDecoration(
@@ -185,39 +189,29 @@ class StudentLoginPageState extends State<StudentLoginPage> {
                   return null;
                 },
               ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Last name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Last name cannot be null';
-                  } else {
-                    lastName = value;
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Student ID',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'SID cannot be null';
-                  } else {
-                    id = value;
-                  }
-                  return null;
-                },
-              ),
+              Container(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Last name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Last name cannot be null';
+                      } else {
+                        lastName = value;
+                      }
+                      return null;
+                    },
+                  )),
               Row(children: [
                 const Text('Have an account?'),
                 TextButton(
                     onPressed: () {
-                      loggingIn = true;
+                      setState(() {
+                        loggingIn = true;
+                      });
                     },
                     child: const Text('Log In'))
               ]),
@@ -293,12 +287,8 @@ class StudentLoginPageState extends State<StudentLoginPage> {
       id = await _fireDatabase.register(
           email, password, firstname, lastname, sid);
       //Creates the user
-      _sqlDatabase.insertUser(User(
-          id: id,
-          email: email,
-          firstname: firstname,
-          lastname: lastname,
-          sid: sid));
+      _sqlDatabase.insertUser(
+          User(id: id, email: email, firstname: firstname, lastname: lastname));
       var successSnackbar = SnackBar(
         duration: const Duration(seconds: 2),
         backgroundColor: Colors.white38,

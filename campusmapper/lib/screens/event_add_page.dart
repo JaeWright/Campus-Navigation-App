@@ -1,33 +1,20 @@
 /*
 Author: Jaelen Wright - 100790481
-This page allows the user to edit an event that is on their account
+This page allows the user to add an event to their account
 */
 
 import 'package:flutter/material.dart';
-import '../utilities/dateConversions.dart';
+import '../utilities/date_conversions.dart';
 
-class EventEditPage extends StatefulWidget {
-  final String? eventName;
-  final String? location;
-  final String? weekday;
-  final String? time;
-  final DateTime? date;
-
-  const EventEditPage({
-    super.key,
-    required this.eventName,
-    required this.location,
-    required this.weekday,
-    required this.time,
-    required this.date,
-  });
+class EventAddPage extends StatefulWidget {
+  const EventAddPage({super.key});
 
   @override
-  EventEditPageState createState() => EventEditPageState();
+  EventAddPageState createState() => EventAddPageState();
 }
 
-class EventEditPageState extends State<EventEditPage> {
-  //controllers for to-be-edited event data
+class EventAddPageState extends State<EventAddPage> {
+  //controllers for to-be-added event data
   late TextEditingController eventNameController;
   late TextEditingController locationController;
   late TextEditingController dateController;
@@ -35,19 +22,15 @@ class EventEditPageState extends State<EventEditPage> {
   late String weekday;
   late DateTime date;
   //form key
-  final _eventEditKey = GlobalKey<FormState>();
+  final _eventAddKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    eventNameController = TextEditingController(text: widget.eventName);
-    locationController = TextEditingController(text: widget.location);
-    dateController = TextEditingController(
-        text:
-            "${widget.weekday} on ${widget.date?.year}-${widget.date?.month}-${widget.date?.day}");
-    timeController = TextEditingController(text: widget.time);
-    weekday = widget.weekday!;
-    date = widget.date!;
+    eventNameController = TextEditingController();
+    locationController = TextEditingController();
+    dateController = TextEditingController();
+    timeController = TextEditingController();
   }
 
   @override
@@ -62,29 +45,29 @@ class EventEditPageState extends State<EventEditPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          //Return to scheduler if user presses the back button
-          FocusScope.of(context).unfocus();
-          Future.delayed(const Duration(milliseconds: 750), () {
-            Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
-          });
+      onWillPop: () async {
+        // Return to scheduler if back button is pressed
+        FocusScope.of(context).unfocus();
+        Future.delayed(const Duration(milliseconds: 750), () {
+          Navigator.popUntil(context, ModalRoute.withName('/scheduler'));
+        });
 
-          // Return 'false' to prevent the default back button behavior
-          return false;
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.deepPurple,
-            title: const Text('Edit Event'),
-          ),
-          body: Padding(
+        // Return 'false' to prevent the default back button behavior
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.deepPurple,
+          title: const Text('Add Event'),
+        ),
+        body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
-              key: _eventEditKey,
-              child:Column(
+              key: _eventAddKey,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  //edit event name
+                  //enter event name
                   TextFormField(
                     controller: eventNameController,
                     decoration: const InputDecoration(labelText: 'Event Name'),
@@ -95,7 +78,7 @@ class EventEditPageState extends State<EventEditPage> {
                       return null;
                     },
                   ),
-                  //edit location
+                  //enter location
                   TextFormField(
                     controller: locationController,
                     decoration: const InputDecoration(labelText: 'Location'),
@@ -106,7 +89,7 @@ class EventEditPageState extends State<EventEditPage> {
                       return null;
                     },
                   ),
-                  //edit date
+                  //select date
                   TextFormField(
                     readOnly: true,
                     controller: dateController,
@@ -117,11 +100,12 @@ class EventEditPageState extends State<EventEditPage> {
                         onPressed: () async {
                           final DateTime? picked = await showDatePicker(
                             context: context,
-                            initialDate: widget.date!,
+                            initialDate:
+                                setInitialDate(), //sets initial date to monday if user is accessing on a weekend
                             firstDate: DateTime(2023),
                             lastDate: DateTime(2025),
                             selectableDayPredicate: (DateTime date) {
-                              // Disable Saturday (day 6) and Sunday (day 7)
+                              //user cannot pick saturday or sunday
                               return date.weekday != DateTime.saturday &&
                                   date.weekday != DateTime.sunday;
                             },
@@ -131,7 +115,7 @@ class EventEditPageState extends State<EventEditPage> {
                               date = picked;
                               weekday = convertWeekday(picked);
                               dateController.text =
-                              "${convertWeekday(picked)} on ${picked.year}-${picked.month}-${picked.day}"; // format in weekday - date
+                                  "${convertWeekday(picked)} on ${picked.year}-${picked.month}-${picked.day}";
                             });
                           }
                         },
@@ -144,7 +128,7 @@ class EventEditPageState extends State<EventEditPage> {
                       return null;
                     },
                   ),
-                  //edit time
+                  //select time
                   TextFormField(
                     readOnly: true,
                     controller: timeController,
@@ -159,8 +143,7 @@ class EventEditPageState extends State<EventEditPage> {
                           );
                           if (picked != null) {
                             setState(() {
-                              timeController.text = picked
-                                  .format(context); // Format as per requirement
+                              timeController.text = picked.format(context);
                             });
                           }
                         },
@@ -179,17 +162,17 @@ class EventEditPageState extends State<EventEditPage> {
                       //hide keyboard before navigation (causes a renderflex error if not)
                       FocusScope.of(context).unfocus();
                       //delay for keyboard to hide before navigation
-                      if (_eventEditKey.currentState!.validate()) {
-                      Future.delayed(const Duration(milliseconds: 750), () {
-                        //pass updated data back to scheduler
-                        var updatedData = {
-                          'eventName': eventNameController.text,
-                          'location': locationController.text,
-                          'weekday': weekday,
-                          'date': date,
-                          'time': timeController.text,
-                        };
-                        Navigator.pop(context, updatedData);
+                      if (_eventAddKey.currentState!.validate()) {
+                        Future.delayed(const Duration(milliseconds: 750), () {
+                          //pass new data back to scheduler
+                          var newData = {
+                            'eventName': eventNameController.text,
+                            'location': locationController.text,
+                            'weekday': weekday,
+                            'date': date,
+                            'time': timeController.text,
+                          };
+                          Navigator.pop(context, newData);
                         });
                       }
                     },
@@ -197,8 +180,8 @@ class EventEditPageState extends State<EventEditPage> {
                   ),
                 ],
               ),
-            )
-          ),
-        ));
+            )),
+      ),
+    );
   }
 }

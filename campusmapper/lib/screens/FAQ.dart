@@ -19,10 +19,6 @@ class FAQPageState extends State<FAQPage> {
   List<FAQ> faqs = [
     // ... Your FAQs here
     FAQ(
-        question: "I forgot my password. How can I reset it?",
-        answer:
-            "You can reset your password by clicking on the 'Forgot Password' link on the login screen. Follow the prompts to reset your password via email."),
-    FAQ(
         question: "Can I access my schedule through the app?",
         answer:
             "Yes, you can view your schedule by logging into the app and accessing the 'My Schedule' section."),

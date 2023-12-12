@@ -5,17 +5,18 @@ This page manages the course and event schedule page, which displays the user's 
 import 'package:campusmapper/screens/course_search_page.dart';
 import 'package:campusmapper/screens/schedule_page.dart';
 import 'package:campusmapper/screens/student_login.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../models/sqflite/logged_in_model.dart';
-import '../utilities/user.dart';
-import 'package:campusmapper/widgets/event_add_page.dart';
-import 'package:campusmapper/widgets/event_edit_page.dart';
-import 'package:campusmapper/utilities/events.dart';
-import 'package:campusmapper/utilities/courses.dart';
+import 'package:campusmapper/models/sqflite/logged_in_model.dart';
+import 'package:campusmapper/models/sqflite/scheduler_database_helper.dart';
+import 'package:campusmapper/utilities/classes/user.dart';
+import 'package:campusmapper/screens/event_add_page.dart';
+import 'package:campusmapper/screens/event_edit_page.dart';
+import 'package:campusmapper/utilities/classes/events.dart';
+import 'package:campusmapper/utilities/classes/courses.dart';
 import 'package:intl/intl.dart';
-import '../utilities/dateConversions.dart';
-import '../widgets/calendar_view.dart';
+import 'package:campusmapper/utilities/date_conversions.dart';
+import 'package:campusmapper/screens/calendar_view.dart';
+import 'package:campusmapper/models/firestore/firebase_model.dart';
 
 //model for course database
 final _courses = CoursesModel();
@@ -24,46 +25,6 @@ final _courses = CoursesModel();
 final _events = EventsModel();
 
 //class for holding course tile data
-class CourseTile {
-  String? id;
-  String? weekday;
-  String? courseName;
-  String? profName;
-  String? roomNum;
-  String? startTime;
-  String? endTime;
-  DocumentReference? reference;
-
-  CourseTile(
-      {required this.id,
-      required this.weekday,
-      required this.courseName,
-      required this.profName,
-      required this.roomNum,
-      required this.endTime,
-      required this.startTime,
-      this.reference});
-}
-
-//class to hold event tile data
-class EventTile {
-  String? id;
-  String? eventName;
-  String? location;
-  String? weekday;
-  String? time;
-  DateTime? date;
-  DocumentReference? reference;
-
-  EventTile(
-      {required this.id,
-      required this.eventName,
-      required this.location,
-      required this.weekday,
-      required this.time,
-      required this.date,
-      this.reference});
-}
 
 class SchedulerHandlerPage extends StatefulWidget {
   const SchedulerHandlerPage({super.key});
@@ -73,12 +34,15 @@ class SchedulerHandlerPage extends StatefulWidget {
 }
 
 class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
+  //Only for use with the Schedule page
   //list of courses to be populated by database
-  List<CourseTile> coursesList = [];
+  List<Course> coursesList = [];
   // list of events to be populated by database
-  List<EventTile> eventsList = [];
+  List<Event> eventsList = [];
   //flag for switch between course and event data
   bool isSwitched = false;
+
+  final FirebaseModel _database = FirebaseModel();
 
   @override
   void initState() {
@@ -111,6 +75,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   //send user to the log in page if they are not logged in
   void sendToLogin() {
     showDialog(
+      //We want the users to log in
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -177,7 +143,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     results = await _courses.getAllCoursesLocal();
     if (results.isNotEmpty) {
       for (int i = 0; i < results.length; i++) {
-        coursesList.add(CourseTile(
+        coursesList.add(Course(
           id: results[i].id,
           weekday: results[i].weekday,
           courseName: results[i].courseName,
@@ -189,10 +155,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       }
     } else {
       //check global database if no data is saved
-      results = await _courses.getAllCoursesCloud();
+      results = await _database.getAllCoursesCloud();
       if (results.isNotEmpty) {
         for (int i = 0; i < results.length; i++) {
-          coursesList.add(CourseTile(
+          coursesList.add(Course(
             id: results[i].id,
             weekday: results[i].weekday,
             courseName: results[i].courseName,
@@ -228,7 +194,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     results = await _events.getAllEventsLocal();
     if (results.isNotEmpty) {
       for (int i = 0; i < results.length; i++) {
-        eventsList.add(EventTile(
+        eventsList.add(Event(
             id: results[i].id,
             eventName: results[i].eventName,
             location: results[i].location,
@@ -238,10 +204,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       }
     } else {
       //check global database if no data is saved
-      results = await _events.getAllEventsCloud();
+      results = await _database.getAllEventsCloud();
       if (results.isNotEmpty) {
         for (int i = 0; i < results.length; i++) {
-          eventsList.add(EventTile(
+          eventsList.add(Event(
               id: results[i].id,
               eventName: results[i].eventName,
               location: results[i].location,
@@ -282,11 +248,11 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       final DateTime newDate = newEventData['date'];
 
       // Add the new data to the cloud + get ref id for local database
-      String newId = await _events.insertEventCloud(
+      String newId = await _database.insertEventCloud(
           newWeekday, newEventName, newLocation, newTime, newDate);
       //add to eventTile list
       setState(() {
-        eventsList.add(EventTile(
+        eventsList.add(Event(
             id: newId,
             eventName: newEventName,
             location: newLocation,
@@ -307,7 +273,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   }
 
   //popup for user to confirm if they want to delete their event
-  void _confirmDeleteEvent(EventTile eventToDelete) {
+  void _confirmDeleteEvent(Event eventToDelete) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -345,11 +311,11 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     //delete from local database
     await _events.deleteEventLocal(id);
     //delete from cloud database
-    await _events.deleteEventCloud(id);
+    await _database.deleteEventCloud(id);
   }
 
   //go to eventEditPage and update database
-  void _editEvent(EventTile event) async {
+  void _editEvent(Event event) async {
     //get current event info
     final initialEventName = event.eventName;
     final initialLocation = event.location;
@@ -387,7 +353,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             eventsList.indexWhere((eventTile) => eventTile.id == event.id);
         //update event in eventTile list
         if (index != -1) {
-          eventsList[index] = EventTile(
+          eventsList[index] = Event(
             id: updatedEvent.id,
             eventName: updatedEvent.eventName,
             location: updatedEvent.location,
@@ -401,7 +367,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
       // Update the event in the local database
       await _events.updateEventLocal(updatedEvent);
       // Update the event in the cloud database
-      await _events.updateEventCloud(updatedEvent);
+      await _database.updateEventCloud(updatedEvent);
     }
   }
 
@@ -445,15 +411,17 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
               : Container(),
           !isSwitched
               ? IconButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SchedulePage(),
+                        builder: (context) =>
+                            SchedulePage(courses: coursesList),
                       ),
                     );
+                    setState(() {});
                   },
-                  icon: const Icon(Icons.calendar_month))
+                  icon: const Icon(Icons.list_alt))
               : Container(),
         ],
       ),
@@ -596,7 +564,7 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   List<Widget> getCourseWidgets(String weekday) {
     List<Widget> widgets = [];
 
-    List<CourseTile> filteredCourses =
+    List<Course> filteredCourses =
         coursesList.where((course) => course.weekday == weekday).toList();
 
     for (int i = 0; i < filteredCourses.length; i++) {

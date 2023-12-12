@@ -1,19 +1,19 @@
 /*
 Author: Jaelen Wright - 100790481
-This page initializes the courses and events databases, and adds premade values for local testing
+This page initializes the courses and events databases, and helper functions
 */
+import 'package:campusmapper/utilities/events.dart';
+import 'package:campusmapper/utilities/courses.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'dart:async';
-import 'package:campusmapper/utilities/courses.dart';
-import 'package:campusmapper/utilities/events.dart';
 
 //class for initialization of databases for courses and events
 class DBUtilsSQL {
   //initialize local courses database
   static Future<Database> initCourses() async {
     final database = await openDatabase(
-      path.join(await getDatabasesPath(), 'courses_manager.db'),
+      path.join(await getDatabasesPath(), 'course_manager.db'),
       onCreate: (db, version) {
         db.execute(
             'CREATE TABLE courses(id TEXT PRIMARY KEY, weekday TEXT, courseName TEXT, profName TEXT, roomNum TEXT, startTime TEXT, endTime TEXT)');
@@ -28,7 +28,7 @@ class DBUtilsSQL {
   //initialize local events database
   static Future<Database> initEvents() async {
     final database = await openDatabase(
-      path.join(await getDatabasesPath(), 'events_manager.db'),
+      path.join(await getDatabasesPath(), 'event_manager.db'),
       onCreate: (db, version) {
         db.execute(
             'CREATE TABLE events(id TEXT PRIMARY KEY, eventName TEXT, location TEXT, weekday TEXT, time TEXT, date DATETIME)');
@@ -39,180 +39,108 @@ class DBUtilsSQL {
     );
     return database;
   }
+}
 
-  //test functions for before online stuff
+class CoursesModel {
+  //sql database interactions
 
-  // Create a list of pre-made values (courses) to insert into the database
-  static void _insertValuesCourses(Database db) {
-    final List<Course> preMadeCourses = [
-      Course(
-        id: "1",
-        weekday: "Mon",
-        courseName: "Mathematics",
-        profName: "Dr. Smith",
-        roomNum: "101",
-        startTime: "9:00 AM",
-        endTime: "10:30 AM",
-      ),
-      Course(
-        id: "2",
-        weekday: "Tue",
-        courseName: "History",
-        profName: "Dr. Johnson",
-        roomNum: "202",
-        startTime: "11:00 AM",
-        endTime: "12:30 PM",
-      ),
-      Course(
-        id: "3",
-        weekday: "Wed",
-        courseName: "Computer Science",
-        profName: "Prof. Johnson",
-        roomNum: "303",
-        startTime: "2:00 PM",
-        endTime: "4:00 PM",
-      ),
-      Course(
-        id: "4",
-        weekday: "Thu",
-        courseName: "Physics",
-        profName: "Dr. Davis",
-        roomNum: "404",
-        startTime: "3:00 PM",
-        endTime: "5:00 PM",
-      ),
-      Course(
-        id: "5",
-        weekday: "Fri",
-        courseName: "Chemistry",
-        profName: "Dr. Brown",
-        roomNum: "505",
-        startTime: "5:00 PM",
-        endTime: "6:30 PM",
-      ),
-      // Add more values as needed
-      Course(
-        id: "6",
-        weekday: "Tue",
-        courseName: "Literature",
-        profName: "Dr. Wilson",
-        roomNum: "606",
-        startTime: "1:00 PM",
-        endTime: "2:30 PM",
-      ),
-      Course(
-        id: "7",
-        weekday: "Fri",
-        courseName: "Art",
-        profName: "Prof. Miller",
-        roomNum: "707",
-        startTime: "4:30 PM",
-        endTime: "6:00 PM",
-      ),
-    ];
+  //get course data from sqlLite database
+  Future getAllCoursesLocal() async {
+    final db = await DBUtilsSQL.initCourses();
+    final List maps = await db.query('courses');
 
-    // Insert the pre-made courses into the database
-    for (final course in preMadeCourses) {
-      db.insert(
-        'courses',
-        course.toMapLocal(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+    List results = [];
+
+    if (maps.isNotEmpty) {
+      for (int i = 0; i < maps.length; i++) {
+        results.add(Course.fromMapLocal(maps[i]));
+      }
     }
+
+    return results;
   }
 
-  // Create a list of pre-made values (events) to insert into the database
-  static void _insertValuesEvents(Database db) {
-    final List<Event> preMadeEvents = [
-      Event(
-        id: "1",
-        eventName: "Conference",
-        location: "Convention Center",
-        weekday: "Mon",
-        time: "2:00 PM",
-        date: DateTime(2023, 12, 11),
-      ),
-      Event(
-        id: "2",
-        eventName: "Concert",
-        location: "Stadium",
-        weekday: "Wed",
-        time: "5:35 PM",
-        date: DateTime(2023, 12, 13),
-      ),
-      Event(
-        id: "3",
-        eventName: "Seminar",
-        location: "Meeting Room",
-        weekday: "Fri",
-        time: "10:00 AM",
-        date: DateTime(2023, 12, 15),
-      ),
-      Event(
-        id: "4",
-        eventName: "Movie Night",
-        location: "Community Hall",
-        weekday: "Tue",
-        time: "7:00 PM",
-        date: DateTime(2023, 12, 12),
-      ),
-      Event(
-        id: "5",
-        eventName: "Sports Event",
-        location: "Sports Complex",
-        weekday: "Thu",
-        time: "3:30 PM",
-        date: DateTime(2023, 12, 14),
-      ),
-      Event(
-        id: "6",
-        eventName: "Exhibition",
-        location: "Art Gallery",
-        weekday: "Mon",
-        time: "1:30 PM",
-        date: DateTime(2023, 12, 11),
-      ),
-      Event(
-        id: "7",
-        eventName: "Team Building",
-        location: "Outdoor Park",
-        weekday: "Wed",
-        time: "4:45 PM",
-        date: DateTime(2023, 12, 13),
-      ),
-      Event(
-        id: "8",
-        eventName: "Networking",
-        location: "Coffee Shop",
-        weekday: "Thu",
-        time: "8:15 AM",
-        date: DateTime(2023, 12, 14),
-      ),
-      Event(
-        id: "9",
-        eventName: "Dinner Party",
-        location: "Restaurant",
-        weekday: "Fri",
-        time: "6:45 PM",
-        date: DateTime(2023, 12, 15),
-      ),
-      Event(
-        id: "10",
-        eventName: "Tech Talk",
-        location: "Tech Hub",
-        weekday: "Tue",
-        time: "12:15 PM",
-        date: DateTime(2023, 12, 12),
-      ),
-    ];
+  //insert course data to sqlLite database
+  Future insertLocal(Course course) async {
+    final db = await DBUtilsSQL.initCourses();
+    return db.insert(
+      'courses',
+      course.toMapLocal(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 
-    // Insert the pre-made events into the database
-    for (final event in preMadeEvents) {
-      db.insert(
-        'events',
-        event.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+  //delete course from sql database
+  Future<int> deleteCourseLocal(String? id) async {
+    final db = await DBUtilsSQL.initCourses();
+    return db.delete(
+      'courses',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  //clear local database when the user logs out
+  Future clearLocal() async {
+    databaseFactory.deleteDatabase(
+        "/data/data/com.example.campusmapper/databases/courses_manager.db");
+  }
+}
+
+//class for interaction between event class and local database
+class EventsModel {
+  //sql database interactions
+
+  //get event data from sqlLite database
+  Future getAllEventsLocal() async {
+    final db = await DBUtilsSQL.initEvents();
+    final List maps = await db.query('events');
+
+    List results = [];
+
+    if (maps.isNotEmpty) {
+      for (int i = 0; i < maps.length; i++) {
+        results.add(Event.fromMapLocal(maps[i]));
+      }
     }
+
+    return results;
+  }
+
+  //adds new event to sql database
+  Future<int> insertEventLocal(Event event) async {
+    final db = await DBUtilsSQL.initEvents();
+    return db.insert(
+      'events',
+      event.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  //update event in sql database
+  Future<int> updateEventLocal(Event event) async {
+    final db = await DBUtilsSQL.initEvents();
+    return db.update(
+      'events',
+      event.toMap(),
+      where: 'id = ?',
+      whereArgs: [event.id],
+    );
+  }
+
+  //delete event from sql database
+  Future<int> deleteEventLocal(String id) async {
+    final db = await DBUtilsSQL.initEvents();
+    return db.delete(
+      'events',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  //clear local database when user logs out
+  Future clearLocal() async {
+    databaseFactory.deleteDatabase(
+        "/data/data/com.example.campusmapper/databases/events_manager.db");
   }
 }

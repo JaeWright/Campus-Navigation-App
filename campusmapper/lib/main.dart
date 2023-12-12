@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:campusmapper/models/firestore/firebase_options.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:campusmapper/screens/helpbutton.dart';
+import 'package:campusmapper/screens/help_button.dart';
 import 'package:campusmapper/screens/course_search_page.dart';
 import 'package:campusmapper/utilities/schedule_provider.dart';
 import 'package:campusmapper/screens/information_centre_page.dart';
@@ -27,7 +27,7 @@ import 'package:campusmapper/screens/scheduler_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:campusmapper/screens//map_screen.dart';
 import 'package:campusmapper/utilities/location.dart';
-import 'package:campusmapper/utilities/restaurant_details.dart';
+import 'package:campusmapper/widgets/restaurant_details.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 
 import 'screens/FAQ.dart';
@@ -118,7 +118,7 @@ class HomePageState extends State<HomePage> {
         title: 'Information Center',
         color: const Color(0xFF3498DB),
         onTap: () {
-          navigateToSection(context, InformationCenterPage());
+          navigateToSection(context, const InformationCenterPage());
         },
       ),
       NavigationCard(

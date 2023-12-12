@@ -8,12 +8,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:campusmapper/models/constants/map_constants.dart';
 import 'package:campusmapper/models/firestore/firebase_model.dart';
-import 'package:campusmapper/utilities/map_marker.dart';
+import 'package:campusmapper/utilities/classes/map_marker.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 import 'package:campusmapper/models/openrouteservice/directions.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:geolocator/geolocator.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 

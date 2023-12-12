@@ -5,7 +5,7 @@ guidelines for how to access each app functionality for user's assistance.
 */
 
 import 'package:flutter/material.dart';
-import '../utilities/restaurant_details.dart';
+import 'package:campusmapper/widgets/restaurant_details.dart';
 import 'accessibility.dart';
 import 'scheduler_handler.dart';
 import 'course_search_page.dart';
@@ -19,7 +19,7 @@ class TutorialPage1 extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Information Center'),
-        backgroundColor: const Color(0xFF3498DB), // Customize header color
+        backgroundColor: Colors.black, // Customize header color
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -243,6 +243,13 @@ class TutorialPage4 extends StatelessWidget {
             leading: Icon(Icons.add),
             title: Text(
               'When looking at events, press the + icon in the appbar to add a new event',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.touch_app),
+            title: Text(
+              'You can edit events by tapping it, and remove it with a long press',
               style: TextStyle(fontSize: 18.0),
             ),
           ),

@@ -7,12 +7,12 @@ class for search functionality.
 
 import 'package:campusmapper/screens/student_login.dart';
 import 'package:flutter/material.dart';
-import '../models/sqflite/logged_in_model.dart';
-import '../utilities/user.dart';
+import 'package:campusmapper/models/sqflite/logged_in_model.dart';
+import 'package:campusmapper/utilities/classes/user.dart';
 import 'course_details_page.dart';
-import 'package:campusmapper/utilities/courses.dart';
+import 'package:campusmapper/utilities/classes/courses.dart';
 import 'package:provider/provider.dart';
-import '../utilities/schedule_provider.dart';
+import 'package:campusmapper/utilities/schedule_provider.dart';
 
 class CourseSearchPage extends StatefulWidget {
   const CourseSearchPage({super.key});
@@ -296,6 +296,8 @@ class CourseSearchPageState extends State<CourseSearchPage> {
   //send user to the log in page if they are not logged in
   void sendToLogin() {
     showDialog(
+      //We want the users to log in
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -367,7 +369,6 @@ class CourseSearchPageState extends State<CourseSearchPage> {
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
-            // Implement undo functionality if needed
             scheduleProvider.removeFromSchedule(course);
           },
         ),

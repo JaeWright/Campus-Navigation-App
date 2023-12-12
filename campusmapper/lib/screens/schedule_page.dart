@@ -1,31 +1,31 @@
 /*
 Author: Brock Davidge - 100787894
-This page displays the user's weekly course schedule. It listens for changes
-in the ScheduleProvider using the Provider package and organizes courses by day
+This page displays the user's weekly course schedule. It gets courses from the 
+scheduler_handler organizes courses by day
 of the week. The app bar is styled with a lilac-colored background and white
 bold text. Each day's schedule is presented in a card format, showing course
 names and times. Tapping on a course navigates to the CourseDetailsPage.
 */
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:campusmapper/utilities/courses.dart';
 import 'course_details_page.dart';
-import '../utilities/schedule_provider.dart';
 
-class SchedulePage extends StatelessWidget {
-  const SchedulePage({super.key});
+class SchedulePage extends StatefulWidget {
+  const SchedulePage({super.key, required this.courses});
+  final List<Course> courses;
+  @override
+  State<SchedulePage> createState() => SchedulePageState();
+}
 
+class SchedulePageState extends State<SchedulePage> {
   @override
   Widget build(BuildContext context) {
-    // Listen to changes in the ScheduleProvider
-    List<Course> courses = Provider.of<ScheduleProvider>(context).courses;
-
     // Create a map to organize courses by weekday
     Map<String, List<Course>> coursesByDay = {};
 
     // Organize courses based on the day of the week
-    for (Course course in courses) {
+    for (Course course in widget.courses) {
       if (!coursesByDay.containsKey(course.weekday!)) {
         coursesByDay[course.weekday!] = [];
       }
@@ -72,15 +72,21 @@ class SchedulePage extends StatelessWidget {
                           title: Text(course.courseName!),
                           subtitle:
                               Text('${course.startTime!} - ${course.endTime!}'),
-                          onTap: () {
+                          onTap: () async {
                             // Handle tapping on a course to show details
-                            Navigator.push(
+
+                            bool check = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
                                     CourseDetailsPage(course: course),
                               ),
                             );
+                            if (check) {
+                              setState(() {
+                                widget.courses.remove(course);
+                              });
+                            }
                           },
                         ),
                       )

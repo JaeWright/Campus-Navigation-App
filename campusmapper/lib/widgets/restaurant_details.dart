@@ -6,9 +6,9 @@ Author: Darshilkumar Patel
 */
 
 import 'package:flutter/material.dart';
-import '../models/constants/menu_constants.dart';
-import 'food_main.dart';
-import 'location.dart';
+import 'package:campusmapper/models/constants/menu_constants.dart';
+import 'package:campusmapper/utilities/classes/food_main.dart';
+import 'package:campusmapper/utilities/classes/location.dart';
 import 'package:campusmapper/widgets/drop_menu.dart';
 
 class FoodPage extends StatelessWidget {

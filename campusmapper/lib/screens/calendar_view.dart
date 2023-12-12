@@ -5,12 +5,13 @@ Used https://dipeshgoswami.medium.com/table-calendar-3-0-0-null-safety-818ba8d4c
  */
 
 import 'dart:collection';
+import 'package:campusmapper/utilities/events.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../screens/scheduler_handler.dart';
 
 class CalendarPage extends StatefulWidget {
-  final List<EventTile>? events;
+  final List<Event>? events;
   final bool displayEvents;
 
   const CalendarPage(
@@ -52,7 +53,8 @@ class CalendarPageState extends State<CalendarPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Calendar'),
+        title: const Text('Event Calendar'),
+        backgroundColor: Colors.deepPurple,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -126,10 +128,10 @@ class CalendarPageState extends State<CalendarPage> {
 
   //creates a list that maps each event and sorts them by matching dates
   //Uses chatGPT for this
-  Map<DateTime, List<EventTile>> groupEventsByDay(List<EventTile> events) {
-    Map<DateTime, List<EventTile>> groupedEvents = {};
+  Map<DateTime, List<Event>> groupEventsByDay(List<Event> events) {
+    Map<DateTime, List<Event>> groupedEvents = {};
 
-    for (EventTile event in events) {
+    for (Event event in events) {
       DateTime? eventDate = event.date;
       if (eventDate != null) {
         if (!groupedEvents.containsKey(eventDate)) {
@@ -145,7 +147,7 @@ class CalendarPageState extends State<CalendarPage> {
   //converts the mapped lists into a LinkedHashMap
   //used ChatGPT for this
   LinkedHashMap<DateTime, List<dynamic>> convertToDynamicMap(
-      Map<DateTime, List<EventTile>> map) {
+      Map<DateTime, List<Event>> map) {
     LinkedHashMap<DateTime, List<dynamic>> convertedMap = LinkedHashMap();
 
     map.forEach((key, value) {

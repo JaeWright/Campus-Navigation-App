@@ -476,13 +476,24 @@ class ListMapState extends State<ListMapScreen> {
 
   //Creates routing information
   void setMap(String moveType) async {
-    //Preforms a check for location before getting path, os it isn't a default to center
+    //Preforms a check for location before getting path, so it isn't a default to center
 
     if (isOnCampus()) {
       List<LatLng> returned = await directionManager.getDirections(moveType);
       setState(() {
         routing = returned;
       });
+      //Moves camera to the center of the path. Becuase of map bouds, can't change the zoom
+      //Reason being is if the zoom exceeded the map bounds, the camera wouldn't move to the center
+      mapController.move(
+          LatLng(
+              (directionManager.initialPosition.latitude +
+                      directionManager.locationPosition.latitude) /
+                  2,
+              (directionManager.initialPosition.longitude +
+                      directionManager.locationPosition.longitude) /
+                  2),
+          mapController.camera.zoom);
     } else {
       displayOffCampus();
     }

@@ -2,6 +2,8 @@
 Author: Jaelen Wright - 100790481
 This page manages the course and event schedule page, which displays the user's courses and events
 */
+import 'dart:async';
+
 import 'package:campusmapper/screens/course_search_page.dart';
 import 'package:campusmapper/screens/schedule_page.dart';
 import 'package:campusmapper/screens/student_login.dart';
@@ -287,7 +289,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
   }
 
   //popup for user to confirm if they want to delete their event
-  void _confirmDeleteEvent(Event eventToDelete) {
+  Future<bool> _confirmDeleteEvent(Event eventToDelete) async{
+    Completer <bool> completer = Completer<bool>();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -297,14 +300,14 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop(false); // Close the dialog
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 _deleteEvent(eventToDelete.id!); // Perform delete operation
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop(true); // Close the dialog
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.red,
@@ -314,7 +317,10 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
           ],
         );
       },
-    );
+    ).then((value){
+      completer.complete(value ?? false);
+    });
+    return completer.future;
   }
 
   //delete selected event from databases and eventTile list
@@ -642,44 +648,61 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
 
     for (int i = 0; i < indexes.length; i++) {
       widgets.addAll([
-        GestureDetector(
-          onTap: () {
-            _editEvent(eventsList[indexes[i]]);
+        Dismissible(
+          key: UniqueKey(),
+          direction: DismissDirection.endToStart,
+          confirmDismiss: (DismissDirection direction) async {
+            return await _confirmDeleteEvent(eventsList[indexes[i]]);
           },
-          onLongPress: () {
-            _confirmDeleteEvent(eventsList[indexes[i]]);
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20.0),
+            child: const Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+          onDismissed: (DismissDirection direction) {
+            // This will not be executed immediately upon swipe due to confirmDismiss
+            // If confirmed in the confirmation dialog, the item will be removed.
           },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                eventsList[indexes[i]].eventName!,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                eventsList[indexes[i]].location!,
-                style: const TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
-                style: const TextStyle(fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
-              if (i < indexes.length - 1)
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  height: 1,
-                  width: double.infinity,
-                  color: Colors.black54,
+          child: GestureDetector(
+            onTap: () {
+              _editEvent(eventsList[indexes[i]]);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  eventsList[indexes[i]].eventName!,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-            ],
+                Text(
+                  eventsList[indexes[i]].location!,
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  "${eventsList[indexes[i]].date!.year}-${eventsList[indexes[i]].date!.month}-${eventsList[indexes[i]].date!.day} at ${eventsList[indexes[i]].time!}",
+                  style: const TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                if (i < indexes.length - 1)
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    height: 1,
+                    width: double.infinity,
+                    color: Colors.black54,
+                  ),
+              ],
+            ),
           ),
         ),
       ]);
     }
+
 
     return widgets;
   }

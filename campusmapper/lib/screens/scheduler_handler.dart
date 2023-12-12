@@ -49,8 +49,8 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
     super.initState();
     Future.delayed(Duration.zero, () async {
       if (await loggedIn()) {
-        loadCoursesData();
         loadEventsData();
+        loadCoursesData();
       } else {
         sendToLogin();
       }
@@ -86,7 +86,6 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             TextButton(
               onPressed: () {
                 FocusScope.of(context).unfocus();
-                //Navigator.of(context).pop(); // Close the dialog
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -121,11 +120,26 @@ class _SchedulerHandlerPageState extends State<SchedulerHandlerPage> {
             ),
             TextButton(
               onPressed: () {
+                /*
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const CourseSearchPage()),
-                );
+                ).then((value) => null);
+
+                 */
+
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                  builder: (context) => const CourseSearchPage(),
+                ))
+                    .then((value) {
+                  // you can do what you need here
+                  Navigator.of(context).pop();
+                  loadCoursesData();
+                  setState(() {
+                  });
+                });
               },
               child: const Text('Select Courses'),
             ),

@@ -387,7 +387,7 @@ class CourseSearchPageState extends State<CourseSearchPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.yellow,
+        backgroundColor: Colors.pink,
         actions: [
           IconButton(
             icon: const Icon(

@@ -120,7 +120,7 @@ class HomePageState extends State<HomePage> {
       NavigationCard(
         icon: Icons.search,
         title: 'Search Courses',
-        color: const Color(0xFFFFD700),
+        color: Colors.pink,
         onTap: () {
           navigateToSection(context, const CourseSearchPage());
         },

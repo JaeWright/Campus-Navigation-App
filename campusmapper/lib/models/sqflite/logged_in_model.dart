@@ -12,7 +12,7 @@ class DBUtils {
       path.join(await getDatabasesPath(), 'user_manager.db'),
       onCreate: (db, version) {
         db.execute(
-            'CREATE TABLE user(id TEXT PRIMARY KEY, email TEXT, firstname TEXT, lastname TEXT, sid TEXT)');
+            'CREATE TABLE user(id TEXT PRIMARY KEY, email TEXT, firstname TEXT, lastname TEXT)');
       },
       version: 1,
     );

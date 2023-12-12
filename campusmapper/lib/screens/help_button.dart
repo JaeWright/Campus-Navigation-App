@@ -6,9 +6,12 @@ guidelines for how to access each app functionality for user's assistance.
 
 import 'package:flutter/material.dart';
 import 'package:campusmapper/widgets/restaurant_details.dart';
-import 'accessibility.dart';
-import 'scheduler_handler.dart';
-import 'course_search_page.dart';
+import 'package:campusmapper/screens/accessibility.dart';
+import 'package:campusmapper/screens/scheduler_handler.dart';
+import 'package:campusmapper/screens/course_search_page.dart';
+import 'package:campusmapper/screens/map_screen.dart';
+import 'package:campusmapper/screens/information_centre_page.dart';
+import 'package:latlong2/latlong.dart';
 
 class TutorialPage1 extends StatelessWidget {
   const TutorialPage1({super.key});
@@ -18,6 +21,19 @@ class TutorialPage1 extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.info),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const InformationCenterPage(),
+                ),
+              );
+            },
+          ),
+        ],
         title: const Text('Information Center'),
         backgroundColor: Colors.black, // Customize header color
       ),
@@ -68,7 +84,6 @@ class TutorialPage2 extends StatelessWidget {
           IconButton(
             icon: const Icon(
               Icons.fastfood_sharp,
-              color: Colors.black,
             ),
             onPressed: () {
               Navigator.push(
@@ -143,7 +158,6 @@ class TutorialPage3 extends StatelessWidget {
           IconButton(
             icon: const Icon(
               Icons.accessible,
-              color: Colors.black,
             ),
             onPressed: () {
               Navigator.push(
@@ -203,7 +217,6 @@ class TutorialPage4 extends StatelessWidget {
           IconButton(
             icon: const Icon(
               Icons.calendar_month,
-              color: Colors.black,
             ),
             onPressed: () {
               Navigator.push(
@@ -273,10 +286,28 @@ class TutorialPage5 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Campus Map'),
-        backgroundColor: const Color(0xFF008080), // Customize header color
-      ),
+          automaticallyImplyLeading: false,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.map,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ListMapScreen(
+                      findLocation: LatLng(0.0, 0.0),
+                      type: "None",
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+          title: const Text('Campus Map'),
+          backgroundColor: Colors.cyan //Customize header color
+          ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: const [
@@ -338,7 +369,6 @@ class TutorialPage6 extends StatelessWidget {
           IconButton(
             icon: const Icon(
               Icons.search,
-              color: Colors.black,
             ),
             onPressed: () {
               Navigator.push(
@@ -425,7 +455,7 @@ class TutorialSliderState extends State<TutorialSlider> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tutorial'),
-        backgroundColor: const Color(0xFFE0F2F1), // Customize header color
+        backgroundColor: Colors.indigo, // Customize header color
       ),
       body: Column(
         children: [

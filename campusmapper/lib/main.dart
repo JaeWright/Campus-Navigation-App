@@ -92,24 +92,10 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  bool isLoggedIn = false;
-
   void navigateToSection(BuildContext context, Widget page) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => page),
     );
-  }
-
-  void loginUser() {
-    setState(() {
-      isLoggedIn = true;
-    });
-  }
-
-  void logoutUser() {
-    setState(() {
-      isLoggedIn = false;
-    });
   }
 
   @override

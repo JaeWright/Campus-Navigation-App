@@ -238,7 +238,7 @@ class NavigationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(icon, size: 32.0, color: Colors.white), // Icon color changed
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 5.0),
               Text(
                 title,
                 style: const TextStyle(

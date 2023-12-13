@@ -36,3 +36,9 @@ Each restaurant showcases its name and location. Upon selection, a pop-up window
 
 ### FAQ
 Browse through frequently asked questions or search by specific keywords for quick answers.
+
+### Helpbutton
+
+Access a quick guide to all features by tapping the help button positioned at the bottom right corner of the homepage. 
+Swipe through for a detailed overview of each feature. Additionally, on each page, tapping the icon located in the header 
+will directly take you to the specific page related to that feature.
